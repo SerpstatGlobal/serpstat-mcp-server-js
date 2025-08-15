@@ -178,3 +178,4 @@ pids/
 *.pid.lock
 /docs/openapi_spec/
 /docs/
+/docss/

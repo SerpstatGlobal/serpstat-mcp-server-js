@@ -1,82 +1,83 @@
-# Инструкция для автоматического добавления нового метода в MCP сервер (Serpstat)
+# Instruction for Automatic Addition of a New Method to the MCP Server (Serpstat)
 
-## Входные данные:
-- OpenAPI-спецификация метода (json, yaml или объект)
-- Название метода (например, get_domain_regions_count)
-- Описание метода (человеко-ориентированное, для документации)
+## Input Data:
+- OpenAPI specification of the method (json, yaml, or object)
+- Method name (e.g., get_domain_regions_count)
+- Method description (human-readable, for documentation)
 
-## Чеклист и пошаговый план
+## Checklist and Step-by-Step Plan
 
-### 1. Схема валидации и типы параметров
-- Извлечь параметры метода из OpenAPI (или схемы запроса).
-- Создать Zod-схему для параметров в src/utils/validation.ts.
-  - Название: <methodName>Schema (например, domainRegionsCountSchema)
-  - Тип: <MethodName>Params (например, DomainRegionsCountParams)
-  - Проверить: все required/optional, паттерны, enum, min/max, default.
-- Добавить экспорт схемы и типа.
+### 1. Validation Schema and Parameter Types
+- Extract method parameters from OpenAPI (or request schema).
+- Create a Zod schema for parameters in src/utils/validation.ts.
+  - Name: <methodName>Schema (e.g., domainRegionsCountSchema)
+  - Type: <MethodName>Params (e.g., DomainRegionsCountParams)
+  - Check: all required/optional, patterns, enum, min/max, default.
+- Export the schema and type.
 
-### 2. Типы ответа
-- Извлечь структуру ответа из OpenAPI (или схемы ответа).
-- Добавить интерфейсы в src/types/serpstat.ts:
-  - <MethodName>Response (например, DomainRegionsCountResponse)
-  - Вложенные типы (например, DomainRegionCount)
-- Проверить: все поля, вложенность, типы, массивы, опциональность.
+### 2. Response Types
+- Extract response structure from OpenAPI (or response schema).
+- Add interfaces to src/types/serpstat.ts:
+  - <MethodName>Response (e.g., DomainRegionsCountResponse)
+  - Nested types (e.g., DomainRegionCount)
+- Check: all fields, nesting, types, arrays, optionality.
 
-### 3. Сервис
-- В src/services/domain_tools.ts:
-  - Добавить метод get<MethodNameCamel>(params: <MethodName>Params): Promise<<MethodName>Response>
-  - Использовать правильный SerpstatRequest.method (например, SerpstatDomainProcedure.getRegionsCount)
-  - Логировать входные параметры и результат.
-  - Обрабатывать отсутствие result (ошибка).
+### 3. Service
+- In src/services/domain_tools.ts:
+  - Add method get<MethodNameCamel>(params: <MethodName>Params): Promise<<MethodName>Response>
+  - Use the correct SerpstatRequest.method (e.g., SerpstatDomainProcedure.getRegionsCount)
+  - Log input parameters and result.
+  - Handle missing result (error).
 
 ### 4. Handler
-- В src/handlers/domain_tools.ts:
-  - Создать класс <MethodNamePascal>Handler extends BaseHandler
-  - getName() — возвращает название метода (например, get_domain_regions_count)
-  - getDescription() — возвращает описание метода
-  - getInputSchema() — возвращает zod-схему
+- In src/handlers/domain_tools.ts:
+  - Create class <MethodNamePascal>Handler extends BaseHandler
+  - getName() — returns the method name (e.g., get_domain_regions_count)
+  - getDescription() — returns the method description
+  - getInputSchema() — must return a JSON Schema object with type: "object" (NOT a Zod schema!).
+    - If using Zod, convert via zod-to-json-schema or describe the schema manually, as in other methods.
+    - Ensure the type field is always "object" (otherwise the server cannot build tools/list and you will get an invalid_literal error).
   - handle(call: MCPToolCall): Promise<MCPToolResponse>
     - try/catch
-    - Валидация через .parse(call.arguments)
-    - Вызов сервиса
+    - Validate via .parse(call.arguments)
+    - Call the service
     - return this.createSuccessResponse(result)
-    - Обработка ошибок через createErrorResponse
-- Проверить: стиль и сигнатуры как у других handler'ов.
+    - Handle errors via createErrorResponse
+- Check: style and signatures match other handlers.
 
-### 5. Регистрация
-- В src/server.ts:
-  - Импортировать новый handler
-  - Добавить в массив handlers
-  - Проверить, что getName() совпадает с MCP-именем
+### 5. Registration
+- In src/server.ts:
+  - Import the new handler
+  - Add to the handlers array
+  - Check that getName() matches the MCP name
 
-### 6. Тесты
-- В src/__tests__/services/domain_tools.test.ts:
-  - Тест схемы: валидные/невалидные параметры
-  - Тест сервиса: мок makeRequest, проверка результата
-  - Тест handler:
-    - Мок сервиса
+### 6. Tests
+- In src/__tests__/services/domain_tools.test.ts: (if the method is from another domain area, create a new file in the appropriate folder by analogy)
+  - Schema test: valid/invalid parameters
+  - Service test: mock makeRequest, check result
+  - Handler test:
+    - Mock the service
     - handle({ name, arguments })
-    - Проверить res.content, распарсить JSON, проверить структуру
-    - Проверить вызов мока
-- Проверить: все тесты проходят, структура ответа совпадает с ожидан��ями.
+    - Check res.content, parse JSON, check structure
+    - Check mock call
+- Check: all tests pass, response structure matches expectations.
 
-### 7. Документация
-- В README.md:
-  - Добавить метод в таблицу MCP Tools
-  - Кратко описать назначение, параметры, пример запроса/ответа
+### 7. Documentation
+- In README.md:
+  - Add the method to the MCP Tools table
+  - Briefly describe the purpose, parameters, example request/response
 
-### 8. ВАЖНО
-- Везде использовать единый стиль импортов (без .js)
-- В handler'ах всегда использовать call.arguments
-- В тестах для handler'а проверять res.content, а не res.result
-- Везде использовать строгую типизацию
-- Проверять, что все required поля действительно required
-- Проверять, что все опциональные поля корректно обрабатываются
-- Проверять, что структура ответа полностью совпадает с OpenAPI
-- После всех изменений запускать тесты и исправлять ошибки до полного успеха
+### 8. IMPORTANT
+- Always use a consistent import style (without .js)
+- Always use call.arguments in handlers
+- In handler tests, check res.content, not res.result
+- Always use strict typing
+- Check that all required fields are truly required
+- Check that all optional fields are handled correctly
+- Check that the response structure fully matches OpenAPI
+- After all changes, run tests and fix errors until all pass
 
 ---
 
-## Итог
-Следовать этому чеклисту строго, не пропуская ни одного пункта. Проверять все детали, чтобы интеграция нового метода была безошибочной, тесты проходили, а документация была актуальной и полной.
-
+## Result
+Strictly follow this checklist, do not skip any points. Check all details to ensure the integration of a new method is error-free, tests pass, and documentation is up-to-date and complete.

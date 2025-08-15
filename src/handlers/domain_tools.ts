@@ -15,7 +15,7 @@ export class DomainsInfoHandler extends BaseHandler {
     }
 
     getName(): string {
-        return 'serpstat_domains_info';
+        return 'get_domains_info';
     }
 
     getDescription(): string {
@@ -90,7 +90,7 @@ export class CompetitorsHandler extends BaseHandler {
     }
 
     getName(): string {
-        return 'serpstat_get_competitors';
+        return 'get_domain_competitors';
     }
 
     getDescription(): string {
