@@ -380,7 +380,9 @@ export class DomainRegionsCountHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Analyze domain keyword presence across all Google regional databases. Shows keyword count by country, regional performance comparison and international SEO insights. Start every complex domain analysis with this tool.';
+        return '**REQUIRED FIRST STEP** for domain analysis: Determines optimal regional database (se parameter) by analyzing domain keyword presence across all Google regions. This tool identifies which regional database contains the most keyword data for the domain, ensuring subsequent analysis uses the correct market context. \n' +
+            '**WORKFLOW:** Always call this first → use the top region from results as `se` parameter in serpstat_domains_info, get_domain_keywords, get_domain_urls, and serpstat_get_competitors.\n' +
+            'Returns: keyword count by country, regional performance comparison, and identifies primary market for the domain.';
     }
 
     getInputSchema(): object {

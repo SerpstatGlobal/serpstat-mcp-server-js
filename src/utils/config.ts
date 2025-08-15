@@ -16,6 +16,6 @@ export function loadConfig(): Config {
         serpstatApiUrl: process.env.SERPSTAT_API_URL ?? 'https://api.serpstat.com/v4',
         logLevel: process.env.LOG_LEVEL as 'error' | 'warn' | 'info' | 'debug' ?? 'error',
         maxRetries: process.env.MAX_RETRIES ? Number(process.env.MAX_RETRIES) : 1,
-        requestTimeout: process.env.REQUEST_TIMEOUT ? Number(process.env.REQUEST_TIMEOUT) : 5000,
+        requestTimeout: process.env.REQUEST_TIMEOUT ? Number(process.env.REQUEST_TIMEOUT) : 30000,
     });
 }

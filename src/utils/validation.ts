@@ -1,11 +1,7 @@
 import { z } from 'zod';
-import { SearchEngine } from '../types/serpstat.js';
+import { SEARCH_ENGINES } from '../types/serpstat';
 
-const searchEngineSchema = z.enum([
-    'g_us', 'g_uk', 'g_de', 'g_fr', 'g_es', 'g_it', 'g_ca', 'g_au',
-    'g_nl', 'g_be', 'g_dk', 'g_se', 'g_no', 'g_fi', 'g_pl', 'g_cz',
-    'g_ua', 'g_ru', 'bing_us'
-] as const);
+const searchEngineSchema = z.enum(SEARCH_ENGINES);
 
 export const domainsInfoSchema = z.object({
     domains: z.array(z.string().min(1)).min(1).max(10),
@@ -27,11 +23,7 @@ export const competitorsGetSchema = z.object({
         .min(4)
         .max(253)
         .regex(/^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/),
-    se: z.enum([
-        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de',
-        'g_fr', 'g_ru', 'g_br', 'g_mx', 'g_es',
-        'g_it', 'g_nl', 'g_pl', 'g_ua'
-    ] as const),
+    se: searchEngineSchema,
     size: z.number().int().min(1).max(100).default(10),
     filters: z.object({
         visible: z.number().min(0).optional(),
@@ -59,11 +51,7 @@ export const domainKeywordsSchema = z.object({
         .min(4)
         .max(253)
         .regex(/^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/),
-    se: z.enum([
-        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de',
-        'g_fr', 'g_ru', 'g_br', 'g_mx', 'g_es',
-        'g_it', 'b_us', 'y_ru'
-    ] as const).default('g_us'),
+    se: searchEngineSchema,
     withSubdomains: z.boolean().optional(),
     withIntents: z.boolean().optional(),
     url: z.string().url().optional(),
@@ -113,11 +101,7 @@ export const domainUrlsSchema = z.object({
         .min(4)
         .max(253)
         .regex(/^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/),
-    se: z.enum([
-        "g_us", "g_uk", "g_au", "g_ca", "g_de",
-        "g_fr", "g_kz", "g_br", "g_mx", "g_es",
-        "g_it", "g_nl", "g_pl", "g_ua"
-    ] as const).default("g_us"),
+    se: searchEngineSchema,
     filters: z.object({
         url_prefix: z.string().max(500).optional(),
         url_contain: z.string().max(200).optional(),
