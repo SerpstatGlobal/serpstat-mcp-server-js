@@ -64,8 +64,8 @@
 
 ### 7. Documentation
 - In README.md:
-  - Add the method to the MCP Tools table
-  - Briefly describe the purpose, parameters, example request/response
+  - Add the method to the MCP Tools table only, preserve the order and structure.
+
 
 ### 8. IMPORTANT
 - Always use a consistent import style (without .js)

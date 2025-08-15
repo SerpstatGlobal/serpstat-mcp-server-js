@@ -1,6 +1,6 @@
-import { SerpstatMCPServer } from './server.js';
-import { logger } from './utils/logger.js';
-import { loadConfig } from './utils/config.js';
+import { SerpstatMCPServer } from './server';
+import { logger } from './utils/logger';
+import { loadConfig } from './utils/config';
 
 async function main() {
     try {

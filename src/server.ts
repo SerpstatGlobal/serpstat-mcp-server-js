@@ -5,9 +5,10 @@ import {
     ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { BaseHandler } from './handlers/base';
-import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler } from './handlers/domain_tools';
+import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from './handlers/domain_tools';
 import { BacklinksSummaryHandler } from './handlers/backlinks_tools';
-import { logger } from './utils/logger.js';
+import { GetKeywordsHandler } from './handlers/keyword_tools';
+import { logger } from './utils/logger';
 
 export class SerpstatMCPServer {
     private server: Server;
@@ -39,6 +40,8 @@ export class SerpstatMCPServer {
             new DomainUrlsHandler(),
             new BacklinksSummaryHandler(),
             new DomainRegionsCountHandler(),
+            new GetDomainUniqKeywordsHandler(),
+            new GetKeywordsHandler(),
             // Add more handlers here as you expand the API
         ];
 

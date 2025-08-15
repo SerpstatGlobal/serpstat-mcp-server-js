@@ -1,8 +1,8 @@
 import { BaseService } from './base';
 import { DomainsInfoResponse, SerpstatRequest } from '../types/serpstat';
-import { DomainsInfoParams, CompetitorsGetParams, DomainKeywordsParams, DomainUrlsParams, DomainRegionsCountParams } from '../utils/validation';
+import { DomainsInfoParams, CompetitorsGetParams, DomainKeywordsParams, DomainUrlsParams, DomainRegionsCountParams, DomainUniqKeywordsParams } from '../utils/validation';
 import { logger } from '../utils/logger';
-import { CompetitorsResponse, DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse } from '../types/serpstat';
+import { CompetitorsResponse, DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse } from '../types/serpstat';
 
 export class DomainService extends BaseService {
     async getDomainsInfo(params: DomainsInfoParams): Promise<DomainsInfoResponse> {
@@ -114,6 +114,29 @@ export class DomainService extends BaseService {
 
         logger.info('Successfully retrieved domain regions count', {
             regionsCount: response.result.data.length,
+            leftLines: response.result.summary_info.left_lines
+        });
+
+        return response.result;
+    }
+
+    async getDomainUniqKeywords(params: DomainUniqKeywordsParams): Promise<DomainUniqKeywordsResponse> {
+        logger.info('Getting unique keywords for domains', { domains: params.domains, minusDomain: params.minusDomain, se: params.se });
+
+        const request: SerpstatRequest = {
+            id: `domain_uniq_keywords_${Date.now()}`,
+            method: 'SerpstatDomainProcedure.getDomainsUniqKeywords',
+            params,
+        };
+
+        const response = await this.makeRequest<DomainUniqKeywordsResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved unique keywords', {
+            keywordsCount: response.result.data.length,
             leftLines: response.result.summary_info.left_lines
         });
 

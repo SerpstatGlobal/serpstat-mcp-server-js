@@ -1,7 +1,7 @@
 import { BaseHandler } from './base';
 import { DomainService } from '../services/domain_tools';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp';
-import { domainsInfoSchema, DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams } from '../utils/validation';
+import { domainsInfoSchema, DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams } from '../utils/validation';
 import { loadConfig } from '../utils/config';
 import { z } from 'zod';
 
@@ -418,6 +418,136 @@ export class DomainRegionsCountHandler extends BaseHandler {
         try {
             const params = domainRegionsCountSchema.parse(call.arguments) as DomainRegionsCountParams;
             const result = await this.domainService.getDomainRegionsCount(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetDomainUniqKeywordsHandler extends BaseHandler {
+    private domainService: DomainService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.domainService = new DomainService(config);
+    }
+
+    getName(): string {
+        return 'get_domain_uniq_keywords';
+    }
+
+    getDescription(): string {
+        return 'Возвращает уникальные ключевые слова двух доменов, по которым третий домен не ранжируется. Аналог отчёта Domain vs domain.';
+    }
+
+    getInputSchema(): object {
+        return {
+            type: 'object',
+            properties: {
+                se: {
+                    type: 'string',
+                    enum: [
+                        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de', 'g_fr', 'g_ru', 'g_br', 'g_mx', 'g_es', 'g_it', 'g_nl', 'g_pl', 'g_ua'
+                    ],
+                    description: 'Search engine database ID',
+                    default: 'g_us'
+                },
+                domains: {
+                    type: 'array',
+                    description: 'Array of domains to analyze for unique keywords (min 1, max 2)',
+                    minItems: 1,
+                    maxItems: 2,
+                    uniqueItems: true,
+                    items: {
+                        type: 'string',
+                        pattern: '^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$',
+                        minLength: 4,
+                        maxLength: 253
+                    }
+                },
+                minusDomain: {
+                    type: 'string',
+                    description: 'Domain with keywords which must not intersect with domains parameter',
+                    pattern: '^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$',
+                    minLength: 4,
+                    maxLength: 253
+                },
+                page: {
+                    type: 'integer',
+                    description: 'Page number',
+                    minimum: 1,
+                    default: 1
+                },
+                size: {
+                    type: 'integer',
+                    description: 'Number of results per page',
+                    minimum: 1,
+                    maximum: 1000,
+                    default: 100
+                },
+                filters: {
+                    type: 'object',
+                    description: 'Filter conditions for unique keywords',
+                    properties: {
+                        right_spelling: { type: 'boolean', description: 'Include or exclude correctly spelled keywords' },
+                        misspelled: { type: 'boolean', description: 'Include or exclude misspelled keywords' },
+                        keywords: {
+                            type: 'array',
+                            description: 'List of included keywords',
+                            items: { type: 'string', minLength: 1, maxLength: 100 },
+                            maxItems: 100
+                        },
+                        minus_keywords: {
+                            type: 'array',
+                            description: 'List of excluded keywords',
+                            items: { type: 'string', minLength: 1, maxLength: 100 },
+                            maxItems: 100
+                        },
+                        queries: { type: 'integer', description: 'Exact number of keyword searches per month', minimum: 0 },
+                        queries_from: { type: 'integer', description: 'Minimum number of keyword searches per month', minimum: 0 },
+                        queries_to: { type: 'integer', description: 'Maximum number of keyword searches per month', minimum: 0 },
+                        region_queries_count: { type: 'integer', description: 'Exact search volume for the selected region', minimum: 0 },
+                        region_queries_count_from: { type: 'integer', description: 'Minimum search volume for the selected region', minimum: 0 },
+                        region_queries_count_to: { type: 'integer', description: 'Maximum search volume for the selected region', minimum: 0 },
+                        region_queries_count_wide: { type: 'integer', description: 'Exact search volume in broad match', minimum: 0 },
+                        region_queries_count_wide_from: { type: 'integer', description: 'Minimum search volume in broad match', minimum: 0 },
+                        region_queries_count_wide_to: { type: 'integer', description: 'Maximum search volume in broad match', minimum: 0 },
+                        cost: { type: 'number', description: 'Exact cost per click (in USD)', minimum: 0 },
+                        cost_from: { type: 'number', description: 'Minimum cost per click (in USD)', minimum: 0 },
+                        cost_to: { type: 'number', description: 'Maximum cost per click (in USD)', minimum: 0 },
+                        concurrency: { type: 'integer', description: 'Exact competition level (1-100)', minimum: 1, maximum: 100 },
+                        concurrency_from: { type: 'integer', description: 'Minimum competition level (1-100)', minimum: 1, maximum: 100 },
+                        concurrency_to: { type: 'integer', description: 'Maximum competition level (1-100)', minimum: 1, maximum: 100 },
+                        difficulty: { type: 'integer', description: 'Exact keyword difficulty', minimum: 0, maximum: 100 },
+                        difficulty_from: { type: 'integer', description: 'Minimum keyword difficulty', minimum: 0, maximum: 100 },
+                        difficulty_to: { type: 'integer', description: 'Maximum keyword difficulty', minimum: 0, maximum: 100 },
+                        keyword_length: { type: 'integer', description: 'Exact number of words in a keyword', minimum: 1 },
+                        keyword_length_from: { type: 'integer', description: 'Minimum number of words in a keyword', minimum: 1 },
+                        keyword_length_to: { type: 'integer', description: 'Maximum number of words in a keyword', minimum: 1 },
+                        traff: { type: 'integer', description: 'Exact traffic volume for the keyword', minimum: 0 },
+                        traff_from: { type: 'integer', description: 'Minimum traffic volume for the keyword', minimum: 0 },
+                        traff_to: { type: 'integer', description: 'Maximum traffic volume for the keyword', minimum: 0 },
+                        position: { type: 'integer', description: 'Exact keyword position in the SERP', minimum: 1, maximum: 100 },
+                        position_from: { type: 'integer', description: 'Minimum keyword position in the SERP', minimum: 1, maximum: 100 },
+                        position_to: { type: 'integer', description: 'Maximum keyword position in the SERP', minimum: 1, maximum: 100 }
+                    },
+                    additionalProperties: false
+                }
+            },
+            required: ['se', 'domains', 'minusDomain'],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = domainUniqKeywordsSchema.parse(call.arguments) as DomainUniqKeywordsParams;
+            const result = await this.domainService.getDomainUniqKeywords(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {

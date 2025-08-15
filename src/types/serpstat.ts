@@ -193,3 +193,64 @@ export interface DomainRegionsCountResponse {
     data: DomainRegionCount[];
     summary_info: DomainRegionsCountSummaryInfo;
 }
+
+export interface DomainUniqKeywordData {
+    domain: string;
+    subdomain: string;
+    keyword: string;
+    keyword_length: number;
+    url: string;
+    position: number;
+    date: string;
+    types: string[];
+    found_results: number;
+    cost: number;
+    concurrency: number;
+    region_queries_count: number;
+    region_queries_count_wide: number;
+    geo_names: string[];
+    traff: number;
+    difficulty: number;
+    dynamic: number;
+    // динамические ключи: позиции доменов, например "adidas.com": 52, "nike.com": 1
+    [domainName: string]: string | number | string[] | undefined;
+}
+
+export interface DomainUniqKeywordsSummaryInfo {
+    page: number;
+    total: number;
+    left_lines: number;
+}
+
+export interface DomainUniqKeywordsResponse {
+    data: DomainUniqKeywordData[];
+    summary_info: DomainUniqKeywordsSummaryInfo;
+}
+
+export interface KeywordGetData {
+    keyword: string;
+    cost: number;
+    concurrency: number;
+    found_results: number;
+    region_queries_count: number;
+    region_queries_count_wide: number;
+    types: string[];
+    geo_names: any[];
+    social_domains: string[];
+    right_spelling: string | null;
+    lang: string;
+    keyword_length: number;
+    difficulty: number;
+    intents: string[];
+}
+
+export interface KeywordGetSummaryInfo {
+    page: number;
+    total: number;
+    left_lines: number;
+}
+
+export interface KeywordGetResponse {
+    data: KeywordGetData[];
+    summary_info: KeywordGetSummaryInfo;
+}

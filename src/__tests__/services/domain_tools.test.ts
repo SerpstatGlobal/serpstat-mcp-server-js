@@ -1,8 +1,8 @@
 import { DomainService } from '../../services/domain_tools';
 import { Config } from '../../utils/config';
-import { DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams } from '../../utils/validation';
-import { DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse } from '../../types/serpstat';
-import { DomainRegionsCountHandler } from '../../handlers/domain_tools';
+import { DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams } from '../../utils/validation';
+import { DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse } from '../../types/serpstat';
+import { DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from '../../handlers/domain_tools';
 import { jest, beforeEach, describe, it, expect } from '@jest/globals';
 
 
@@ -373,6 +373,112 @@ describe('DomainService', () => {
             const parsed = JSON.parse(res.content[0].text);
             expect(parsed.summary_info.analysed_domain).toBe('example.com');
             expect(handler['domainService'].getDomainRegionsCount).toHaveBeenCalled();
+        });
+    });
+
+    describe('domainUniqKeywordsSchema', () => {
+        it('validates correct parameters', () => {
+            const params: DomainUniqKeywordsParams = {
+                se: 'g_us',
+                domains: ['nike.com', 'adidas.com'],
+                minusDomain: 'puma.com',
+                page: 1,
+                size: 10,
+                filters: { queries_from: 1000, queries_to: 2000 }
+            };
+            expect(() => domainUniqKeywordsSchema.parse(params)).not.toThrow();
+        });
+        it('rejects invalid domains', () => {
+            const params = {
+                se: 'g_us',
+                domains: ['bad_domain'],
+                minusDomain: 'puma.com',
+            };
+            expect(() => domainUniqKeywordsSchema.parse(params)).toThrow();
+        });
+        it('rejects duplicate domains', () => {
+            const params = {
+                se: 'g_us',
+                domains: ['nike.com', 'nike.com'],
+                minusDomain: 'puma.com',
+            };
+            expect(() => domainUniqKeywordsSchema.parse(params)).toThrow();
+        });
+    });
+
+    describe('DomainService.getDomainUniqKeywords', () => {
+        let service: DomainService;
+        let mockConfig: Config;
+        beforeEach(() => {
+            mockConfig = {
+                serpstatApiToken: 'test-token',
+                serpstatApiUrl: 'https://api.serpstat.com/v4',
+                logLevel: 'error',
+                maxRetries: 1,
+                requestTimeout: 5000,
+            };
+            service = new DomainService(mockConfig);
+        });
+        it('returns result from API', async () => {
+            const params: DomainUniqKeywordsParams = {
+                se: 'g_us',
+                domains: ['nike.com', 'adidas.com'],
+                minusDomain: 'puma.com',
+            };
+            const mockResult: DomainUniqKeywordsResponse = {
+                data: [
+                    {
+                        domain: 'nike.com',
+                        subdomain: 'www.nike.com',
+                        keyword: 'test',
+                        keyword_length: 1,
+                        url: 'https://nike.com',
+                        position: 1,
+                        date: '2025-01-01',
+                        types: [],
+                        found_results: 1,
+                        cost: 1,
+                        concurrency: 1,
+                        region_queries_count: 1,
+                        region_queries_count_wide: 1,
+                        geo_names: [],
+                        traff: 1,
+                        difficulty: 1,
+                        dynamic: 0,
+                        'adidas.com': 2,
+                        'nike.com': 1
+                    }
+                ],
+                summary_info: { page: 1, total: 1, left_lines: 100 }
+            };
+            jest.spyOn(service, 'makeRequest').mockResolvedValue({ id: '1', result: mockResult });
+            const result = await service.getDomainUniqKeywords(params);
+            expect(result).toEqual(mockResult);
+        });
+        it('throws if no result', async () => {
+            jest.spyOn(service, 'makeRequest').mockResolvedValue({ id: '1' });
+            await expect(service.getDomainUniqKeywords({ se: 'g_us', domains: ['nike.com'], minusDomain: 'puma.com' })).rejects.toThrow('No result data received from Serpstat API');
+        });
+    });
+
+    describe('GetDomainUniqKeywordsHandler', () => {
+        it('returns success response for valid call', async () => {
+            const handler = new GetDomainUniqKeywordsHandler();
+            const mockResult: DomainUniqKeywordsResponse = {
+                data: [],
+                summary_info: { page: 1, total: 0, left_lines: 100 }
+            };
+            jest.spyOn(handler['domainService'], 'getDomainUniqKeywords').mockResolvedValue(mockResult);
+            const res = await handler.handle({ name: 'get_domain_uniq_keywords', arguments: { se: 'g_us', domains: ['nike.com'], minusDomain: 'puma.com' } });
+            expect(res.isError).toBeFalsy();
+            expect(res.content).toBeDefined();
+            expect(JSON.stringify(res.content)).toContain('summary_info');
+        });
+        it('returns error for invalid params', async () => {
+            const handler = new GetDomainUniqKeywordsHandler();
+            const res = await handler.handle({ name: 'get_domain_uniq_keywords', arguments: { se: 'g_us', domains: ['bad_domain'], minusDomain: 'puma.com' } });
+            expect(res.isError).toBeTruthy();
+            expect(res.content?.[0]?.text).toContain('Invalid parameters');
         });
     });
 });

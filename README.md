@@ -61,14 +61,16 @@ npm test
 
 ## MCP Tools
 
-| Method name              | Description                                                                                                                        |
-|--------------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| get_domains_info         | Get comprehensive SEO information for multiple domains including visibility, keywords, traffic, and dynamics                        |
-| get_domain_competitors | Get a list of competitor domains for a given domain, including visibility, traffic, and relevance.                                 |
-| get_domain_keywords      | Get keywords that domain ranks for in Google search results. Includes position, traffic, difficulty analysis with comprehensive SEO insights and performance metrics. |
-| get_domain_urls          | Get URLs within a domain and keyword count for each URL. Analyze URL structure, performance distribution, and identify top-performing pages. Each URL costs 1 API credit, minimum 1 credit per request. |
-| get_backlinks_summary    | Get comprehensive backlinks summary using Serpstat API. Returns referring domains, backlinks count, link types, quality metrics and recent changes for domain or subdomain. |
-| get_domain_regions_count | Analyze domain keyword presence across all Google regional databases. Shows keyword count by country, regional performance comparison and international SEO insights. Start every complex domain analysis with this tool. |
+| Name                      | Description                                                                                                                                                                 | Parameters (main)                 |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| get_domains_info          | Get SEO info for multiple domains                                                                                                                                           | domains, se, filters              |
+| get_domain_competitors    | Get list of competitor domains                                                                                                                                              | domain, se, size, filters         |
+| get_domain_keywords       | Get keywords that domain ranks for                                                                                                                                          | domain, se, page, size, filters   |
+| get_domain_urls           | Get URLs within a domain and keyword count                                                                                                                                  | domain, se, page, size, filters   |
+| get_domain_regions_count  | Get keyword count by region for a domain                                                                                                                                    | domain, sort, order               |
+| get_domain_uniq_keywords  | Get unique keywords for two domains not ranked by a third domain            | se, domains, minusDomain, filters |
+| get_keywords              | Get related organic keywords for a given keyword                            | keyword, se, filters              |
+| get_backlinks_summary      | Get comprehensive backlinks summary using Serpstat API. Returns referring domains, backlinks count, link types, quality metrics and recent changes for domain or subdomain. |
 
 ## License
 
