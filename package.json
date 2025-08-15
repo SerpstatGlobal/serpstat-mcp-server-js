@@ -1,0 +1,38 @@
+{
+  "name": "serpstat-mcp-server",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Serpstat MCP Server for Serpstat API. Allows you to automate your daily SEO tasks and get results in a few seconds.",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "jest"
+  },
+  "keywords": [
+    "Serpstat",
+    "MCP",
+    "API",
+    "Server"
+  ],
+  "author": "Sertpstat Global LTD Team (https://serpstat.com)",
+  "homepage": "https://serpstat.com/pages/mcp/",
+  "type": "commonjs",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.2",
+    "@types/node": "^24.2.1",
+    "axios": "^1.11.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.6.0",
+    "typescript": "^5.9.2",
+    "winston": "^3.17.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "ts-jest": "^29.4.1"
+  }
+}

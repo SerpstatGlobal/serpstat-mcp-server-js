@@ -1,0 +1,82 @@
+# Инструкция для автоматического добавления нового метода в MCP сервер (Serpstat)
+
+## Входные данные:
+- OpenAPI-спецификация метода (json, yaml или объект)
+- Название метода (например, get_domain_regions_count)
+- Описание метода (человеко-ориентированное, для документации)
+
+## Чеклист и пошаговый план
+
+### 1. Схема валидации и типы параметров
+- Извлечь параметры метода из OpenAPI (или схемы запроса).
+- Создать Zod-схему для параметров в src/utils/validation.ts.
+  - Название: <methodName>Schema (например, domainRegionsCountSchema)
+  - Тип: <MethodName>Params (например, DomainRegionsCountParams)
+  - Проверить: все required/optional, паттерны, enum, min/max, default.
+- Добавить экспорт схемы и типа.
+
+### 2. Типы ответа
+- Извлечь структуру ответа из OpenAPI (или схемы ответа).
+- Добавить интерфейсы в src/types/serpstat.ts:
+  - <MethodName>Response (например, DomainRegionsCountResponse)
+  - Вложенные типы (например, DomainRegionCount)
+- Проверить: все поля, вложенность, типы, массивы, опциональность.
+
+### 3. Сервис
+- В src/services/domain_tools.ts:
+  - Добавить метод get<MethodNameCamel>(params: <MethodName>Params): Promise<<MethodName>Response>
+  - Использовать правильный SerpstatRequest.method (например, SerpstatDomainProcedure.getRegionsCount)
+  - Логировать входные параметры и результат.
+  - Обрабатывать отсутствие result (ошибка).
+
+### 4. Handler
+- В src/handlers/domain_tools.ts:
+  - Создать класс <MethodNamePascal>Handler extends BaseHandler
+  - getName() — возвращает название метода (например, get_domain_regions_count)
+  - getDescription() — возвращает описание метода
+  - getInputSchema() — возвращает zod-схему
+  - handle(call: MCPToolCall): Promise<MCPToolResponse>
+    - try/catch
+    - Валидация через .parse(call.arguments)
+    - Вызов сервиса
+    - return this.createSuccessResponse(result)
+    - Обработка ошибок через createErrorResponse
+- Проверить: стиль и сигнатуры как у других handler'ов.
+
+### 5. Регистрация
+- В src/server.ts:
+  - Импортировать новый handler
+  - Добавить в массив handlers
+  - Проверить, что getName() совпадает с MCP-именем
+
+### 6. Тесты
+- В src/__tests__/services/domain_tools.test.ts:
+  - Тест схемы: валидные/невалидные параметры
+  - Тест сервиса: мок makeRequest, проверка результата
+  - Тест handler:
+    - Мок сервиса
+    - handle({ name, arguments })
+    - Проверить res.content, распарсить JSON, проверить структуру
+    - Проверить вызов мока
+- Проверить: все тесты проходят, структура ответа совпадает с ожидан��ями.
+
+### 7. Документация
+- В README.md:
+  - Добавить метод в таблицу MCP Tools
+  - Кратко описать назначение, параметры, пример запроса/ответа
+
+### 8. ВАЖНО
+- Везде использовать единый стиль импортов (без .js)
+- В handler'ах всегда использовать call.arguments
+- В тестах для handler'а проверять res.content, а не res.result
+- Везде использовать строгую типизацию
+- Проверять, что все required поля действительно required
+- Проверять, что все опциональные поля корректно обрабатываются
+- Проверять, что структура ответа полностью совпадает с OpenAPI
+- После всех изменений запускать тесты и исправлять ошибки до полного успеха
+
+---
+
+## Итог
+Следовать этому чеклисту строго, не пропуская ни одного пункта. Проверять все детали, чтобы интеграция нового метода была безошибочной, тесты проходили, а документация была актуальной и полной.
+
