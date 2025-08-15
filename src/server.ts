@@ -7,7 +7,7 @@ import {
 import { BaseHandler } from './handlers/base';
 import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from './handlers/domain_tools';
 import { BacklinksSummaryHandler } from './handlers/backlinks_tools';
-import { GetKeywordsHandler } from './handlers/keyword_tools';
+import { GetKeywordsHandler, GetRelatedKeywordsHandler } from './handlers/keyword_tools';
 import { logger } from './utils/logger';
 
 export class SerpstatMCPServer {
@@ -42,6 +42,7 @@ export class SerpstatMCPServer {
             new DomainRegionsCountHandler(),
             new GetDomainUniqKeywordsHandler(),
             new GetKeywordsHandler(),
+            new GetRelatedKeywordsHandler(),
             // Add more handlers here as you expand the API
         ];
 

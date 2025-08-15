@@ -254,3 +254,28 @@ export interface KeywordGetResponse {
     data: KeywordGetData[];
     summary_info: KeywordGetSummaryInfo;
 }
+
+export interface GetRelatedKeywordData {
+    keyword: string;
+    cost?: number;
+    concurrency?: number;
+    region_queries_count?: number;
+    difficulty?: number;
+    weight?: number;
+    types?: string[];
+    geo_names?: string[];
+    right_spelling?: boolean;
+    keyword_length?: number;
+    intents?: string[];
+}
+
+export interface GetRelatedKeywordsSummaryInfo {
+    page: number;
+    total: number;
+    left_lines: number;
+}
+
+export interface GetRelatedKeywordsResponse {
+    data: GetRelatedKeywordData[];
+    summary_info: GetRelatedKeywordsSummaryInfo;
+}

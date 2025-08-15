@@ -229,3 +229,57 @@ export const keywordGetSchema = z.object({
 }).strict();
 
 export type KeywordGetParams = z.infer<typeof keywordGetSchema>;
+
+export const getRelatedKeywordsSchema = z.object({
+    keyword: z.string().min(1).max(200),
+    se: z.enum([
+        "g_us", "g_uk", "g_au", "g_ca", "g_de",
+        "g_fr", "g_br", "g_mx", "g_es", "g_bg",
+        "g_it", "g_nl", "g_pl", "g_ua"
+    ]),
+    withIntents: z.boolean().default(false).optional(),
+    page: z.number().int().min(1).default(1).optional(),
+    size: z.number().int().min(1).max(1000).default(100).optional(),
+    sort: z.object({
+        region_queries_count: z.enum(["asc", "desc"]).optional(),
+        cost: z.enum(["asc", "desc"]).optional(),
+        difficulty: z.enum(["asc", "desc"]).optional(),
+        concurrency: z.enum(["asc", "desc"]).optional(),
+        weight: z.enum(["asc", "desc"]).optional(),
+        keyword: z.enum(["asc", "desc"]).optional(),
+    }).strict().optional(),
+    filters: z.object({
+        cost: z.number().min(0).max(200).optional(),
+        cost_from: z.number().min(0).max(200).optional(),
+        cost_to: z.number().min(0).max(200).optional(),
+        region_queries_count: z.number().int().min(0).max(100000000).optional(),
+        region_queries_count_from: z.number().int().min(0).max(100000000).optional(),
+        region_queries_count_to: z.number().int().min(0).max(100000000).optional(),
+        keyword_length: z.number().int().min(1).optional(),
+        keyword_length_from: z.number().int().min(1).optional(),
+        keyword_length_to: z.number().int().min(1).optional(),
+        difficulty: z.number().int().min(0).max(100).optional(),
+        difficulty_from: z.number().int().min(0).max(100).optional(),
+        difficulty_to: z.number().int().min(0).max(100).optional(),
+        concurrency: z.number().int().min(1).max(100).optional(),
+        concurrency_from: z.number().int().min(1).max(100).optional(),
+        concurrency_to: z.number().int().min(1).max(100).optional(),
+        weight: z.number().int().min(1).optional(),
+        weight_from: z.number().min(1).optional(),
+        weight_to: z.number().min(1).optional(),
+        right_spelling: z.boolean().optional(),
+        keyword_contain: z.array(z.string()).optional(),
+        keyword_not_contain: z.array(z.string()).optional(),
+        keyword_contain_one_of: z.array(z.string()).optional(),
+        keyword_not_contain_one_of: z.array(z.string()).optional(),
+        keyword_contain_broad_match: z.array(z.string()).optional(),
+        keyword_not_contain_broad_match: z.array(z.string()).optional(),
+        keyword_contain_one_of_broad_match: z.array(z.string()).optional(),
+        keyword_not_contain_one_of_broad_match: z.array(z.string()).optional(),
+        geo_names: z.enum(["contain", "not_contain"]).optional(),
+        types: z.array(z.string()).optional(),
+        intents_contain: z.array(z.enum(["informational", "navigational", "commercial", "transactional"])).optional(),
+    }).strict().optional(),
+}).strict();
+
+export type GetRelatedKeywordsParams = z.infer<typeof getRelatedKeywordsSchema>;

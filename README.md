@@ -71,6 +71,7 @@ npm test
 | get_domain_uniq_keywords  | Get unique keywords for two domains not ranked by a third domain            | se, domains, minusDomain, filters |
 | get_keywords              | Get related organic keywords for a given keyword                            | keyword, se, filters              |
 | get_backlinks_summary      | Get comprehensive backlinks summary using Serpstat API. Returns referring domains, backlinks count, link types, quality metrics and recent changes for domain or subdomain. |
+| get_related_keywords      | Get all search queries semantically related to the given keyword. Returns frequency, CPC, competition, difficulty, weight, intents, etc. for each found keyword. | keyword, se, filters, sort, page, size |
 
 ## License
 
