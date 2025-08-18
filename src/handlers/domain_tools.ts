@@ -442,7 +442,7 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Возвращает уникальные ключевые слова двух доменов, по которым третий домен не ранжируется. Аналог отчёта Domain vs domain.';
+        return 'Returns unique keywords of two domains for which a third domain does not rank. Equivalent to a Domain vs domain report.';
     }
 
     getInputSchema(): object {

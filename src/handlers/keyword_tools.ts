@@ -19,7 +19,7 @@ export class GetKeywordsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Показывает органические ключевые слова, связанные с исследуемым ключевым словом, по которым домены ранжируются в топ-100 Google. Для каждого найденного ключа отображается его частотность, CPC и уровень конкуренции.';
+        return 'Shows organic keywords related to the researched keyword for which domains rank in Google top 100. For each found keyword, displays its search volume, CPC, and competition level.'
     }
 
     getInputSchema(): object {
@@ -30,7 +30,7 @@ export class GetKeywordsHandler extends BaseHandler {
                     type: 'string',
                     minLength: 1,
                     maxLength: 100,
-                    description: 'Ключевое слово для поиска связанных ключей'
+                    description: 'Keyword for finding related keywords'
                 },
                 se: {
                     type: 'string',
@@ -40,31 +40,31 @@ export class GetKeywordsHandler extends BaseHandler {
                         'g_it', 'g_nl', 'g_pl', 'g_ua'
                     ],
                     default: 'g_us',
-                    description: 'ID поисковой базы'
+                    description: 'Search database ID'
                 },
                 minusKeywords: {
                     type: 'array',
                     items: { type: 'string', minLength: 1, maxLength: 100 },
                     maxItems: 50,
-                    description: 'Ключевые слова для ис��лючения из поиска'
+                    description: 'Keywords to exclude from search'
                 },
                 withIntents: {
                     type: 'boolean',
                     default: false,
-                    description: 'Включать ли интенты ключевых слов'
+                    description: 'Whether to include keyword intents'
                 },
                 page: {
                     type: 'integer',
                     minimum: 1,
                     default: 1,
-                    description: 'Номер страницы'
+                    description: 'page number'
                 },
                 size: {
                     type: 'integer',
                     minimum: 1,
                     maximum: 1000,
                     default: 100,
-                    description: 'Количество результатов на страницу'
+                    description: 'results per page'
                 },
                 sort: {
                     type: 'object',
@@ -77,7 +77,7 @@ export class GetKeywordsHandler extends BaseHandler {
                         keyword_length: { type: 'string', enum: ['asc', 'desc'] }
                     },
                     additionalProperties: false,
-                    description: 'Сортировка'
+                    description: 'Sorting parameters for results'
                 },
                 filters: {
                     type: 'object',
@@ -97,19 +97,21 @@ export class GetKeywordsHandler extends BaseHandler {
                         concurrency: { type: 'integer', minimum: 1, maximum: 100 },
                         concurrency_from: { type: 'integer', minimum: 1, maximum: 100 },
                         concurrency_to: { type: 'integer', minimum: 1, maximum: 100 },
-                        right_spelling: { type: 'boolean' },
-                        keyword_contain: { type: 'array', items: { type: 'string' } },
-                        keyword_not_contain: { type: 'array', items: { type: 'string' } },
-                        keyword_contain_one_of: { type: 'array', items: { type: 'string' } },
-                        keyword_not_contain_one_of: { type: 'array', items: { type: 'string' } },
-                        keyword_contain_broad_match: { type: 'array', items: { type: 'string' } },
-                        keyword_not_contain_broad_match: { type: 'array', items: { type: 'string' } },
-                        lang: { type: 'string' },
-                        intents_contain: { type: 'array', items: { type: 'string', enum: ['informational', 'navigational', 'commercial', 'transactional'] } },
-                        intents_not_contain: { type: 'array', items: { type: 'string', enum: ['informational', 'navigational', 'commercial', 'transactional'] } }
+                        right_spelling: { type: 'boolean', description: 'Filter by correct spelling' },
+                        keyword_contain: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain all of these terms (exact match)' },
+                        keyword_not_contain: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain these terms (exact match)' },
+                        keyword_contain_one_of: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain at least one of these terms' },
+                        keyword_not_contain_one_of: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain any of these terms' },
+                        keyword_contain_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain all of these terms (broad match)' },
+                        keyword_not_contain_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain these terms (broad match)' },
+                        keyword_contain_one_of_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain at least one of these terms (broad match)' },
+                        keyword_not_contain_one_of_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain any of these terms (broad match)' },
+                        geo_names: { type: 'string', enum: ['contain', 'not_contain'], description: 'Filter by presence of geographic names' },
+                        types: { type: 'array', items: { type: 'string' }, description: 'Filter by SERP feature types' },
+                        intents_contain: { type: 'array', items: { type: 'string', enum: ['informational', 'navigational', 'commercial', 'transactional'] }, description: 'Keywords must contain these search intents' }
                     },
                     additionalProperties: false,
-                    description: 'Фильтры поиска'
+                    description: 'Results filters'
                 }
             },
             required: ['keyword', 'se'],
@@ -145,7 +147,7 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Показывает все поисковые запросы, семантически связанные с исследуемым ключевым словом. Для каждого найденного ключа отображается его частотность, CPC, конкуренция, сложность, вес, интенты и др.';
+        return 'Shows all search queries semantically related to the researched keyword. For each found keyword, displays its search volume, CPC, competition, difficulty, weight, intents, and more.';
     }
 
     getInputSchema(): object {
@@ -156,7 +158,7 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                     type: 'string',
                     minLength: 1,
                     maxLength: 200,
-                    description: 'Ключевое слово для поиска связанных ключей'
+                    description: 'Keyword for finding related keywords'
                 },
                 se: {
                     type: 'string',
@@ -166,25 +168,25 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                         'g_it', 'g_nl', 'g_pl', 'g_ua'
                     ],
                     default: 'g_us',
-                    description: 'ID поисковой базы'
+                    description: 'Search database ID'
                 },
                 withIntents: {
                     type: 'boolean',
                     default: false,
-                    description: 'Включать ли интенты ключевых слов (работает только для g_ua и g_us)'
+                    description: 'Whether to include keyword intents (works only for g_ua and g_us)'
                 },
                 page: {
                     type: 'integer',
                     minimum: 1,
                     default: 1,
-                    description: 'Номер страницы'
+                    description: 'Page number'
                 },
                 size: {
                     type: 'integer',
                     minimum: 1,
                     maximum: 1000,
                     default: 100,
-                    description: 'Количество результатов на страницу'
+                    description: 'results per page'
                 },
                 sort: {
                     type: 'object',
@@ -197,7 +199,7 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                         keyword: { type: 'string', enum: ['asc', 'desc'] }
                     },
                     additionalProperties: false,
-                    description: 'Сортировка'
+                    description: 'Sorting parameters for results'
                 },
                 filters: {
                     type: 'object',
@@ -220,21 +222,21 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                         weight: { type: 'integer', minimum: 1 },
                         weight_from: { type: 'number', minimum: 1 },
                         weight_to: { type: 'number', minimum: 1 },
-                        right_spelling: { type: 'boolean', description: 'Фильтр по правильности написания' },
-                        keyword_contain: { type: 'array', items: { type: 'string' }, description: 'Ключевые слова должны содержать все эти термины (точное совпадение)' },
-                        keyword_not_contain: { type: 'array', items: { type: 'string' }, description: 'Ключевые слова не должны содержать эти термины (точное совпадение)' },
-                        keyword_contain_one_of: { type: 'array', items: { type: 'string' }, description: 'Ключевые слова должны содержать хотя бы один из этих терминов' },
-                        keyword_not_contain_one_of: { type: 'array', items: { type: 'string' }, description: 'Ключевые слова не должны содержать ни один из этих терминов' },
-                        keyword_contain_broad_match: { type: 'array', items: { type: 'string' }, description: 'Ключевые слова должны содержать все эти термины (широкое соответствие)' },
-                        keyword_not_contain_broad_match: { type: 'array', items: { type: 'string' }, description: 'Ключевые слова не должны содержать эти термины (широкое соответствие)' },
-                        keyword_contain_one_of_broad_match: { type: 'array', items: { type: 'string' }, description: 'Ключевые слова должны содержать хотя бы один из этих терминов (широкое соответствие)' },
-                        keyword_not_contain_one_of_broad_match: { type: 'array', items: { type: 'string' }, description: 'Ключевые слова не должны содержать ни один из этих терминов (широкое соответствие)' },
-                        geo_names: { type: 'string', enum: ['contain', 'not_contain'], description: 'Фильтр по наличию географических названий' },
-                        types: { type: 'array', items: { type: 'string' }, description: 'Фильтр по типам SERP-фич' },
-                        intents_contain: { type: 'array', items: { type: 'string', enum: ['informational', 'navigational', 'commercial', 'transactional'] }, description: 'Ключевые слова должны содержать эти интенты' }
+                        right_spelling: { type: 'boolean', description: 'Filter by correct spelling' },
+                        keyword_contain: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain all of these terms (exact match)' },
+                        keyword_not_contain: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain these terms (exact match)' },
+                        keyword_contain_one_of: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain at least one of these terms' },
+                        keyword_not_contain_one_of: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain any of these terms' },
+                        keyword_contain_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain all of these terms (broad match)' },
+                        keyword_not_contain_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain these terms (broad match)' },
+                        keyword_contain_one_of_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain at least one of these terms (broad match)' },
+                        keyword_not_contain_one_of_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain any of these terms (broad match)' },
+                        geo_names: { type: 'string', enum: ['contain', 'not_contain'], description: 'Filter by presence of geographic names' },
+                        types: { type: 'array', items: { type: 'string' }, description: 'Filter by SERP feature types' },
+                        intents_contain: { type: 'array', items: { type: 'string', enum: ['informational', 'navigational', 'commercial', 'transactional'] }, description: 'Keywords must contain these search intents' }
                     },
                     additionalProperties: false,
-                    description: 'Фильтры'
+                    description: 'Results filters'
                 }
             },
             required: ['keyword', 'se'],
