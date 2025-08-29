@@ -1,7 +1,7 @@
-import { KeywordService } from '../../services/keyword_tools';
-import { KeywordGetParams, keywordGetSchema, getRelatedKeywordsSchema, GetRelatedKeywordsParams } from '../../utils/validation';
-import { KeywordGetResponse, GetRelatedKeywordsResponse } from '../../types/serpstat';
-import { GetKeywordsHandler, GetRelatedKeywordsHandler } from '../../handlers/keyword_tools';
+import { KeywordService } from '../../services/keyword_tools.js';
+import { KeywordGetParams, keywordGetSchema, getRelatedKeywordsSchema, GetRelatedKeywordsParams } from '../../utils/validation.js';
+import { KeywordGetResponse, GetRelatedKeywordsResponse } from '../../types/serpstat.js';
+import { GetKeywordsHandler, GetRelatedKeywordsHandler } from '../../handlers/keyword_tools.js';
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';

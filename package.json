@@ -7,18 +7,22 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build",
     "start": "node dist/index.js",
-    "dev": "tsx src/index.ts",
+    "watch": "tsc --watch",
     "test": "jest"
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "Serpstat",
     "MCP",
     "API",
     "Server"
   ],
-  "author": "Sertpstat Global LTD Team (https://serpstat.com)",
-  "homepage": "https://serpstat.com/pages/mcp/",
+  "author": "Sertpstat Team",
+  "homepage": "https://serpstat.com/",
   "type": "commonjs",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.2",

@@ -1,5 +1,5 @@
-import { MCPToolCall, MCPToolResponse } from '../types/mcp';
-import { logger } from '../utils/logger';
+import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
+import { logger } from '../utils/logger.js';
 
 export abstract class BaseHandler {
     abstract getName(): string;

@@ -1,7 +1,7 @@
-import { BaseService } from './base';
-import { BacklinksSummaryParams } from '../utils/validation';
-import { BacklinksSummaryResponse, SerpstatRequest } from '../types/serpstat';
-import { logger } from '../utils/logger';
+import { BaseService } from './base.js';
+import { BacklinksSummaryParams } from '../utils/validation.js';
+import { BacklinksSummaryResponse, SerpstatRequest } from '../types/serpstat.js';
+import { logger } from '../utils/logger.js';
 
 export class BacklinksService extends BaseService {
     async getBacklinksSummary(params: BacklinksSummaryParams): Promise<BacklinksSummaryResponse> {

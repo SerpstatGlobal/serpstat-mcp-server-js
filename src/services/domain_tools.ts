@@ -1,8 +1,8 @@
-import { BaseService } from './base';
-import { DomainsInfoResponse, SerpstatRequest } from '../types/serpstat';
-import { DomainsInfoParams, CompetitorsGetParams, DomainKeywordsParams, DomainUrlsParams, DomainRegionsCountParams, DomainUniqKeywordsParams } from '../utils/validation';
-import { logger } from '../utils/logger';
-import { CompetitorsResponse, DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse } from '../types/serpstat';
+import { BaseService } from './base.js';
+import { DomainsInfoResponse, SerpstatRequest } from '../types/serpstat.js';
+import { DomainsInfoParams, CompetitorsGetParams, DomainKeywordsParams, DomainUrlsParams, DomainRegionsCountParams, DomainUniqKeywordsParams } from '../utils/validation.js';
+import { logger } from '../utils/logger.js';
+import { CompetitorsResponse, DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse } from '../types/serpstat.js';
 
 export class DomainService extends BaseService {
     async getDomainsInfo(params: DomainsInfoParams): Promise<DomainsInfoResponse> {

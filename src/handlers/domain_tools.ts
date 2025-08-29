@@ -1,8 +1,8 @@
-import { BaseHandler } from './base';
-import { DomainService } from '../services/domain_tools';
-import { MCPToolCall, MCPToolResponse } from '../types/mcp';
-import { domainsInfoSchema, DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams } from '../utils/validation';
-import { loadConfig } from '../utils/config';
+import { BaseHandler } from './base.js';
+import { DomainService } from '../services/domain_tools.js';
+import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
+import { domainsInfoSchema, DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams } from '../utils/validation.js';
+import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 
 export class DomainsInfoHandler extends BaseHandler {

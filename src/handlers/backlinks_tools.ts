@@ -1,8 +1,8 @@
-import { BaseHandler } from './base';
-import { BacklinksService } from '../services/backlinks_tools';
-import { MCPToolCall, MCPToolResponse } from '../types/mcp';
-import { backlinksSummarySchema, BacklinksSummaryParams } from '../utils/validation';
-import { loadConfig } from '../utils/config';
+import { BaseHandler } from './base.js';
+import { BacklinksService } from '../services/backlinks_tools.js';
+import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
+import { backlinksSummarySchema, BacklinksSummaryParams } from '../utils/validation.js';
+import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 
 export class BacklinksSummaryHandler extends BaseHandler {

@@ -1,6 +1,6 @@
-import { BacklinksService } from '../../services/backlinks_tools';
-import { BacklinksSummaryParams, backlinksSummarySchema } from '../../utils/validation';
-import { BacklinksSummaryResponse } from '../../types/serpstat';
+import { BacklinksService } from '../../services/backlinks_tools.js';
+import { BacklinksSummaryParams, backlinksSummarySchema } from '../../utils/validation.js';
+import { BacklinksSummaryResponse } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';

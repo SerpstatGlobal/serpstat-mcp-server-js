@@ -1,8 +1,8 @@
-import { BaseHandler } from './base';
-import { KeywordService } from '../services/keyword_tools';
-import { MCPToolCall, MCPToolResponse } from '../types/mcp';
-import { keywordGetSchema, KeywordGetParams, getRelatedKeywordsSchema } from '../utils/validation';
-import { loadConfig } from '../utils/config';
+import { BaseHandler } from './base.js';
+import { KeywordService } from '../services/keyword_tools.js';
+import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
+import { keywordGetSchema, KeywordGetParams, getRelatedKeywordsSchema } from '../utils/validation.js';
+import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 
 export class GetKeywordsHandler extends BaseHandler {

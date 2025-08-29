@@ -4,11 +4,11 @@ import {
     CallToolRequestSchema,
     ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { BaseHandler } from './handlers/base';
-import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from './handlers/domain_tools';
-import { BacklinksSummaryHandler } from './handlers/backlinks_tools';
-import { GetKeywordsHandler, GetRelatedKeywordsHandler } from './handlers/keyword_tools';
-import { logger } from './utils/logger';
+import { BaseHandler } from './handlers/base.js';
+import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from './handlers/domain_tools.js';
+import { BacklinksSummaryHandler } from './handlers/backlinks_tools.js';
+import { GetKeywordsHandler, GetRelatedKeywordsHandler } from './handlers/keyword_tools.js';
+import { logger } from './utils/logger.js';
 
 export class SerpstatMCPServer {
     private server: Server;

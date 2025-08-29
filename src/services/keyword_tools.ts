@@ -1,7 +1,7 @@
-import { BaseService } from './base';
-import { KeywordGetParams, GetRelatedKeywordsParams } from '../utils/validation';
-import { KeywordGetResponse, GetRelatedKeywordsResponse, SerpstatRequest } from '../types/serpstat';
-import { logger } from '../utils/logger';
+import { BaseService } from './base.js';
+import { KeywordGetParams, GetRelatedKeywordsParams } from '../utils/validation.js';
+import { KeywordGetResponse, GetRelatedKeywordsResponse, SerpstatRequest } from '../types/serpstat.js';
+import { logger } from '../utils/logger.js';
 
 export class KeywordService extends BaseService {
     async getKeywords(params: KeywordGetParams): Promise<KeywordGetResponse> {

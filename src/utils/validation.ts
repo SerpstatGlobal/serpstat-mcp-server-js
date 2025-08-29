@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SEARCH_ENGINES } from '../types/serpstat';
+import { SEARCH_ENGINES } from '../types/serpstat.js';
 
 const searchEngineSchema = z.enum(SEARCH_ENGINES);
 

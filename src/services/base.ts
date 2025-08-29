@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { SerpstatRequest, SerpstatResponse } from '../types/serpstat';
-import { Config } from '../utils/config';
-import { logger } from '../utils/logger';
+import { SerpstatRequest, SerpstatResponse } from '../types/serpstat.js';
+import { Config } from '../utils/config.js';
+import { logger } from '../utils/logger.js';
 
 export abstract class BaseService {
     protected readonly client: AxiosInstance;

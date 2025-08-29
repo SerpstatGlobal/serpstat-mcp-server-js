@@ -1,8 +1,8 @@
-import { DomainService } from '../../services/domain_tools';
-import { Config } from '../../utils/config';
-import { DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams } from '../../utils/validation';
-import { DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse } from '../../types/serpstat';
-import { DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from '../../handlers/domain_tools';
+import { DomainService } from '../../services/domain_tools.js';
+import { Config } from '../../utils/config.js';
+import { DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams } from '../../utils/validation.js';
+import { DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse } from '../../types/serpstat.js';
+import { DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from '../../handlers/domain_tools.js';
 import { jest, beforeEach, describe, it, expect } from '@jest/globals';
 
 
