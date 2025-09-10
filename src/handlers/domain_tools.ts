@@ -43,7 +43,7 @@ export class DomainsInfoHandler extends BaseHandler {
                     enum: [
                         'g_us', 'g_uk', 'g_de', 'g_fr', 'g_es', 'g_it', 'g_ca', 'g_au',
                         'g_nl', 'g_be', 'g_dk', 'g_se', 'g_no', 'g_fi', 'g_pl', 'g_cz',
-                        'g_ua', 'g_ru', 'bing_us'
+                        'g_ua', 'g_kz', 'bing_us'
                     ],
                     description: "Search engine database (e.g., g_us for Google US)"
                 },
@@ -112,7 +112,7 @@ export class CompetitorsHandler extends BaseHandler {
                     type: "string",
                     enum: [
                         'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de',
-                        'g_fr', 'g_ru', 'g_br', 'g_mx', 'g_es',
+                        'g_fr', 'g_kz', 'g_br', 'g_mx', 'g_es',
                         'g_it', 'g_nl', 'g_pl', 'g_ua'
                     ],
                     description: "Search engine database ID"
@@ -145,7 +145,7 @@ export class CompetitorsHandler extends BaseHandler {
                     description: "Optional filter conditions"
                 }
             },
-            required: ["domain", "se", "size"],
+            required: ["domain", "se"],
             additionalProperties: false
         };
     }
@@ -153,6 +153,10 @@ export class CompetitorsHandler extends BaseHandler {
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
             const params = competitorsGetSchema.parse(call.arguments) as CompetitorsGetParams;
+            // sometimes llm bad at assume required size parameter, let it be 20
+            if (params.size === undefined) {
+                params.size = 20;
+            }
             const result = await this.domainService.getCompetitors(params);
             return this.createSuccessResponse(result);
         } catch (error) {
@@ -196,15 +200,15 @@ export class DomainKeywordsHandler extends BaseHandler {
                     type: "string",
                     enum: [
                         'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de',
-                        'g_fr', 'g_ru', 'g_br', 'g_mx', 'g_es',
-                        'g_it', 'b_us', 'y_ru'
+                        'g_fr', 'g_ua', 'g_br', 'g_mx', 'g_es',
+                        'g_it', 'g_kz'
                     ],
                     default: 'g_us',
                     description: "Search engine database ID"
                 },
                 withSubdomains: { type: "boolean", description: "Include subdomains in analysis", default: false },
                 withIntents: { type: "boolean", description: "Include keyword intents (works for g_ua and g_us only)", default: false },
-                url: { type: "string", format: "uri", description: "Specific URL to filter results" },
+                url: { type: "string", description: "Specific URL to filter results" },
                 keywords: {
                     type: "array",
                     items: { type: "string", minLength: 1, maxLength: 100 },
@@ -277,6 +281,9 @@ export class DomainKeywordsHandler extends BaseHandler {
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
             const params = domainKeywordsSchema.parse(call.arguments) as DomainKeywordsParams;
+            if (params.size === undefined) {
+                params.size = 100;
+            }
             const result = await this.domainService.getDomainKeywords(params);
             return this.createSuccessResponse(result);
         } catch (error) {
@@ -355,6 +362,9 @@ export class DomainUrlsHandler extends BaseHandler {
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
             const params = domainUrlsSchema.parse(call.arguments) as DomainUrlsParams;
+            if (params.size === undefined) {
+                params.size = 100;
+            }
             const result = await this.domainService.getDomainUrls(params);
             return this.createSuccessResponse(result);
         } catch (error) {
@@ -452,7 +462,7 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
                 se: {
                     type: 'string',
                     enum: [
-                        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de', 'g_fr', 'g_ru', 'g_br', 'g_mx', 'g_es', 'g_it', 'g_nl', 'g_pl', 'g_ua'
+                        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de', 'g_fr', 'g_kz', 'g_br', 'g_mx', 'g_es', 'g_it', 'g_nl', 'g_pl', 'g_ua'
                     ],
                     description: 'Search engine database ID',
                     default: 'g_us'
@@ -547,6 +557,9 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
             const params = domainUniqKeywordsSchema.parse(call.arguments) as DomainUniqKeywordsParams;
+            if (params.size === undefined) {
+                params.size = 100;
+            }
             const result = await this.domainService.getDomainUniqKeywords(params);
             return this.createSuccessResponse(result);
         } catch (error) {

@@ -18,7 +18,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.0.0',
+                version: '1.0.3',
             },
             {
                 capabilities: {
@@ -43,7 +43,7 @@ export class SerpstatMCPServer {
             new GetDomainUniqKeywordsHandler(),
             new GetKeywordsHandler(),
             new GetRelatedKeywordsHandler(),
-            // Add more handlers here as you expand the API
+
         ];
 
         for (const handler of handlers) {
@@ -75,7 +75,6 @@ export class SerpstatMCPServer {
                 throw new Error(`Unknown tool: ${name}`);
             }
 
-            // args может быть undefined, передаем пустой объект
             const result = await handler.handle({ name, arguments: args ?? {} });
 
             logger.info(`Tool call completed: ${name}`, {
@@ -83,7 +82,6 @@ export class SerpstatMCPServer {
                 responseLength: result.content?.[0]?.text?.length
             });
 
-            // Приведение к ожидаемому типу
             return { ...result };
         });
     }

@@ -122,6 +122,9 @@ export class GetKeywordsHandler extends BaseHandler {
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
             const params = keywordGetSchema.parse(call.arguments) as KeywordGetParams;
+            if (params.size === undefined) {
+                params.size = 100;
+            }
             const result = await this.keywordService.getKeywords(params);
             return this.createSuccessResponse(result);
         } catch (error) {
@@ -247,6 +250,9 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
             const parsed = getRelatedKeywordsSchema.parse(call.arguments);
+            if (parsed.size === undefined) {
+                parsed.size = 100;
+            }
             const result = await this.keywordService.getRelatedKeywords(parsed);
             return this.createSuccessResponse(result);
         } catch (error: any) {
