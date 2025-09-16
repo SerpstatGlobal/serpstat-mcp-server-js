@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { KeywordGetParams, GetRelatedKeywordsParams, KeywordsInfoParams, KeywordSuggestionsParams } from '../utils/validation.js';
-import { KeywordGetResponse, GetRelatedKeywordsResponse, KeywordsInfoResponse, KeywordSuggestionsResponse, SerpstatRequest } from '../types/serpstat.js';
+import { KeywordGetParams, GetRelatedKeywordsParams, KeywordsInfoParams, KeywordSuggestionsParams, KeywordFullTopParams } from '../utils/validation.js';
+import { KeywordGetResponse, GetRelatedKeywordsResponse, KeywordsInfoResponse, KeywordSuggestionsResponse, KeywordFullTopResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class KeywordService extends BaseService {
@@ -82,6 +82,28 @@ export class KeywordService extends BaseService {
             suggestionsCount: response.result.data.length,
             totalSuggestions: response.result.summary_info.total,
             leftLines: response.result.summary_info.left_lines
+        });
+        return response.result;
+    }
+
+    async getKeywordFullTop(params: KeywordFullTopParams): Promise<KeywordFullTopResponse> {
+        logger.info('Getting keyword full top', {
+            keyword: params.keyword,
+            se: params.se,
+            size: params.size
+        });
+        const request: SerpstatRequest = {
+            id: `get_keyword_full_top_${Date.now()}`,
+            method: 'SerpstatKeywordProcedure.getKeywordFullTop',
+            params,
+        };
+        const response = await this.makeRequest<KeywordFullTopResponse>(request);
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+        logger.info('Successfully retrieved keyword full top', {
+            topResultsCount: response.result.top.length,
+            leftLimits: response.result.summary_info.left_limits
         });
         return response.result;
     }

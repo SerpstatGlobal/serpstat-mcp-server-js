@@ -335,3 +335,24 @@ export const keywordSuggestionsSchema = z.object({
 }).strict();
 
 export type KeywordSuggestionsParams = z.infer<typeof keywordSuggestionsSchema>;
+
+export const keywordFullTopSchema = z.object({
+    keyword: z.string().min(1),
+    se: z.enum(MAIN_SEARCH_ENGINES),
+    sort: z.object({
+        position: sortOrderSchema.optional(),
+        url_keywords_count: sortOrderSchema.optional(),
+        domain_visibility: sortOrderSchema.optional(),
+        domain_keywords_organic: sortOrderSchema.optional(),
+        domain_keywords_ppc: sortOrderSchema.optional(),
+        domain_top_10_keywords_count: sortOrderSchema.optional(),
+        domain_sdr: sortOrderSchema.optional(),
+        domain_in_urls_count: sortOrderSchema.optional(),
+        domain_in_domains_count: sortOrderSchema.optional(),
+        domain_out_urls_count: sortOrderSchema.optional(),
+        domain_out_domains_count: sortOrderSchema.optional(),
+    }).strict().optional(),
+    size: z.number().int().min(10).max(100).optional(),
+}).strict();
+
+export type KeywordFullTopParams = z.infer<typeof keywordFullTopSchema>;

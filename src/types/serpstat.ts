@@ -323,3 +323,38 @@ export interface KeywordSuggestionsResponse {
     data: KeywordSuggestionData[];
     summary_info: KeywordSuggestionsSummaryInfo;
 }
+
+export interface KeywordFullTopData {
+    position: number;
+    url: string;
+    url_keywords_count: number;
+    domain: string;
+    domain_visibility: number;
+    domain_keywords_organic: number;
+    domain_keywords_ppc: number;
+    domain_top_10_keywords_count: number;
+    domain_sdr: number;
+    domain_in_urls_count: number;
+    domain_in_domains_count: number;
+    domain_out_urls_count: number;
+    domain_out_domains_count: number;
+}
+
+export interface KeywordFullTopSummaryInfo {
+    keywords: number;
+    frequency: number;
+    cost: number;
+    difficulty: number;
+    concurrency: number;
+    types: string[];
+    sorting?: object;
+    left_limits: number;
+    count_top_results: number;
+    keyword: string;
+    se: string;
+}
+
+export interface KeywordFullTopResponse {
+    top: KeywordFullTopData[];
+    summary_info: KeywordFullTopSummaryInfo;
+}

@@ -1,7 +1,7 @@
 import { BaseHandler } from './base.js';
 import { KeywordService } from '../services/keyword_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { keywordGetSchema, KeywordGetParams, getRelatedKeywordsSchema, keywordsInfoSchema, KeywordsInfoParams, keywordSuggestionsSchema, KeywordSuggestionsParams } from '../utils/validation.js';
+import { keywordGetSchema, KeywordGetParams, getRelatedKeywordsSchema, keywordsInfoSchema, KeywordsInfoParams, keywordSuggestionsSchema, KeywordSuggestionsParams, keywordFullTopSchema, KeywordFullTopParams } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 import {
@@ -436,6 +436,81 @@ export class GetKeywordSuggestionsHandler extends BaseHandler {
                 params.size = DEFAULT_PAGE_SIZE;
             }
             const result = await this.keywordService.getKeywordSuggestions(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetKeywordFullTopHandler extends BaseHandler {
+    private keywordService: KeywordService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.keywordService = new KeywordService(config);
+    }
+
+    getName(): string {
+        return 'get_keyword_full_top';
+    }
+
+    getDescription(): string {
+        return 'Shows Google\'s top-100 search results for the analyzed keyword. Returns detailed information about domains ranking for the keyword including their visibility, organic/PPC keywords count, SDR score, and backlink metrics.';
+    }
+
+    getInputSchema(): object {
+        return {
+            type: 'object',
+            properties: {
+                keyword: {
+                    type: 'string',
+                    minLength: 1,
+                    description: 'Keyword to search for'
+                },
+                se: {
+                    type: 'string',
+                    enum: MAIN_SEARCH_ENGINES,
+                    description: 'Search engine database ID'
+                },
+                sort: {
+                    type: 'object',
+                    properties: {
+                        position: { type: 'string', enum: SORT_ORDER },
+                        url_keywords_count: { type: 'string', enum: SORT_ORDER },
+                        domain_visibility: { type: 'string', enum: SORT_ORDER },
+                        domain_keywords_organic: { type: 'string', enum: SORT_ORDER },
+                        domain_keywords_ppc: { type: 'string', enum: SORT_ORDER },
+                        domain_top_10_keywords_count: { type: 'string', enum: SORT_ORDER },
+                        domain_sdr: { type: 'string', enum: SORT_ORDER },
+                        domain_in_urls_count: { type: 'string', enum: SORT_ORDER },
+                        domain_in_domains_count: { type: 'string', enum: SORT_ORDER },
+                        domain_out_urls_count: { type: 'string', enum: SORT_ORDER },
+                        domain_out_domains_count: { type: 'string', enum: SORT_ORDER }
+                    },
+                    additionalProperties: false,
+                    description: 'Order of sorting the results in the format: field: order'
+                },
+                size: {
+                    type: 'integer',
+                    minimum: 10,
+                    maximum: 100,
+                    description: 'Number of results per page in response'
+                }
+            },
+            required: ['keyword', 'se'],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = keywordFullTopSchema.parse(call.arguments) as KeywordFullTopParams;
+            const result = await this.keywordService.getKeywordFullTop(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {
