@@ -1,9 +1,10 @@
 import { z } from 'zod';
+import { LOG_LEVELS } from './constants.js';
 
 const configSchema = z.object({
     serpstatApiToken: z.string().min(1, 'SERPSTAT_API_TOKEN is required'),
     serpstatApiUrl: z.string().url().default('https://api.serpstat.com/v4'),
-    logLevel: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
+    logLevel: z.enum(LOG_LEVELS).default('info'),
     maxRetries: z.number().int().positive().default(3),
     requestTimeout: z.number().int().positive().default(30000),
 });

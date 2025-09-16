@@ -4,6 +4,13 @@ import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { domainsInfoSchema, DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
+import {
+    MAIN_SEARCH_ENGINES,
+    KEYWORD_INTENTS,
+    DOMAIN_REGIONS_SORT_FIELDS,
+    SORT_ORDER,
+    DOMAIN_NAME_REGEX
+} from '../utils/constants.js';
 
 export class DomainsInfoHandler extends BaseHandler {
     private domainService: DomainService;
@@ -30,7 +37,7 @@ export class DomainsInfoHandler extends BaseHandler {
                     type: "array",
                     items: {
                          type: "string",
-                         pattern: "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+                         pattern: DOMAIN_NAME_REGEX,
                          minLength: 4,
                          maxLength: 253
                     },
@@ -40,11 +47,7 @@ export class DomainsInfoHandler extends BaseHandler {
                 },
                 se: {
                     type: "string",
-                    enum: [
-                        'g_us', 'g_uk', 'g_de', 'g_fr', 'g_es', 'g_it', 'g_ca', 'g_au',
-                        'g_nl', 'g_be', 'g_dk', 'g_se', 'g_no', 'g_fi', 'g_pl', 'g_cz',
-                        'g_ua', 'g_kz', 'bing_us'
-                    ],
+                    enum: MAIN_SEARCH_ENGINES,
                     description: "Search engine database (e.g., g_us for Google US)"
                 },
                 filters: {
@@ -103,18 +106,14 @@ export class CompetitorsHandler extends BaseHandler {
             properties: {
                 domain: {
                     type: "string",
-                    pattern: "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+                    pattern: DOMAIN_NAME_REGEX,
                     minLength: 4,
                     maxLength: 253,
                     description: "Domain to analyze"
                 },
                 se: {
                     type: "string",
-                    enum: [
-                        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de',
-                        'g_fr', 'g_kz', 'g_br', 'g_mx', 'g_es',
-                        'g_it', 'g_nl', 'g_pl', 'g_ua'
-                    ],
+                    enum: MAIN_SEARCH_ENGINES,
                     description: "Search engine database ID"
                 },
                 size: {
@@ -133,7 +132,7 @@ export class CompetitorsHandler extends BaseHandler {
                             type: "array",
                             items: {
                                 type: "string",
-                                pattern: "^([a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\\.)+[a-zA-Z]{2,}$"
+                                pattern: DOMAIN_NAME_REGEX
                             },
                             minItems: 1,
                             maxItems: 50,
@@ -191,18 +190,14 @@ export class DomainKeywordsHandler extends BaseHandler {
             properties: {
                 domain: {
                     type: "string",
-                    pattern: "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+                    pattern: DOMAIN_NAME_REGEX,
                     minLength: 4,
                     maxLength: 253,
                     description: "Domain name to analyze"
                 },
                 se: {
                     type: "string",
-                    enum: [
-                        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de',
-                        'g_fr', 'g_ua', 'g_br', 'g_mx', 'g_es',
-                        'g_it', 'g_kz'
-                    ],
+                    enum: MAIN_SEARCH_ENGINES,
                     default: 'g_us',
                     description: "Search engine database ID"
                 },
@@ -226,13 +221,13 @@ export class DomainKeywordsHandler extends BaseHandler {
                 sort: {
                     type: "object",
                     properties: {
-                        position: { type: "string", enum: ["asc", "desc"] },
-                        region_queries_count: { type: "string", enum: ["asc", "desc"] },
-                        cost: { type: "string", enum: ["asc", "desc"] },
-                        traff: { type: "string", enum: ["asc", "desc"] },
-                        difficulty: { type: "string", enum: ["asc", "desc"] },
-                        keyword_length: { type: "string", enum: ["asc", "desc"] },
-                        concurrency: { type: "string", enum: ["asc", "desc"] }
+                        position: { type: "string", enum: SORT_ORDER },
+                        region_queries_count: { type: "string", enum: SORT_ORDER },
+                        cost: { type: "string", enum: SORT_ORDER },
+                        traff: { type: "string", enum: SORT_ORDER },
+                        difficulty: { type: "string", enum: SORT_ORDER },
+                        keyword_length: { type: "string", enum: SORT_ORDER },
+                        concurrency: { type: "string", enum: SORT_ORDER }
                     },
                     additionalProperties: false,
                     description: "Sort configuration"
@@ -262,11 +257,11 @@ export class DomainKeywordsHandler extends BaseHandler {
                         keyword_not_contain: { type: "string" },
                         intents_contain: {
                             type: "array",
-                            items: { type: "string", enum: ["informational", "navigational", "commercial", "transactional"] }
+                            items: { type: "string", enum: KEYWORD_INTENTS }
                         },
                         intents_not_contain: {
                             type: "array",
-                            items: { type: "string", enum: ["informational", "navigational", "commercial", "transactional"] }
+                            items: { type: "string", enum: KEYWORD_INTENTS }
                         }
                     },
                     additionalProperties: false,
@@ -318,18 +313,14 @@ export class DomainUrlsHandler extends BaseHandler {
             properties: {
                 domain: {
                     type: "string",
-                    pattern: "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+                    pattern: DOMAIN_NAME_REGEX,
                     minLength: 4,
                     maxLength: 253,
                     description: "Domain name to analyze"
                 },
                 se: {
                     type: "string",
-                    enum: [
-                        "g_us", "g_uk", "g_au", "g_ca", "g_de",
-                        "g_fr", "g_kz", "g_br", "g_mx", "g_es",
-                        "g_it", "g_nl", "g_pl", "g_ua"
-                    ],
+                    enum: MAIN_SEARCH_ENGINES,
                     default: "g_us",
                     description: "Search engine database ID"
                 },
@@ -346,7 +337,7 @@ export class DomainUrlsHandler extends BaseHandler {
                 sort: {
                     type: "object",
                     properties: {
-                        keywords: { type: "string", enum: ["asc", "desc"], description: "Sort by number of keywords" }
+                        keywords: { type: "string", enum: SORT_ORDER, description: "Sort by number of keywords" }
                     },
                     additionalProperties: false,
                     description: "Sort configuration"
@@ -401,20 +392,20 @@ export class DomainRegionsCountHandler extends BaseHandler {
             properties: {
                 domain: {
                     type: "string",
-                    pattern: "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+                    pattern: DOMAIN_NAME_REGEX,
                     minLength: 4,
                     maxLength: 253,
                     description: "Domain name to analyze"
                 },
                 sort: {
                     type: "string",
-                    enum: ["keywords_count", "country_name_en", "db_name"],
+                    enum: DOMAIN_REGIONS_SORT_FIELDS,
                     description: "Sort by field",
                     default: undefined
                 },
                 order: {
                     type: "string",
-                    enum: ["asc", "desc"],
+                    enum: SORT_ORDER,
                     description: "Sort order",
                     default: undefined
                 }
@@ -461,9 +452,7 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
             properties: {
                 se: {
                     type: 'string',
-                    enum: [
-                        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de', 'g_fr', 'g_kz', 'g_br', 'g_mx', 'g_es', 'g_it', 'g_nl', 'g_pl', 'g_ua'
-                    ],
+                    enum: MAIN_SEARCH_ENGINES,
                     description: 'Search engine database ID',
                     default: 'g_us'
                 },
@@ -475,7 +464,7 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
                     uniqueItems: true,
                     items: {
                         type: 'string',
-                        pattern: '^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$',
+                        pattern: DOMAIN_NAME_REGEX,
                         minLength: 4,
                         maxLength: 253
                     }
@@ -483,7 +472,7 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
                 minusDomain: {
                     type: 'string',
                     description: 'Domain with keywords which must not intersect with domains parameter',
-                    pattern: '^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$',
+                    pattern: DOMAIN_NAME_REGEX,
                     minLength: 4,
                     maxLength: 253
                 },

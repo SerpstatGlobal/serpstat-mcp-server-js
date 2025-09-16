@@ -29,4 +29,10 @@ web_modules/
 .DS_Store
 dist/
 .idea/
+test/
 serpstat-mcp-server-js.iml
+/test/
+
+# Development files
+TODO.md
+.env

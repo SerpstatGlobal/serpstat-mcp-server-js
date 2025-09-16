@@ -4,6 +4,12 @@ import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { keywordGetSchema, KeywordGetParams, getRelatedKeywordsSchema } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
+import {
+    MAIN_SEARCH_ENGINES,
+    KEYWORD_INTENTS,
+    DOMAIN_REGIONS_SORT_FIELDS,
+    SORT_ORDER
+} from '../utils/constants.js';
 
 export class GetKeywordsHandler extends BaseHandler {
     private keywordService: KeywordService;
@@ -34,11 +40,7 @@ export class GetKeywordsHandler extends BaseHandler {
                 },
                 se: {
                     type: 'string',
-                    enum: [
-                        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de',
-                        'g_fr', 'g_br', 'g_mx', 'g_es', 'g_bg',
-                        'g_it', 'g_nl', 'g_pl', 'g_ua'
-                    ],
+                    enum: MAIN_SEARCH_ENGINES,
                     default: 'g_us',
                     description: 'Search database ID'
                 },
@@ -69,12 +71,12 @@ export class GetKeywordsHandler extends BaseHandler {
                 sort: {
                     type: 'object',
                     properties: {
-                        region_queries_count: { type: 'string', enum: ['asc', 'desc'] },
-                        cost: { type: 'string', enum: ['asc', 'desc'] },
-                        difficulty: { type: 'string', enum: ['asc', 'desc'] },
-                        concurrency: { type: 'string', enum: ['asc', 'desc'] },
-                        found_results: { type: 'string', enum: ['asc', 'desc'] },
-                        keyword_length: { type: 'string', enum: ['asc', 'desc'] }
+                        region_queries_count: { type: 'string', enum: SORT_ORDER },
+                        cost: { type: 'string', enum: SORT_ORDER },
+                        difficulty: { type: 'string', enum: SORT_ORDER },
+                        concurrency: { type: 'string', enum: SORT_ORDER },
+                        found_results: { type: 'string', enum: SORT_ORDER },
+                        keyword_length: { type: 'string', enum: SORT_ORDER }
                     },
                     additionalProperties: false,
                     description: 'Sorting parameters for results'
@@ -108,7 +110,7 @@ export class GetKeywordsHandler extends BaseHandler {
                         keyword_not_contain_one_of_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain any of these terms (broad match)' },
                         geo_names: { type: 'string', enum: ['contain', 'not_contain'], description: 'Filter by presence of geographic names' },
                         types: { type: 'array', items: { type: 'string' }, description: 'Filter by SERP feature types' },
-                        intents_contain: { type: 'array', items: { type: 'string', enum: ['informational', 'navigational', 'commercial', 'transactional'] }, description: 'Keywords must contain these search intents' }
+                        intents_contain: { type: 'array', items: { type: 'string', enum: KEYWORD_INTENTS }, description: 'Keywords must contain these search intents' }
                     },
                     additionalProperties: false,
                     description: 'Results filters'
@@ -165,18 +167,9 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                 },
                 se: {
                     type: 'string',
-                    enum: [
-                        'g_us', 'g_uk', 'g_au', 'g_ca', 'g_de',
-                        'g_fr', 'g_br', 'g_mx', 'g_es', 'g_bg',
-                        'g_it', 'g_nl', 'g_pl', 'g_ua'
-                    ],
+                    enum: MAIN_SEARCH_ENGINES,
                     default: 'g_us',
                     description: 'Search database ID'
-                },
-                withIntents: {
-                    type: 'boolean',
-                    default: false,
-                    description: 'Whether to include keyword intents (works only for g_ua and g_us)'
                 },
                 page: {
                     type: 'integer',
@@ -194,12 +187,12 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                 sort: {
                     type: 'object',
                     properties: {
-                        region_queries_count: { type: 'string', enum: ['asc', 'desc'] },
-                        cost: { type: 'string', enum: ['asc', 'desc'] },
-                        difficulty: { type: 'string', enum: ['asc', 'desc'] },
-                        concurrency: { type: 'string', enum: ['asc', 'desc'] },
-                        weight: { type: 'string', enum: ['asc', 'desc'] },
-                        keyword: { type: 'string', enum: ['asc', 'desc'] }
+                        region_queries_count: { type: 'string', enum: SORT_ORDER },
+                        cost: { type: 'string', enum: SORT_ORDER },
+                        difficulty: { type: 'string', enum: SORT_ORDER },
+                        concurrency: { type: 'string', enum: SORT_ORDER },
+                        weight: { type: 'string', enum: SORT_ORDER },
+                        keyword: { type: 'string', enum: SORT_ORDER }
                     },
                     additionalProperties: false,
                     description: 'Sorting parameters for results'
@@ -236,7 +229,7 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                         keyword_not_contain_one_of_broad_match: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain any of these terms (broad match)' },
                         geo_names: { type: 'string', enum: ['contain', 'not_contain'], description: 'Filter by presence of geographic names' },
                         types: { type: 'array', items: { type: 'string' }, description: 'Filter by SERP feature types' },
-                        intents_contain: { type: 'array', items: { type: 'string', enum: ['informational', 'navigational', 'commercial', 'transactional'] }, description: 'Keywords must contain these search intents' }
+                        intents_contain: { type: 'array', items: { type: 'string', enum: KEYWORD_INTENTS }, description: 'Keywords must contain these search intents' }
                     },
                     additionalProperties: false,
                     description: 'Results filters'

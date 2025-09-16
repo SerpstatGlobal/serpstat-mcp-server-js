@@ -4,6 +4,7 @@ import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { backlinksSummarySchema, BacklinksSummaryParams } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
+import { SEARCH_TYPES, DOMAIN_NAME_REGEX } from '../utils/constants.js';
 
 export class BacklinksSummaryHandler extends BaseHandler {
     private backlinksService: BacklinksService;
@@ -28,14 +29,14 @@ export class BacklinksSummaryHandler extends BaseHandler {
             properties: {
                 query: {
                     type: "string",
-                    pattern: "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+                    pattern: DOMAIN_NAME_REGEX,
                     minLength: 4,
                     maxLength: 253,
                     description: "Domain or subdomain to analyze"
                 },
                 searchType: {
                     type: "string",
-                    enum: ["domain", "domain_with_subdomains"],
+                    enum: SEARCH_TYPES,
                     default: "domain",
                     description: "Type of search query"
                 }

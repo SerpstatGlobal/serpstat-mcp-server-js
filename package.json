@@ -23,7 +23,7 @@
     "Server",
     "SEO"
   ],
-  "author": "Sertpstat Team",
+  "author": "Serpstat Team",
   "homepage": "https://serpstat.com/",
   "type": "commonjs",
   "dependencies": {
