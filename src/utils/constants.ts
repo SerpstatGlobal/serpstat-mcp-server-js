@@ -37,8 +37,44 @@ export const MAIN_SEARCH_ENGINES = [
     'g_va', 'g_ve', 'g_vn', 'g_wf', 'g_ye', 'g_zm', 'g_zw', 'bing_us'
 ] as const;
 
-export const DOMAIN_NAME_REGEX  ="^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$";
+export const DOMAIN_NAME_REGEX = "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$";
 
 // Default values
 export const DEFAULT_PAGE_SIZE = 100;
 export const DEFAULT_COMPETITORS_SIZE = 20;
+
+// Validation constants
+export const MIN_DOMAIN_LENGTH = 4;
+export const MAX_DOMAIN_LENGTH = 253;
+export const MIN_DOMAINS_ITEMS = 1;
+export const MAX_DOMAINS_ITEMS = 100;
+export const MIN_MINUS_DOMAINS_ITEMS = 1;
+export const MAX_MINUS_DOMAINS_ITEMS = 50;
+export const MIN_COMPETITORS_SIZE = 1;
+export const MAX_COMPETITORS_SIZE = 100;
+export const DEFAULT_COMPETITORS_HANDLER_SIZE = 10;
+export const MIN_KEYWORD_LENGTH = 1;
+export const MAX_KEYWORD_LENGTH = 100;
+export const MAX_KEYWORDS_ITEMS = 50;
+export const MAX_MINUS_KEYWORDS_ITEMS = 50;
+export const MIN_PAGE = 1;
+export const MAX_PAGE_SIZE = 1000;
+export const MIN_FILTER_POSITION = 1;
+export const MAX_FILTER_POSITION = 100;
+export const MIN_FILTER_VALUE = 0;
+export const MAX_FILTER_DIFFICULTY = 100;
+export const MIN_FILTER_CONCURRENCY = 1;
+export const MAX_FILTER_CONCURRENCY = 100;
+export const MAX_URL_PREFIX_LENGTH = 500;
+export const MAX_URL_CONTAIN_LENGTH = 200;
+export const MIN_UNIQ_DOMAINS = 1;
+export const MAX_UNIQ_DOMAINS = 2;
+export const MAX_UNIQ_KEYWORDS_ITEMS = 100;
+export const MAX_FILTER_COST = 200;
+export const MAX_QUERIES_COUNT = 100000000;
+export const MAX_RELATED_KEYWORD_LENGTH = 200;
+export const MIN_WEIGHT = 1;
+export const MIN_KEYWORDS_INFO_ITEMS = 1;
+export const MAX_KEYWORDS_INFO_ITEMS = 1000;
+export const MIN_KEYWORD_TOP_SIZE = 10;
+export const MAX_KEYWORD_TOP_SIZE = 100;

@@ -1,7 +1,7 @@
 import { BaseHandler } from './base.js';
 import { DomainService } from '../services/domain_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { domainsInfoSchema, DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams } from '../utils/validation.js';
+import { domainsInfoSchema, competitorsGetSchema, domainKeywordsSchema, domainUrlsSchema, domainRegionsCountSchema, domainUniqKeywordsSchema } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 import {
@@ -11,7 +11,33 @@ import {
     SORT_ORDER,
     DOMAIN_NAME_REGEX,
     DEFAULT_PAGE_SIZE,
-    DEFAULT_COMPETITORS_SIZE
+    DEFAULT_COMPETITORS_SIZE,
+    MIN_DOMAIN_LENGTH,
+    MAX_DOMAIN_LENGTH,
+    MIN_DOMAINS_ITEMS,
+    MAX_DOMAINS_ITEMS,
+    MIN_COMPETITORS_SIZE,
+    MAX_COMPETITORS_SIZE,
+    DEFAULT_COMPETITORS_HANDLER_SIZE,
+    MIN_FILTER_VALUE,
+    MIN_MINUS_DOMAINS_ITEMS,
+    MAX_MINUS_DOMAINS_ITEMS,
+    MIN_KEYWORD_LENGTH,
+    MAX_KEYWORD_LENGTH,
+    MAX_KEYWORDS_ITEMS,
+    MAX_MINUS_KEYWORDS_ITEMS,
+    MIN_PAGE,
+    MAX_PAGE_SIZE,
+    MIN_FILTER_POSITION,
+    MAX_FILTER_POSITION,
+    MAX_FILTER_DIFFICULTY,
+    MIN_FILTER_CONCURRENCY,
+    MAX_FILTER_CONCURRENCY,
+    MAX_URL_PREFIX_LENGTH,
+    MAX_URL_CONTAIN_LENGTH,
+    MIN_UNIQ_DOMAINS,
+    MAX_UNIQ_DOMAINS,
+    MAX_UNIQ_KEYWORDS_ITEMS
 } from '../utils/constants.js';
 
 export class DomainsInfoHandler extends BaseHandler {
@@ -40,12 +66,12 @@ export class DomainsInfoHandler extends BaseHandler {
                     items: {
                          type: "string",
                          pattern: DOMAIN_NAME_REGEX,
-                         minLength: 4,
-                         maxLength: 253
+                         minLength: MIN_DOMAIN_LENGTH,
+                         maxLength: MAX_DOMAIN_LENGTH
                     },
-                    description: "List of domains to analyze (1-100 domains)",
-                    minItems: 1,
-                    maxItems: 100
+                    description: `List of domains to analyze (1-${MAX_DOMAINS_ITEMS} domains)`,
+                    minItems: MIN_DOMAINS_ITEMS,
+                    maxItems: MAX_DOMAINS_ITEMS
                 },
                 se: {
                     type: "string",
@@ -73,7 +99,7 @@ export class DomainsInfoHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = domainsInfoSchema.parse(call.arguments) as DomainsInfoParams;
+            const params = domainsInfoSchema.parse(call.arguments);
             const result = await this.domainService.getDomainsInfo(params);
             return this.createSuccessResponse(result);
         } catch (error) {
@@ -109,8 +135,8 @@ export class CompetitorsHandler extends BaseHandler {
                 domain: {
                     type: "string",
                     pattern: DOMAIN_NAME_REGEX,
-                    minLength: 4,
-                    maxLength: 253,
+                    minLength: MIN_DOMAIN_LENGTH,
+                    maxLength: MAX_DOMAIN_LENGTH,
                     description: "Domain to analyze"
                 },
                 se: {
@@ -120,24 +146,24 @@ export class CompetitorsHandler extends BaseHandler {
                 },
                 size: {
                     type: "integer",
-                    minimum: 1,
-                    maximum: 100,
-                    default: 10,
+                    minimum: MIN_COMPETITORS_SIZE,
+                    maximum: MAX_COMPETITORS_SIZE,
+                    default: DEFAULT_COMPETITORS_HANDLER_SIZE,
                     description: "Number of results to return"
                 },
                 filters: {
                     type: "object",
                     properties: {
-                        visible: { type: "number", minimum: 0, description: "Minimum site visibility" },
-                        traff: { type: "integer", minimum: 0, description: "Minimum estimated traffic" },
+                        visible: { type: "number", minimum: MIN_FILTER_VALUE, description: "Minimum site visibility" },
+                        traff: { type: "integer", minimum: MIN_FILTER_VALUE, description: "Minimum estimated traffic" },
                         minus_domains: {
                             type: "array",
                             items: {
                                 type: "string",
                                 pattern: DOMAIN_NAME_REGEX
                             },
-                            minItems: 1,
-                            maxItems: 50,
+                            minItems: MIN_MINUS_DOMAINS_ITEMS,
+                            maxItems: MAX_MINUS_DOMAINS_ITEMS,
                             uniqueItems: true,
                             description: "Array of domains to exclude from the analysis."
                         }
@@ -153,7 +179,7 @@ export class CompetitorsHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = competitorsGetSchema.parse(call.arguments) as CompetitorsGetParams;
+            const params = competitorsGetSchema.parse(call.arguments);
             // sometimes llm bad at assume required size parameter, let it be 20
             if (params.size === undefined) {
                 params.size = DEFAULT_COMPETITORS_SIZE;
@@ -193,8 +219,8 @@ export class DomainKeywordsHandler extends BaseHandler {
                 domain: {
                     type: "string",
                     pattern: DOMAIN_NAME_REGEX,
-                    minLength: 4,
-                    maxLength: 253,
+                    minLength: MIN_DOMAIN_LENGTH,
+                    maxLength: MAX_DOMAIN_LENGTH,
                     description: "Domain name to analyze"
                 },
                 se: {
@@ -208,18 +234,18 @@ export class DomainKeywordsHandler extends BaseHandler {
                 url: { type: "string", description: "Specific URL to filter results" },
                 keywords: {
                     type: "array",
-                    items: { type: "string", minLength: 1, maxLength: 100 },
-                    maxItems: 50,
+                    items: { type: "string", minLength: MIN_KEYWORD_LENGTH, maxLength: MAX_KEYWORD_LENGTH },
+                    maxItems: MAX_KEYWORDS_ITEMS,
                     description: "Array of keywords to search for"
                 },
                 minusKeywords: {
                     type: "array",
-                    items: { type: "string", minLength: 1, maxLength: 100 },
-                    maxItems: 50,
+                    items: { type: "string", minLength: MIN_KEYWORD_LENGTH, maxLength: MAX_KEYWORD_LENGTH },
+                    maxItems: MAX_MINUS_KEYWORDS_ITEMS,
                     description: "Array of keywords to exclude from search"
                 },
-                page: { type: "integer", minimum: 1, default: 1, description: "Page number" },
-                size: { type: "integer", minimum: 1, maximum: 1000, default: 100, description: "Number of results per page" },
+                page: { type: "integer", minimum: MIN_PAGE, default: 1, description: "Page number" },
+                size: { type: "integer", minimum: MIN_PAGE, maximum: MAX_PAGE_SIZE, default: DEFAULT_PAGE_SIZE, description: "Number of results per page" },
                 sort: {
                     type: "object",
                     properties: {
@@ -237,23 +263,23 @@ export class DomainKeywordsHandler extends BaseHandler {
                 filters: {
                     type: "object",
                     properties: {
-                        position: { type: "integer", minimum: 1, maximum: 100 },
-                        position_from: { type: "integer", minimum: 1, maximum: 100 },
-                        position_to: { type: "integer", minimum: 1, maximum: 100 },
-                        cost: { type: "number", minimum: 0 },
-                        cost_from: { type: "number", minimum: 0 },
-                        cost_to: { type: "number", minimum: 0 },
-                        region_queries_count: { type: "integer", minimum: 0 },
-                        region_queries_count_from: { type: "integer", minimum: 0 },
-                        region_queries_count_to: { type: "integer", minimum: 0 },
-                        traff: { type: "integer", minimum: 0 },
-                        difficulty: { type: "number", minimum: 0, maximum: 100 },
-                        difficulty_from: { type: "number", minimum: 0, maximum: 100 },
-                        difficulty_to: { type: "number", minimum: 0, maximum: 100 },
-                        keyword_length: { type: "integer", minimum: 1 },
-                        concurrency: { type: "integer", minimum: 1, maximum: 100 },
-                        concurrency_from: { type: "integer", minimum: 1, maximum: 100 },
-                        concurrency_to: { type: "integer", minimum: 1, maximum: 100 },
+                        position: { type: "integer", minimum: MIN_FILTER_POSITION, maximum: MAX_FILTER_POSITION },
+                        position_from: { type: "integer", minimum: MIN_FILTER_POSITION, maximum: MAX_FILTER_POSITION },
+                        position_to: { type: "integer", minimum: MIN_FILTER_POSITION, maximum: MAX_FILTER_POSITION },
+                        cost: { type: "number", minimum: MIN_FILTER_VALUE },
+                        cost_from: { type: "number", minimum: MIN_FILTER_VALUE },
+                        cost_to: { type: "number", minimum: MIN_FILTER_VALUE },
+                        region_queries_count: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        region_queries_count_from: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        region_queries_count_to: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        traff: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        difficulty: { type: "number", minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        difficulty_from: { type: "number", minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        difficulty_to: { type: "number", minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        keyword_length: { type: "integer", minimum: MIN_KEYWORD_LENGTH },
+                        concurrency: { type: "integer", minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_from: { type: "integer", minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_to: { type: "integer", minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
                         right_spelling: { type: "boolean" },
                         keyword_contain: { type: "string" },
                         keyword_not_contain: { type: "string" },
@@ -277,7 +303,7 @@ export class DomainKeywordsHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = domainKeywordsSchema.parse(call.arguments) as DomainKeywordsParams;
+            const params = domainKeywordsSchema.parse(call.arguments);
             if (params.size === undefined) {
                 params.size = DEFAULT_PAGE_SIZE;
             }
@@ -316,8 +342,8 @@ export class DomainUrlsHandler extends BaseHandler {
                 domain: {
                     type: "string",
                     pattern: DOMAIN_NAME_REGEX,
-                    minLength: 4,
-                    maxLength: 253,
+                    minLength: MIN_DOMAIN_LENGTH,
+                    maxLength: MAX_DOMAIN_LENGTH,
                     description: "Domain name to analyze"
                 },
                 se: {
@@ -329,9 +355,9 @@ export class DomainUrlsHandler extends BaseHandler {
                 filters: {
                     type: "object",
                     properties: {
-                        url_prefix: { type: "string", maxLength: 500, description: "Filter URLs that start with given prefix" },
-                        url_contain: { type: "string", maxLength: 200, description: "Filter URLs that contain specified substring" },
-                        url_not_contain: { type: "string", maxLength: 200, description: "Exclude URLs that contain specified substring" }
+                        url_prefix: { type: "string", maxLength: MAX_URL_PREFIX_LENGTH, description: "Filter URLs that start with given prefix" },
+                        url_contain: { type: "string", maxLength: MAX_URL_CONTAIN_LENGTH, description: "Filter URLs that contain specified substring" },
+                        url_not_contain: { type: "string", maxLength: MAX_URL_CONTAIN_LENGTH, description: "Exclude URLs that contain specified substring" }
                     },
                     additionalProperties: false,
                     description: "URL filtering options"
@@ -344,8 +370,8 @@ export class DomainUrlsHandler extends BaseHandler {
                     additionalProperties: false,
                     description: "Sort configuration"
                 },
-                page: { type: "integer", minimum: 1, default: 1, description: "Page number" },
-                size: { type: "integer", minimum: 1, maximum: 1000, default: 100, description: "Number of results per page" }
+                page: { type: "integer", minimum: MIN_PAGE, default: 1, description: "Page number" },
+                size: { type: "integer", minimum: MIN_PAGE, maximum: MAX_PAGE_SIZE, default: DEFAULT_PAGE_SIZE, description: "Number of results per page" }
             },
             required: ["domain", "se"],
             additionalProperties: false
@@ -354,7 +380,7 @@ export class DomainUrlsHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = domainUrlsSchema.parse(call.arguments) as DomainUrlsParams;
+            const params = domainUrlsSchema.parse(call.arguments);
             if (params.size === undefined) {
                 params.size = DEFAULT_PAGE_SIZE;
             }
@@ -383,9 +409,8 @@ export class DomainRegionsCountHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return '**REQUIRED FIRST STEP** for domain analysis: Determines optimal regional database (se parameter) by analyzing domain keyword presence across all Google regions. This tool identifies which regional database contains the most keyword data for the domain, ensuring subsequent analysis uses the correct market context. \n' +
-            '**WORKFLOW:** Always call this first → use the top region from results as `se` parameter in serpstat_domains_info, get_domain_keywords, get_domain_urls, and serpstat_get_competitors.\n' +
-            'Returns: keyword count by country, regional performance comparison, and identifies primary market for the domain.';
+        return '**REQUIRED FIRST STEP ONLY IF DOMAIN ANALYSIS** for domain analysis: Determines optimal regional database (se parameter) by analyzing domain keyword presence across all Google regions. This tool identifies which regional database contains the most keyword data for the domain, ensuring subsequent analysis uses the correct market context.'
+            +' Returns: keyword count by country, regional performance comparison, and identifies primary market for the domain.';
     }
 
     getInputSchema(): object {
@@ -395,8 +420,8 @@ export class DomainRegionsCountHandler extends BaseHandler {
                 domain: {
                     type: "string",
                     pattern: DOMAIN_NAME_REGEX,
-                    minLength: 4,
-                    maxLength: 253,
+                    minLength: MIN_DOMAIN_LENGTH,
+                    maxLength: MAX_DOMAIN_LENGTH,
                     description: "Domain name to analyze"
                 },
                 sort: {
@@ -419,7 +444,7 @@ export class DomainRegionsCountHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = domainRegionsCountSchema.parse(call.arguments) as DomainRegionsCountParams;
+            const params = domainRegionsCountSchema.parse(call.arguments);
             const result = await this.domainService.getDomainRegionsCount(params);
             return this.createSuccessResponse(result);
         } catch (error) {
@@ -460,36 +485,36 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
                 },
                 domains: {
                     type: 'array',
-                    description: 'Array of domains to analyze for unique keywords (min 1, max 2)',
-                    minItems: 1,
-                    maxItems: 2,
+                    description: `Array of domains to analyze for unique keywords (min ${MIN_UNIQ_DOMAINS}, max ${MAX_UNIQ_DOMAINS})`,
+                    minItems: MIN_UNIQ_DOMAINS,
+                    maxItems: MAX_UNIQ_DOMAINS,
                     uniqueItems: true,
                     items: {
                         type: 'string',
                         pattern: DOMAIN_NAME_REGEX,
-                        minLength: 4,
-                        maxLength: 253
+                        minLength: MIN_DOMAIN_LENGTH,
+                        maxLength: MAX_DOMAIN_LENGTH
                     }
                 },
                 minusDomain: {
                     type: 'string',
                     description: 'Domain with keywords which must not intersect with domains parameter',
                     pattern: DOMAIN_NAME_REGEX,
-                    minLength: 4,
-                    maxLength: 253
+                    minLength: MIN_DOMAIN_LENGTH,
+                    maxLength: MAX_DOMAIN_LENGTH
                 },
                 page: {
                     type: 'integer',
                     description: 'Page number',
-                    minimum: 1,
+                    minimum: MIN_PAGE,
                     default: 1
                 },
                 size: {
                     type: 'integer',
                     description: 'Number of results per page',
-                    minimum: 1,
-                    maximum: 1000,
-                    default: 100
+                    minimum: MIN_PAGE,
+                    maximum: MAX_PAGE_SIZE,
+                    default: DEFAULT_PAGE_SIZE
                 },
                 filters: {
                     type: 'object',
@@ -500,42 +525,42 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
                         keywords: {
                             type: 'array',
                             description: 'List of included keywords',
-                            items: { type: 'string', minLength: 1, maxLength: 100 },
-                            maxItems: 100
+                            items: { type: 'string', minLength: MIN_KEYWORD_LENGTH, maxLength: MAX_KEYWORD_LENGTH },
+                            maxItems: MAX_UNIQ_KEYWORDS_ITEMS
                         },
                         minus_keywords: {
                             type: 'array',
                             description: 'List of excluded keywords',
-                            items: { type: 'string', minLength: 1, maxLength: 100 },
-                            maxItems: 100
+                            items: { type: 'string', minLength: MIN_KEYWORD_LENGTH, maxLength: MAX_KEYWORD_LENGTH },
+                            maxItems: MAX_UNIQ_KEYWORDS_ITEMS
                         },
-                        queries: { type: 'integer', description: 'Exact number of keyword searches per month', minimum: 0 },
-                        queries_from: { type: 'integer', description: 'Minimum number of keyword searches per month', minimum: 0 },
-                        queries_to: { type: 'integer', description: 'Maximum number of keyword searches per month', minimum: 0 },
-                        region_queries_count: { type: 'integer', description: 'Exact search volume for the selected region', minimum: 0 },
-                        region_queries_count_from: { type: 'integer', description: 'Minimum search volume for the selected region', minimum: 0 },
-                        region_queries_count_to: { type: 'integer', description: 'Maximum search volume for the selected region', minimum: 0 },
-                        region_queries_count_wide: { type: 'integer', description: 'Exact search volume in broad match', minimum: 0 },
-                        region_queries_count_wide_from: { type: 'integer', description: 'Minimum search volume in broad match', minimum: 0 },
-                        region_queries_count_wide_to: { type: 'integer', description: 'Maximum search volume in broad match', minimum: 0 },
-                        cost: { type: 'number', description: 'Exact cost per click (in USD)', minimum: 0 },
-                        cost_from: { type: 'number', description: 'Minimum cost per click (in USD)', minimum: 0 },
-                        cost_to: { type: 'number', description: 'Maximum cost per click (in USD)', minimum: 0 },
-                        concurrency: { type: 'integer', description: 'Exact competition level (1-100)', minimum: 1, maximum: 100 },
-                        concurrency_from: { type: 'integer', description: 'Minimum competition level (1-100)', minimum: 1, maximum: 100 },
-                        concurrency_to: { type: 'integer', description: 'Maximum competition level (1-100)', minimum: 1, maximum: 100 },
-                        difficulty: { type: 'integer', description: 'Exact keyword difficulty', minimum: 0, maximum: 100 },
-                        difficulty_from: { type: 'integer', description: 'Minimum keyword difficulty', minimum: 0, maximum: 100 },
-                        difficulty_to: { type: 'integer', description: 'Maximum keyword difficulty', minimum: 0, maximum: 100 },
-                        keyword_length: { type: 'integer', description: 'Exact number of words in a keyword', minimum: 1 },
-                        keyword_length_from: { type: 'integer', description: 'Minimum number of words in a keyword', minimum: 1 },
-                        keyword_length_to: { type: 'integer', description: 'Maximum number of words in a keyword', minimum: 1 },
-                        traff: { type: 'integer', description: 'Exact traffic volume for the keyword', minimum: 0 },
-                        traff_from: { type: 'integer', description: 'Minimum traffic volume for the keyword', minimum: 0 },
-                        traff_to: { type: 'integer', description: 'Maximum traffic volume for the keyword', minimum: 0 },
-                        position: { type: 'integer', description: 'Exact keyword position in the SERP', minimum: 1, maximum: 100 },
-                        position_from: { type: 'integer', description: 'Minimum keyword position in the SERP', minimum: 1, maximum: 100 },
-                        position_to: { type: 'integer', description: 'Maximum keyword position in the SERP', minimum: 1, maximum: 100 }
+                        queries: { type: 'integer', description: 'Exact number of keyword searches per month', minimum: MIN_FILTER_VALUE },
+                        queries_from: { type: 'integer', description: 'Minimum number of keyword searches per month', minimum: MIN_FILTER_VALUE },
+                        queries_to: { type: 'integer', description: 'Maximum number of keyword searches per month', minimum: MIN_FILTER_VALUE },
+                        region_queries_count: { type: 'integer', description: 'Exact search volume for the selected region', minimum: MIN_FILTER_VALUE },
+                        region_queries_count_from: { type: 'integer', description: 'Minimum search volume for the selected region', minimum: MIN_FILTER_VALUE },
+                        region_queries_count_to: { type: 'integer', description: 'Maximum search volume for the selected region', minimum: MIN_FILTER_VALUE },
+                        region_queries_count_wide: { type: 'integer', description: 'Exact search volume in broad match', minimum: MIN_FILTER_VALUE },
+                        region_queries_count_wide_from: { type: 'integer', description: 'Minimum search volume in broad match', minimum: MIN_FILTER_VALUE },
+                        region_queries_count_wide_to: { type: 'integer', description: 'Maximum search volume in broad match', minimum: MIN_FILTER_VALUE },
+                        cost: { type: 'number', description: 'Exact cost per click (in USD)', minimum: MIN_FILTER_VALUE },
+                        cost_from: { type: 'number', description: 'Minimum cost per click (in USD)', minimum: MIN_FILTER_VALUE },
+                        cost_to: { type: 'number', description: 'Maximum cost per click (in USD)', minimum: MIN_FILTER_VALUE },
+                        concurrency: { type: 'integer', description: 'Exact competition level (1-100)', minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_from: { type: 'integer', description: 'Minimum competition level (1-100)', minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_to: { type: 'integer', description: 'Maximum competition level (1-100)', minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        difficulty: { type: 'integer', description: 'Exact keyword difficulty', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        difficulty_from: { type: 'integer', description: 'Minimum keyword difficulty', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        difficulty_to: { type: 'integer', description: 'Maximum keyword difficulty', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        keyword_length: { type: 'integer', description: 'Exact number of words in a keyword', minimum: MIN_KEYWORD_LENGTH },
+                        keyword_length_from: { type: 'integer', description: 'Minimum number of words in a keyword', minimum: MIN_KEYWORD_LENGTH },
+                        keyword_length_to: { type: 'integer', description: 'Maximum number of words in a keyword', minimum: MIN_KEYWORD_LENGTH },
+                        traff: { type: 'integer', description: 'Exact traffic volume for the keyword', minimum: MIN_FILTER_VALUE },
+                        traff_from: { type: 'integer', description: 'Minimum traffic volume for the keyword', minimum: MIN_FILTER_VALUE },
+                        traff_to: { type: 'integer', description: 'Maximum traffic volume for the keyword', minimum: MIN_FILTER_VALUE },
+                        position: { type: 'integer', description: 'Exact keyword position in the SERP', minimum: MIN_FILTER_POSITION, maximum: MAX_FILTER_POSITION },
+                        position_from: { type: 'integer', description: 'Minimum keyword position in the SERP', minimum: MIN_FILTER_POSITION, maximum: MAX_FILTER_POSITION },
+                        position_to: { type: 'integer', description: 'Maximum keyword position in the SERP', minimum: MIN_FILTER_POSITION, maximum: MAX_FILTER_POSITION }
                     },
                     additionalProperties: false
                 }
@@ -547,7 +572,7 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = domainUniqKeywordsSchema.parse(call.arguments) as DomainUniqKeywordsParams;
+            const params = domainUniqKeywordsSchema.parse(call.arguments);
             if (params.size === undefined) {
                 params.size = DEFAULT_PAGE_SIZE;
             }

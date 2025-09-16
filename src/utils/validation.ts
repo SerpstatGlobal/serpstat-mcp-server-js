@@ -356,3 +356,14 @@ export const keywordFullTopSchema = z.object({
 }).strict();
 
 export type KeywordFullTopParams = z.infer<typeof keywordFullTopSchema>;
+
+export const keywordTopUrlsSchema = z.object({
+    keyword: z.string().min(1),
+    se: z.enum(MAIN_SEARCH_ENGINES).optional(),
+    sort: z.string().optional(),
+    order: sortOrderSchema.optional(),
+    page: z.number().int().min(1).optional(),
+    page_size: z.number().int().min(1).max(1000).optional(),
+}).strict();
+
+export type KeywordTopUrlsParams = z.infer<typeof keywordTopUrlsSchema>;

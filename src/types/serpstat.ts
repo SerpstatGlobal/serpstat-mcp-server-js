@@ -358,3 +358,26 @@ export interface KeywordFullTopResponse {
     top: KeywordFullTopData[];
     summary_info: KeywordFullTopSummaryInfo;
 }
+
+export interface KeywordTopUrlData {
+    url: string;
+    keywords: number;
+    traff: number;
+    fbShares: number;
+}
+
+export interface KeywordTopUrlsSummaryInfo {
+    left_lines: number;
+    keyword: string;
+    se: string;
+    page: number;
+    page_size: number;
+    sort: string;
+    order: string;
+    total_urls: number;
+}
+
+export interface KeywordTopUrlsResponse {
+    urls: KeywordTopUrlData[];
+    summary_info: KeywordTopUrlsSummaryInfo;
+}

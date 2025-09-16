@@ -1,14 +1,31 @@
 import { BaseHandler } from './base.js';
 import { KeywordService } from '../services/keyword_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { keywordGetSchema, KeywordGetParams, getRelatedKeywordsSchema, keywordsInfoSchema, KeywordsInfoParams, keywordSuggestionsSchema, KeywordSuggestionsParams, keywordFullTopSchema, KeywordFullTopParams } from '../utils/validation.js';
+import { keywordGetSchema, getRelatedKeywordsSchema, keywordsInfoSchema, keywordSuggestionsSchema, keywordFullTopSchema, keywordTopUrlsSchema } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 import {
     MAIN_SEARCH_ENGINES,
     KEYWORD_INTENTS,
     SORT_ORDER,
-    DEFAULT_PAGE_SIZE
+    DEFAULT_PAGE_SIZE,
+    MIN_KEYWORD_LENGTH,
+    MAX_KEYWORD_LENGTH,
+    MAX_MINUS_KEYWORDS_ITEMS,
+    MIN_PAGE,
+    MAX_PAGE_SIZE,
+    MIN_FILTER_VALUE,
+    MAX_FILTER_COST,
+    MAX_QUERIES_COUNT,
+    MAX_FILTER_DIFFICULTY,
+    MIN_FILTER_CONCURRENCY,
+    MAX_FILTER_CONCURRENCY,
+    MAX_RELATED_KEYWORD_LENGTH,
+    MIN_WEIGHT,
+    MIN_KEYWORDS_INFO_ITEMS,
+    MAX_KEYWORDS_INFO_ITEMS,
+    MIN_KEYWORD_TOP_SIZE,
+    MAX_KEYWORD_TOP_SIZE
 } from '../utils/constants.js';
 
 export class GetKeywordsHandler extends BaseHandler {
@@ -34,8 +51,8 @@ export class GetKeywordsHandler extends BaseHandler {
             properties: {
                 keyword: {
                     type: 'string',
-                    minLength: 1,
-                    maxLength: 100,
+                    minLength: MIN_KEYWORD_LENGTH,
+                    maxLength: MAX_KEYWORD_LENGTH,
                     description: 'Keyword for finding related keywords'
                 },
                 se: {
@@ -46,8 +63,8 @@ export class GetKeywordsHandler extends BaseHandler {
                 },
                 minusKeywords: {
                     type: 'array',
-                    items: { type: 'string', minLength: 1, maxLength: 100 },
-                    maxItems: 50,
+                    items: { type: 'string', minLength: MIN_KEYWORD_LENGTH, maxLength: MAX_KEYWORD_LENGTH },
+                    maxItems: MAX_MINUS_KEYWORDS_ITEMS,
                     description: 'Keywords to exclude from search'
                 },
                 withIntents: {
@@ -57,15 +74,15 @@ export class GetKeywordsHandler extends BaseHandler {
                 },
                 page: {
                     type: 'integer',
-                    minimum: 1,
+                    minimum: MIN_PAGE,
                     default: 1,
                     description: 'page number'
                 },
                 size: {
                     type: 'integer',
-                    minimum: 1,
-                    maximum: 1000,
-                    default: 100,
+                    minimum: MIN_PAGE,
+                    maximum: MAX_PAGE_SIZE,
+                    default: DEFAULT_PAGE_SIZE,
                     description: 'results per page'
                 },
                 sort: {
@@ -84,21 +101,21 @@ export class GetKeywordsHandler extends BaseHandler {
                 filters: {
                     type: 'object',
                     properties: {
-                        cost: { type: 'number', minimum: 0, maximum: 200 },
-                        cost_from: { type: 'number', minimum: 0, maximum: 200 },
-                        cost_to: { type: 'number', minimum: 0, maximum: 200 },
-                        region_queries_count: { type: 'integer', minimum: 0, maximum: 100000000 },
-                        region_queries_count_from: { type: 'integer', minimum: 0, maximum: 100000000 },
-                        region_queries_count_to: { type: 'integer', minimum: 0, maximum: 100000000 },
-                        keyword_length: { type: 'integer', minimum: 1 },
-                        keyword_length_from: { type: 'integer', minimum: 1 },
-                        keyword_length_to: { type: 'integer', minimum: 1 },
-                        difficulty: { type: 'integer', minimum: 0, maximum: 100 },
-                        difficulty_from: { type: 'integer', minimum: 0, maximum: 100 },
-                        difficulty_to: { type: 'integer', minimum: 0, maximum: 100 },
-                        concurrency: { type: 'integer', minimum: 1, maximum: 100 },
-                        concurrency_from: { type: 'integer', minimum: 1, maximum: 100 },
-                        concurrency_to: { type: 'integer', minimum: 1, maximum: 100 },
+                        cost: { type: 'number', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_COST },
+                        cost_from: { type: 'number', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_COST },
+                        cost_to: { type: 'number', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_COST },
+                        region_queries_count: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_QUERIES_COUNT },
+                        region_queries_count_from: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_QUERIES_COUNT },
+                        region_queries_count_to: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_QUERIES_COUNT },
+                        keyword_length: { type: 'integer', minimum: MIN_KEYWORD_LENGTH },
+                        keyword_length_from: { type: 'integer', minimum: MIN_KEYWORD_LENGTH },
+                        keyword_length_to: { type: 'integer', minimum: MIN_KEYWORD_LENGTH },
+                        difficulty: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        difficulty_from: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        difficulty_to: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        concurrency: { type: 'integer', minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_from: { type: 'integer', minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_to: { type: 'integer', minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
                         right_spelling: { type: 'boolean', description: 'Filter by correct spelling' },
                         keyword_contain: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain all of these terms (exact match)' },
                         keyword_not_contain: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain these terms (exact match)' },
@@ -123,7 +140,7 @@ export class GetKeywordsHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = keywordGetSchema.parse(call.arguments) as KeywordGetParams;
+            const params = keywordGetSchema.parse(call.arguments);
             if (params.size === undefined) {
                 params.size = DEFAULT_PAGE_SIZE;
             }
@@ -161,8 +178,8 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
             properties: {
                 keyword: {
                     type: 'string',
-                    minLength: 1,
-                    maxLength: 200,
+                    minLength: MIN_KEYWORD_LENGTH,
+                    maxLength: MAX_RELATED_KEYWORD_LENGTH,
                     description: 'Keyword for finding related keywords'
                 },
                 se: {
@@ -173,15 +190,15 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                 },
                 page: {
                     type: 'integer',
-                    minimum: 1,
+                    minimum: MIN_PAGE,
                     default: 1,
                     description: 'Page number'
                 },
                 size: {
                     type: 'integer',
-                    minimum: 1,
-                    maximum: 1000,
-                    default: 100,
+                    minimum: MIN_PAGE,
+                    maximum: MAX_PAGE_SIZE,
+                    default: DEFAULT_PAGE_SIZE,
                     description: 'results per page'
                 },
                 sort: {
@@ -200,24 +217,24 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                 filters: {
                     type: 'object',
                     properties: {
-                        cost: { type: 'number', minimum: 0, maximum: 200 },
-                        cost_from: { type: 'number', minimum: 0, maximum: 200 },
-                        cost_to: { type: 'number', minimum: 0, maximum: 200 },
-                        region_queries_count: { type: 'integer', minimum: 0, maximum: 100000000 },
-                        region_queries_count_from: { type: 'integer', minimum: 0, maximum: 100000000 },
-                        region_queries_count_to: { type: 'integer', minimum: 0, maximum: 100000000 },
-                        keyword_length: { type: 'integer', minimum: 1 },
-                        keyword_length_from: { type: 'integer', minimum: 1 },
-                        keyword_length_to: { type: 'integer', minimum: 1 },
-                        difficulty: { type: 'integer', minimum: 0, maximum: 100 },
-                        difficulty_from: { type: 'integer', minimum: 0, maximum: 100 },
-                        difficulty_to: { type: 'integer', minimum: 0, maximum: 100 },
-                        concurrency: { type: 'integer', minimum: 1, maximum: 100 },
-                        concurrency_from: { type: 'integer', minimum: 1, maximum: 100 },
-                        concurrency_to: { type: 'integer', minimum: 1, maximum: 100 },
-                        weight: { type: 'integer', minimum: 1 },
-                        weight_from: { type: 'number', minimum: 1 },
-                        weight_to: { type: 'number', minimum: 1 },
+                        cost: { type: 'number', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_COST },
+                        cost_from: { type: 'number', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_COST },
+                        cost_to: { type: 'number', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_COST },
+                        region_queries_count: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_QUERIES_COUNT },
+                        region_queries_count_from: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_QUERIES_COUNT },
+                        region_queries_count_to: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_QUERIES_COUNT },
+                        keyword_length: { type: 'integer', minimum: MIN_KEYWORD_LENGTH },
+                        keyword_length_from: { type: 'integer', minimum: MIN_KEYWORD_LENGTH },
+                        keyword_length_to: { type: 'integer', minimum: MIN_KEYWORD_LENGTH },
+                        difficulty: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        difficulty_from: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        difficulty_to: { type: 'integer', minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_DIFFICULTY },
+                        concurrency: { type: 'integer', minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_from: { type: 'integer', minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_to: { type: 'integer', minimum: MIN_FILTER_CONCURRENCY, maximum: MAX_FILTER_CONCURRENCY },
+                        weight: { type: 'integer', minimum: MIN_WEIGHT },
+                        weight_from: { type: 'number', minimum: MIN_WEIGHT },
+                        weight_to: { type: 'number', minimum: MIN_WEIGHT },
                         right_spelling: { type: 'boolean', description: 'Filter by correct spelling' },
                         keyword_contain: { type: 'array', items: { type: 'string' }, description: 'Keywords must contain all of these terms (exact match)' },
                         keyword_not_contain: { type: 'array', items: { type: 'string' }, description: 'Keywords must not contain these terms (exact match)' },
@@ -282,11 +299,11 @@ export class GetKeywordsInfoHandler extends BaseHandler {
                     type: "array",
                     items: {
                         type: "string",
-                        minLength: 1
+                        minLength: MIN_KEYWORD_LENGTH
                     },
-                    minItems: 1,
-                    maxItems: 1000,
-                    description: "Array of keywords to analyze (1-1000 keywords)"
+                    minItems: MIN_KEYWORDS_INFO_ITEMS,
+                    maxItems: MAX_KEYWORDS_INFO_ITEMS,
+                    description: `Array of keywords to analyze (${MIN_KEYWORDS_INFO_ITEMS}-${MAX_KEYWORDS_INFO_ITEMS} keywords)`
                 },
                 se: {
                     type: "string",
@@ -314,21 +331,21 @@ export class GetKeywordsInfoHandler extends BaseHandler {
                 filters: {
                     type: "object",
                     properties: {
-                        cost: { type: "number", minimum: 0 },
-                        cost_from: { type: "number", minimum: 0 },
-                        cost_to: { type: "number", minimum: 0 },
-                        concurrency: { type: "integer", minimum: 0, maximum: 100 },
-                        concurrency_from: { type: "integer", minimum: 0, maximum: 100 },
-                        concurrency_to: { type: "integer", minimum: 0, maximum: 100 },
-                        found_results: { type: "integer", minimum: 0 },
-                        found_results_from: { type: "integer", minimum: 0 },
-                        found_results_to: { type: "integer", minimum: 0 },
-                        region_queries_count: { type: "integer", minimum: 0 },
-                        region_queries_count_from: { type: "integer", minimum: 0 },
-                        region_queries_count_to: { type: "integer", minimum: 0 },
-                        region_queries_count_wide: { type: "integer", minimum: 0 },
-                        region_queries_count_wide_from: { type: "integer", minimum: 0 },
-                        region_queries_count_wide_to: { type: "integer", minimum: 0 },
+                        cost: { type: "number", minimum: MIN_FILTER_VALUE },
+                        cost_from: { type: "number", minimum: MIN_FILTER_VALUE },
+                        cost_to: { type: "number", minimum: MIN_FILTER_VALUE },
+                        concurrency: { type: "integer", minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_from: { type: "integer", minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_CONCURRENCY },
+                        concurrency_to: { type: "integer", minimum: MIN_FILTER_VALUE, maximum: MAX_FILTER_CONCURRENCY },
+                        found_results: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        found_results_from: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        found_results_to: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        region_queries_count: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        region_queries_count_from: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        region_queries_count_to: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        region_queries_count_wide: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        region_queries_count_wide_from: { type: "integer", minimum: MIN_FILTER_VALUE },
+                        region_queries_count_wide_to: { type: "integer", minimum: MIN_FILTER_VALUE },
                         intents_contain: {
                             type: "array",
                             items: { type: "string", enum: KEYWORD_INTENTS }
@@ -340,7 +357,7 @@ export class GetKeywordsInfoHandler extends BaseHandler {
                         right_spelling: { type: "boolean" },
                         minus_keywords: {
                             type: "array",
-                            items: { type: "string", minLength: 1 }
+                            items: { type: "string", minLength: MIN_KEYWORD_LENGTH }
                         }
                     },
                     additionalProperties: false,
@@ -354,7 +371,7 @@ export class GetKeywordsInfoHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = keywordsInfoSchema.parse(call.arguments) as KeywordsInfoParams;
+            const params = keywordsInfoSchema.parse(call.arguments);
             const result = await this.keywordService.getKeywordsInfo(params);
             return this.createSuccessResponse(result);
         } catch (error) {
@@ -389,8 +406,8 @@ export class GetKeywordSuggestionsHandler extends BaseHandler {
             properties: {
                 keyword: {
                     type: 'string',
-                    minLength: 1,
-                    maxLength: 200,
+                    minLength: MIN_KEYWORD_LENGTH,
+                    maxLength: MAX_RELATED_KEYWORD_LENGTH,
                     description: 'Keyword to search for suggestions'
                 },
                 se: {
@@ -403,7 +420,7 @@ export class GetKeywordSuggestionsHandler extends BaseHandler {
                     properties: {
                         minus_keywords: {
                             type: 'array',
-                            items: { type: 'string', minLength: 1 },
+                            items: { type: 'string', minLength: MIN_KEYWORD_LENGTH },
                             description: 'List of keywords to exclude from the search'
                         }
                     },
@@ -412,15 +429,15 @@ export class GetKeywordSuggestionsHandler extends BaseHandler {
                 },
                 page: {
                     type: 'integer',
-                    minimum: 1,
+                    minimum: MIN_PAGE,
                     default: 1,
                     description: 'Page number in response'
                 },
                 size: {
                     type: 'integer',
-                    minimum: 1,
-                    maximum: 1000,
-                    default: 100,
+                    minimum: MIN_PAGE,
+                    maximum: MAX_PAGE_SIZE,
+                    default: DEFAULT_PAGE_SIZE,
                     description: 'Number of results per page in response'
                 }
             },
@@ -431,7 +448,7 @@ export class GetKeywordSuggestionsHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = keywordSuggestionsSchema.parse(call.arguments) as KeywordSuggestionsParams;
+            const params = keywordSuggestionsSchema.parse(call.arguments);
             if (params.size === undefined) {
                 params.size = DEFAULT_PAGE_SIZE;
             }
@@ -469,7 +486,7 @@ export class GetKeywordFullTopHandler extends BaseHandler {
             properties: {
                 keyword: {
                     type: 'string',
-                    minLength: 1,
+                    minLength: MIN_KEYWORD_LENGTH,
                     description: 'Keyword to search for'
                 },
                 se: {
@@ -497,8 +514,8 @@ export class GetKeywordFullTopHandler extends BaseHandler {
                 },
                 size: {
                     type: 'integer',
-                    minimum: 10,
-                    maximum: 100,
+                    minimum: MIN_KEYWORD_TOP_SIZE,
+                    maximum: MAX_KEYWORD_TOP_SIZE,
                     description: 'Number of results per page in response'
                 }
             },
@@ -509,8 +526,80 @@ export class GetKeywordFullTopHandler extends BaseHandler {
 
     async handle(call: MCPToolCall): Promise<MCPToolResponse> {
         try {
-            const params = keywordFullTopSchema.parse(call.arguments) as KeywordFullTopParams;
+            const params = keywordFullTopSchema.parse(call.arguments);
             const result = await this.keywordService.getKeywordFullTop(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetKeywordTopUrlsHandler extends BaseHandler {
+    private keywordService: KeywordService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.keywordService = new KeywordService(config);
+    }
+
+    getName(): string {
+        return 'get_keyword_top_urls';
+    }
+
+    getDescription(): string {
+        return 'Returns website pages that rank for the largest amount of the analyzed keyword variations and have the highest traffic. Shows URLs with keyword count, estimated traffic, and Facebook shares.';
+    }
+
+    getInputSchema(): object {
+        return {
+            type: 'object',
+            properties: {
+                keyword: {
+                    type: 'string',
+                    minLength: MIN_KEYWORD_LENGTH,
+                    description: 'Keyword to search for'
+                },
+                se: {
+                    type: 'string',
+                    enum: MAIN_SEARCH_ENGINES,
+                    description: 'Search engine database ID'
+                },
+                sort: {
+                    type: 'string',
+                    description: 'Sorting by parameters (any field in urls section of response: url, keywords, traff, fbShares)'
+                },
+                order: {
+                    type: 'string',
+                    enum: SORT_ORDER,
+                    default: 'desc',
+                    description: 'Sorting order'
+                },
+                page: {
+                    type: 'integer',
+                    minimum: MIN_PAGE,
+                    description: 'Page number'
+                },
+                page_size: {
+                    type: 'integer',
+                    minimum: MIN_PAGE,
+                    maximum: MAX_PAGE_SIZE,
+                    description: 'Number of results per page'
+                }
+            },
+            required: ['keyword'],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = keywordTopUrlsSchema.parse(call.arguments);
+            const result = await this.keywordService.getKeywordTopUrls(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {
