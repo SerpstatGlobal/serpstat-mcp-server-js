@@ -405,13 +405,13 @@ export const keywordTopUrlsSchema = z.object({
     order: sortOrderSchema.optional(),
     page: z.number().int().min(MIN_PAGE).optional(),
     page_size: z.union([
-        z.literal(10),
-        z.literal(20),
-        z.literal(30),
-        z.literal(50),
-        z.literal(100),
-        z.literal(200),
-        z.literal(500)
+        z.literal(ALLOWED_PAGE_SIZES[0]),
+        z.literal(ALLOWED_PAGE_SIZES[1]),
+        z.literal(ALLOWED_PAGE_SIZES[2]),
+        z.literal(ALLOWED_PAGE_SIZES[3]),
+        z.literal(ALLOWED_PAGE_SIZES[4]),
+        z.literal(ALLOWED_PAGE_SIZES[5]),
+        z.literal(ALLOWED_PAGE_SIZES[6])
     ]).optional(),
 }).strict();
 
