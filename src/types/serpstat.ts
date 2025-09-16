@@ -279,3 +279,47 @@ export interface GetRelatedKeywordsResponse {
     data: GetRelatedKeywordData[];
     summary_info: GetRelatedKeywordsSummaryInfo;
 }
+
+export interface KeywordInfoData {
+    keyword: string;
+    cost: number;
+    concurrency: number;
+    found_results: number;
+    region_queries_count: number;
+    region_queries_count_wide: number;
+    types: string[];
+    geo_names: object[];
+    social_domains: string[];
+    right_spelling: string | null;
+    lang: string;
+    difficulty: number;
+    suggestions_count: number;
+    keywords_count: number;
+    intents?: string[];
+}
+
+export interface KeywordInfoSummaryInfo {
+    page: number;
+    left_lines: number;
+}
+
+export interface KeywordsInfoResponse {
+    data: KeywordInfoData[];
+    summary_info: KeywordInfoSummaryInfo;
+}
+
+export interface KeywordSuggestionData {
+    keyword: string;
+    geo_names: object[];
+}
+
+export interface KeywordSuggestionsSummaryInfo {
+    page: number;
+    total: number;
+    left_lines: number;
+}
+
+export interface KeywordSuggestionsResponse {
+    data: KeywordSuggestionData[];
+    summary_info: KeywordSuggestionsSummaryInfo;
+}

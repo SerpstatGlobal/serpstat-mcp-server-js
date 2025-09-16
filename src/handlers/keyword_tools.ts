@@ -1,7 +1,7 @@
 import { BaseHandler } from './base.js';
 import { KeywordService } from '../services/keyword_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { keywordGetSchema, KeywordGetParams, getRelatedKeywordsSchema } from '../utils/validation.js';
+import { keywordGetSchema, KeywordGetParams, getRelatedKeywordsSchema, keywordsInfoSchema, KeywordsInfoParams, keywordSuggestionsSchema, KeywordSuggestionsParams } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 import {
@@ -247,6 +247,195 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
                 parsed.size = DEFAULT_PAGE_SIZE;
             }
             const result = await this.keywordService.getRelatedKeywords(parsed);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetKeywordsInfoHandler extends BaseHandler {
+    private keywordService: KeywordService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.keywordService = new KeywordService(config);
+    }
+
+    getName(): string {
+        return "get_keywords_info";
+    }
+
+    getDescription(): string {
+        return "Get keyword overview showing volume, CPC, competition level, difficulty, and additional metrics for multiple keywords. Provides comprehensive analysis including search volume, cost per click, competition levels, SERP features, and keyword intents.";
+    }
+
+    getInputSchema(): object {
+        return {
+            type: "object",
+            properties: {
+                keywords: {
+                    type: "array",
+                    items: {
+                        type: "string",
+                        minLength: 1
+                    },
+                    minItems: 1,
+                    maxItems: 1000,
+                    description: "Array of keywords to analyze (1-1000 keywords)"
+                },
+                se: {
+                    type: "string",
+                    enum: MAIN_SEARCH_ENGINES,
+                    description: "Search engine database ID"
+                },
+                withIntents: {
+                    type: "boolean",
+                    description: "Include keyword intents (works for g_ua and g_us only)",
+                    default: false
+                },
+                sort: {
+                    type: "object",
+                    properties: {
+                        region_queries_count: { type: "string", enum: SORT_ORDER },
+                        region_queries_count_wide: { type: "string", enum: SORT_ORDER },
+                        cost: { type: "string", enum: SORT_ORDER },
+                        concurrency: { type: "string", enum: SORT_ORDER },
+                        found_results: { type: "string", enum: SORT_ORDER },
+                        difficulty: { type: "string", enum: SORT_ORDER }
+                    },
+                    additionalProperties: false,
+                    description: "Sort configuration"
+                },
+                filters: {
+                    type: "object",
+                    properties: {
+                        cost: { type: "number", minimum: 0 },
+                        cost_from: { type: "number", minimum: 0 },
+                        cost_to: { type: "number", minimum: 0 },
+                        concurrency: { type: "integer", minimum: 0, maximum: 100 },
+                        concurrency_from: { type: "integer", minimum: 0, maximum: 100 },
+                        concurrency_to: { type: "integer", minimum: 0, maximum: 100 },
+                        found_results: { type: "integer", minimum: 0 },
+                        found_results_from: { type: "integer", minimum: 0 },
+                        found_results_to: { type: "integer", minimum: 0 },
+                        region_queries_count: { type: "integer", minimum: 0 },
+                        region_queries_count_from: { type: "integer", minimum: 0 },
+                        region_queries_count_to: { type: "integer", minimum: 0 },
+                        region_queries_count_wide: { type: "integer", minimum: 0 },
+                        region_queries_count_wide_from: { type: "integer", minimum: 0 },
+                        region_queries_count_wide_to: { type: "integer", minimum: 0 },
+                        intents_contain: {
+                            type: "array",
+                            items: { type: "string", enum: KEYWORD_INTENTS }
+                        },
+                        intents_not_contain: {
+                            type: "array",
+                            items: { type: "string", enum: KEYWORD_INTENTS }
+                        },
+                        right_spelling: { type: "boolean" },
+                        minus_keywords: {
+                            type: "array",
+                            items: { type: "string", minLength: 1 }
+                        }
+                    },
+                    additionalProperties: false,
+                    description: "Filter conditions"
+                }
+            },
+            required: ["keywords", "se"],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = keywordsInfoSchema.parse(call.arguments) as KeywordsInfoParams;
+            const result = await this.keywordService.getKeywordsInfo(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join(".")}: ${e.message}`).join(", ")}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetKeywordSuggestionsHandler extends BaseHandler {
+    private keywordService: KeywordService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.keywordService = new KeywordService(config);
+    }
+
+    getName(): string {
+        return 'get_keyword_suggestions';
+    }
+
+    getDescription(): string {
+        return 'Shows search suggestions for the keyword you requested (they are found by the full-text search). Returns keyword suggestions with geographic names information.';
+    }
+
+    getInputSchema(): object {
+        return {
+            type: 'object',
+            properties: {
+                keyword: {
+                    type: 'string',
+                    minLength: 1,
+                    maxLength: 200,
+                    description: 'Keyword to search for suggestions'
+                },
+                se: {
+                    type: 'string',
+                    enum: MAIN_SEARCH_ENGINES,
+                    description: 'Search engine database ID'
+                },
+                filters: {
+                    type: 'object',
+                    properties: {
+                        minus_keywords: {
+                            type: 'array',
+                            items: { type: 'string', minLength: 1 },
+                            description: 'List of keywords to exclude from the search'
+                        }
+                    },
+                    additionalProperties: false,
+                    description: 'Filter conditions'
+                },
+                page: {
+                    type: 'integer',
+                    minimum: 1,
+                    default: 1,
+                    description: 'Page number in response'
+                },
+                size: {
+                    type: 'integer',
+                    minimum: 1,
+                    maximum: 1000,
+                    default: 100,
+                    description: 'Number of results per page in response'
+                }
+            },
+            required: ['keyword', 'se'],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = keywordSuggestionsSchema.parse(call.arguments) as KeywordSuggestionsParams;
+            if (params.size === undefined) {
+                params.size = DEFAULT_PAGE_SIZE;
+            }
+            const result = await this.keywordService.getKeywordSuggestions(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {

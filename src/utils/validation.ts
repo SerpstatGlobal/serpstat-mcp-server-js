@@ -286,3 +286,52 @@ export const getRelatedKeywordsSchema = z.object({
 }).strict();
 
 export type GetRelatedKeywordsParams = z.infer<typeof getRelatedKeywordsSchema>;
+
+export const keywordsInfoSchema = z.object({
+    keywords: z.array(z.string().min(1)).min(1).max(1000),
+    se: z.enum(MAIN_SEARCH_ENGINES),
+    withIntents: z.boolean().optional(),
+    sort: z.object({
+        region_queries_count: sortOrderSchema.optional(),
+        region_queries_count_wide: sortOrderSchema.optional(),
+        cost: sortOrderSchema.optional(),
+        concurrency: sortOrderSchema.optional(),
+        found_results: sortOrderSchema.optional(),
+        difficulty: sortOrderSchema.optional(),
+    }).strict().optional(),
+    filters: z.object({
+        cost: z.number().min(0).optional(),
+        cost_from: z.number().min(0).optional(),
+        cost_to: z.number().min(0).optional(),
+        concurrency: z.number().int().min(0).max(100).optional(),
+        concurrency_from: z.number().int().min(0).max(100).optional(),
+        concurrency_to: z.number().int().min(0).max(100).optional(),
+        found_results: z.number().int().min(0).optional(),
+        found_results_from: z.number().int().min(0).optional(),
+        found_results_to: z.number().int().min(0).optional(),
+        region_queries_count: z.number().int().min(0).optional(),
+        region_queries_count_from: z.number().int().min(0).optional(),
+        region_queries_count_to: z.number().int().min(0).optional(),
+        region_queries_count_wide: z.number().int().min(0).optional(),
+        region_queries_count_wide_from: z.number().int().min(0).optional(),
+        region_queries_count_wide_to: z.number().int().min(0).optional(),
+        intents_contain: z.array(keywordIntentsSchema).optional(),
+        intents_not_contain: z.array(keywordIntentsSchema).optional(),
+        right_spelling: z.boolean().optional(),
+        minus_keywords: z.array(z.string().min(1)).optional(),
+    }).strict().optional(),
+}).strict();
+
+export type KeywordsInfoParams = z.infer<typeof keywordsInfoSchema>;
+
+export const keywordSuggestionsSchema = z.object({
+    keyword: z.string().min(1).max(200),
+    se: z.enum(MAIN_SEARCH_ENGINES),
+    filters: z.object({
+        minus_keywords: z.array(z.string().min(1)).optional(),
+    }).strict().optional(),
+    page: z.number().int().min(1).default(1).optional(),
+    size: z.number().int().min(1).max(1000).default(100).optional(),
+}).strict();
+
+export type KeywordSuggestionsParams = z.infer<typeof keywordSuggestionsSchema>;

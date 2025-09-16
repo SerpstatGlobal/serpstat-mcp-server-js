@@ -37,3 +37,5 @@ serpstat-mcp-server-js.iml
 TODO.md
 .env
 /docs/
+/.claude/
+/.idea/
