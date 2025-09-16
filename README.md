@@ -101,6 +101,7 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 - "Find related keywords to 'digital marketing'"
 - "Get keyword suggestions for 'iphone 15' excluding 'rent' keywords"
 - "Get comprehensive keyword data for ['iphone', 'samsung', 'google pixel'] including search volume, CPC, and difficulty"
+- "Show me competitor domains ranking for 'pizza delivery' keyword with visibility metrics"
 - "Get unique keywords for domain1.com vs domain2.com"
 
 ## Development
@@ -187,6 +188,9 @@ serpstat-mcp-server/
 | get_keywords              | Get related organic keywords for a given keyword                                              | keyword, se, filters        |
 | get_keyword_suggestions   | Get search suggestions for a keyword using full-text search with geographic names info       | keyword, se, filters        |
 | get_keywords_info         | Get keyword overview with volume, CPC, competition, difficulty, and SERP features            | keywords, se, withIntents   |
+| get_keyword_full_top      | Get Google's top-100 search results for analyzed keywords                                     | keyword, se, size           |
+| get_keyword_top_urls      | Get website pages that rank for the largest amount of analyzed keyword variations with highest traffic | keyword, se, page, page_size |
+| get_keyword_competitors   | Get domains that rank for the given keyword in Google top-20 results with competitor analysis | keyword, se, filters, sort  |
 | get_backlinks_summary     | Get comprehensive backlinks summary with referring domains, quality metrics, and changes     | domain, subdomain           |
 | get_related_keywords      | Get semantically related keywords with frequency, CPC, competition, and difficulty data      | keyword, se, filters, sort  |
 

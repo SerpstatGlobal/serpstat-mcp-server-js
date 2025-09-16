@@ -1,7 +1,7 @@
 import { BaseHandler } from './base.js';
 import { KeywordService } from '../services/keyword_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { keywordGetSchema, getRelatedKeywordsSchema, keywordsInfoSchema, keywordSuggestionsSchema, keywordFullTopSchema, keywordTopUrlsSchema } from '../utils/validation.js';
+import { keywordGetSchema, getRelatedKeywordsSchema, keywordsInfoSchema, keywordSuggestionsSchema, keywordFullTopSchema, keywordTopUrlsSchema, keywordCompetitorsSchema } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 import {
@@ -600,6 +600,136 @@ export class GetKeywordTopUrlsHandler extends BaseHandler {
         try {
             const params = keywordTopUrlsSchema.parse(call.arguments);
             const result = await this.keywordService.getKeywordTopUrls(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetKeywordCompetitorsHandler extends BaseHandler {
+    private keywordService: KeywordService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.keywordService = new KeywordService(config);
+    }
+
+    getName(): string {
+        return 'get_keyword_competitors';
+    }
+
+    getDescription(): string {
+        return 'Lists the domains that rank for the given keyword in Google top-20 results. Shows detailed competitor analysis including visibility metrics, traffic data, keyword dynamics, and relevance scores.';
+    }
+
+    getInputSchema(): object {
+        return {
+            type: 'object',
+            properties: {
+                keyword: {
+                    type: 'string',
+                    minLength: MIN_KEYWORD_LENGTH,
+                    description: 'Keyword to search for competitors'
+                },
+                se: {
+                    type: 'string',
+                    enum: MAIN_SEARCH_ENGINES,
+                    description: 'Search engine database ID'
+                },
+                filters: {
+                    type: 'object',
+                    properties: {
+                        domain: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'List of domains to filter, e.g., www.apple.com'
+                        },
+                        minus_domain: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'List of domains to exclude from the results, e.g., www.blackberry.com'
+                        },
+                        visible: {
+                            type: 'integer',
+                            description: 'Exact visibility value'
+                        },
+                        visible_from: {
+                            type: 'integer',
+                            description: 'Minimum visibility value'
+                        },
+                        visible_to: {
+                            type: 'integer',
+                            description: 'Maximum visibility value'
+                        },
+                        traff: {
+                            type: 'integer',
+                            description: 'Exact traffic value'
+                        },
+                        traff_from: {
+                            type: 'integer',
+                            description: 'Minimum traffic value'
+                        },
+                        traff_to: {
+                            type: 'integer',
+                            description: 'Maximum traffic value'
+                        },
+                        relevance: {
+                            type: 'integer',
+                            description: 'Exact relevance value'
+                        },
+                        relevance_from: {
+                            type: 'integer',
+                            description: 'Minimum relevance value'
+                        },
+                        relevance_to: {
+                            type: 'integer',
+                            description: 'Maximum relevance value'
+                        },
+                        our_relevance: {
+                            type: 'integer',
+                            description: 'Exact value for our relevance'
+                        },
+                        our_relevance_from: {
+                            type: 'integer',
+                            description: 'Minimum value for our relevance'
+                        },
+                        our_relevance_to: {
+                            type: 'integer',
+                            description: 'Maximum value for our relevance'
+                        }
+                    },
+                    additionalProperties: false,
+                    description: 'Filters for search. Fields are combined using the AND logic'
+                },
+                sort: {
+                    type: 'object',
+                    additionalProperties: {
+                        type: 'string',
+                        enum: SORT_ORDER
+                    },
+                    description: 'Order of sorting the results in the format: field: order (e.g., {"region_queries_count": "desc"})'
+                },
+                size: {
+                    type: 'integer',
+                    minimum: 1,
+                    maximum: 1000,
+                    description: 'Number of results per page in response'
+                }
+            },
+            required: ['keyword', 'se'],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = keywordCompetitorsSchema.parse(call.arguments);
+            const result = await this.keywordService.getKeywordCompetitors(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {

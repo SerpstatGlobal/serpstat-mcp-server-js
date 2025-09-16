@@ -381,3 +381,33 @@ export interface KeywordTopUrlsResponse {
     urls: KeywordTopUrlData[];
     summary_info: KeywordTopUrlsSummaryInfo;
 }
+
+export interface KeywordCompetitorData {
+    domain: string;
+    visible: number;
+    keywords: number;
+    traff: number;
+    visible_dynamic: number;
+    keywords_dynamic: number;
+    traff_dynamic: number;
+    ads_dynamic: number;
+    new_keywords: number;
+    out_keywords: number;
+    rised_keywords: number;
+    down_keywords: number;
+    ad_keywords: number;
+    ads: number;
+    intersected: number;
+    relevance: number;
+    our_relevance: number;
+}
+
+export interface KeywordCompetitorsSummaryInfo {
+    page: number;
+    left_lines: number;
+}
+
+export interface KeywordCompetitorsResponse {
+    data: Record<string, KeywordCompetitorData>;
+    summary_info: KeywordCompetitorsSummaryInfo;
+}

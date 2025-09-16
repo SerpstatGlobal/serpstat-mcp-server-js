@@ -78,3 +78,10 @@ export const MIN_KEYWORDS_INFO_ITEMS = 1;
 export const MAX_KEYWORDS_INFO_ITEMS = 1000;
 export const MIN_KEYWORD_TOP_SIZE = 10;
 export const MAX_KEYWORD_TOP_SIZE = 100;
+
+// Additional validation constants for cleanup
+export const MAX_DOMAINS_INFO_ITEMS = 10;
+export const MAX_UNIQ_KEYWORDS_MINUS_ITEMS = 100;
+export const MIN_VISIBLE_VALUE = 0;
+export const MIN_TRAFFIC_VALUE = 0;
+export const MAX_KEYWORD_COMPETITORS_SIZE = 1000;

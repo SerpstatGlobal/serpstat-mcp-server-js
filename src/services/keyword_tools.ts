@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { KeywordGetParams, GetRelatedKeywordsParams, KeywordsInfoParams, KeywordSuggestionsParams, KeywordFullTopParams, KeywordTopUrlsParams } from '../utils/validation.js';
-import { KeywordGetResponse, GetRelatedKeywordsResponse, KeywordsInfoResponse, KeywordSuggestionsResponse, KeywordFullTopResponse, KeywordTopUrlsResponse, SerpstatRequest } from '../types/serpstat.js';
+import { KeywordGetParams, GetRelatedKeywordsParams, KeywordsInfoParams, KeywordSuggestionsParams, KeywordFullTopParams, KeywordTopUrlsParams, KeywordCompetitorsParams } from '../utils/validation.js';
+import { KeywordGetResponse, GetRelatedKeywordsResponse, KeywordsInfoResponse, KeywordSuggestionsResponse, KeywordFullTopResponse, KeywordTopUrlsResponse, KeywordCompetitorsResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class KeywordService extends BaseService {
@@ -127,6 +127,28 @@ export class KeywordService extends BaseService {
         logger.info('Successfully retrieved keyword top URLs', {
             urlsCount: response.result.urls.length,
             totalUrls: response.result.summary_info.total_urls,
+            leftLines: response.result.summary_info.left_lines
+        });
+        return response.result;
+    }
+
+    async getKeywordCompetitors(params: KeywordCompetitorsParams): Promise<KeywordCompetitorsResponse> {
+        logger.info('Getting keyword competitors', {
+            keyword: params.keyword,
+            se: params.se,
+            size: params.size
+        });
+        const request: SerpstatRequest = {
+            id: `get_keyword_competitors_${Date.now()}`,
+            method: 'SerpstatKeywordProcedure.getCompetitors',
+            params,
+        };
+        const response = await this.makeRequest<KeywordCompetitorsResponse>(request);
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+        logger.info('Successfully retrieved keyword competitors', {
+            competitorsCount: Object.keys(response.result.data).length,
             leftLines: response.result.summary_info.left_lines
         });
         return response.result;
