@@ -7,7 +7,7 @@ import {
 import { BaseHandler } from './handlers/base.js';
 import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from './handlers/domain_tools.js';
 import { BacklinksSummaryHandler } from './handlers/backlinks_tools.js';
-import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler, GetKeywordFullTopHandler, GetKeywordTopUrlsHandler, GetKeywordCompetitorsHandler } from './handlers/keyword_tools.js';
+import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler, GetKeywordFullTopHandler, GetKeywordTopUrlsHandler, GetKeywordCompetitorsHandler, GetKeywordTopHandler } from './handlers/keyword_tools.js';
 import { logger } from './utils/logger.js';
 
 export class SerpstatMCPServer {
@@ -18,7 +18,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.0.3',
+                version: '1.0.4',
             },
             {
                 capabilities: {
@@ -48,6 +48,7 @@ export class SerpstatMCPServer {
             new GetKeywordFullTopHandler(),
             new GetKeywordTopUrlsHandler(),
             new GetKeywordCompetitorsHandler(),
+            new GetKeywordTopHandler(),
         ];
 
         for (const handler of handlers) {

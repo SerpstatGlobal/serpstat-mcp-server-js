@@ -1,7 +1,7 @@
 import { KeywordService } from '../../services/keyword_tools.js';
-import { KeywordGetParams, keywordGetSchema, getRelatedKeywordsSchema, GetRelatedKeywordsParams, keywordsInfoSchema, KeywordsInfoParams, keywordSuggestionsSchema, KeywordSuggestionsParams } from '../../utils/validation.js';
-import { KeywordGetResponse, GetRelatedKeywordsResponse, KeywordsInfoResponse, KeywordSuggestionsResponse } from '../../types/serpstat.js';
-import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler } from '../../handlers/keyword_tools.js';
+import { KeywordGetParams, keywordGetSchema, getRelatedKeywordsSchema, GetRelatedKeywordsParams, keywordsInfoSchema, KeywordsInfoParams, keywordSuggestionsSchema, KeywordSuggestionsParams, keywordTopUrlsSchema, KeywordTopUrlsParams } from '../../utils/validation.js';
+import { KeywordGetResponse, GetRelatedKeywordsResponse, KeywordsInfoResponse, KeywordSuggestionsResponse, KeywordTopResponse } from '../../types/serpstat.js';
+import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler, GetKeywordTopHandler } from '../../handlers/keyword_tools.js';
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -29,6 +29,50 @@ describe('keywordGetSchema', () => {
     it('rejects too long keyword', () => {
         const params = { keyword: 'a'.repeat(101), se: 'g_us' };
         expect(() => keywordGetSchema.parse(params)).toThrow();
+    });
+});
+
+describe('keywordTopUrlsSchema', () => {
+    it('validates correct parameters with valid page_size', () => {
+        const params: KeywordTopUrlsParams = {
+            keyword: 'iphone',
+            se: 'g_us',
+            page: 1,
+            page_size: 10
+        };
+        expect(() => keywordTopUrlsSchema.parse(params)).not.toThrow();
+    });
+
+    it('validates with all allowed page_size values', () => {
+        const allowedSizes = [10, 20, 30, 50, 100, 200, 500];
+        for (const size of allowedSizes) {
+            const params = {
+                keyword: 'iphone',
+                se: 'g_us',
+                page_size: size
+            };
+            expect(() => keywordTopUrlsSchema.parse(params)).not.toThrow();
+        }
+    });
+
+    it('rejects invalid page_size values', () => {
+        const invalidSizes = [1, 5, 15, 25, 150, 300, 1000];
+        for (const size of invalidSizes) {
+            const params = {
+                keyword: 'iphone',
+                se: 'g_us',
+                page_size: size
+            };
+            expect(() => keywordTopUrlsSchema.parse(params)).toThrow();
+        }
+    });
+
+    it('validates without page_size (optional)', () => {
+        const params = {
+            keyword: 'iphone',
+            se: 'g_us'
+        };
+        expect(() => keywordTopUrlsSchema.parse(params)).not.toThrow();
     });
 });
 
@@ -594,6 +638,138 @@ describe('GetKeywordSuggestionsHandler', () => {
             },
             page: 1,
             size: 3
+        });
+    });
+});
+
+describe('GetKeywordTopHandler', () => {
+    let handler: GetKeywordTopHandler;
+
+    beforeEach(() => {
+        handler = new GetKeywordTopHandler();
+    });
+
+    it('should have correct name', () => {
+        expect(handler.getName()).toBe('get_keyword_top');
+    });
+
+    it('should have correct description', () => {
+        expect(handler.getDescription()).toContain('Google\'s top-100 search results');
+        expect(handler.getDescription()).toContain('deprecated');
+    });
+
+    it('should have correct input schema', () => {
+        const schema = handler.getInputSchema();
+        expect(schema).toHaveProperty('type', 'object');
+        expect(schema).toHaveProperty('properties');
+        expect((schema as any).properties).toHaveProperty('keyword');
+        expect((schema as any).properties).toHaveProperty('se');
+        expect((schema as any).properties).toHaveProperty('filters');
+        expect((schema as any).properties).toHaveProperty('size');
+        expect((schema as any).required).toEqual(['keyword', 'se']);
+    });
+
+    it('handles successful call', async () => {
+        const mockResult: KeywordTopResponse = {
+            data: {
+                top: [
+                    {
+                        position: 1,
+                        url: 'https://www.bestbuy.com/site/laptop-computers/all-laptops/pcmcat138500050001.c?id=pcmcat138500050001',
+                        domain: 'bestbuy.com',
+                        subdomain: 'www.bestbuy.com',
+                        types: ['pic', 'snip_breadcrumbs', 'snip_image_thumbnail']
+                    }
+                ],
+                ads: [],
+                types: ['pic'],
+                results: 6570000000
+            },
+            summary_info: { page: 1, left_lines: 998460 }
+        };
+
+        jest.spyOn(handler['keywordService'], 'getKeywordTop').mockResolvedValue(mockResult);
+
+        const call = {
+            name: 'get_keyword_top',
+            arguments: {
+                keyword: 'laptop',
+                se: 'g_us'
+            }
+        };
+
+        const response = await handler.handle(call);
+        expect(response.content).toHaveLength(1);
+        expect(response.content[0].type).toBe('text');
+
+        const responseData = JSON.parse(response.content[0].text);
+        expect(responseData).toEqual(mockResult);
+        expect(handler['keywordService'].getKeywordTop).toHaveBeenCalledWith({
+            keyword: 'laptop',
+            se: 'g_us'
+        });
+    });
+
+    it('handles validation error', async () => {
+        const call = {
+            name: 'get_keyword_top',
+            arguments: { se: 'g_us' } // missing keyword
+        };
+
+        const response = await handler.handle(call);
+        expect(response.isError).toBe(true);
+        expect(response.content[0].text).toContain('Invalid parameters');
+        expect(response.content[0].text).toContain('keyword: Required');
+    });
+
+    it('handles call with filters', async () => {
+        const mockResult: KeywordTopResponse = {
+            data: {
+                top: [
+                    {
+                        position: 1,
+                        url: 'https://www.bestbuy.com/site/laptop-computers/all-laptops/pcmcat138500050001.c?id=pcmcat138500050001',
+                        domain: 'bestbuy.com',
+                        subdomain: 'www.bestbuy.com',
+                        types: ['pic', 'snip_breadcrumbs', 'snip_image_thumbnail']
+                    }
+                ],
+                ads: [],
+                types: ['pic'],
+                results: 6570000000
+            },
+            summary_info: { page: 1, left_lines: 998460 }
+        };
+
+        jest.spyOn(handler['keywordService'], 'getKeywordTop').mockResolvedValue(mockResult);
+
+        const call = {
+            name: 'get_keyword_top',
+            arguments: {
+                keyword: 'laptop',
+                se: 'g_us',
+                filters: {
+                    position_to: 5,
+                    top_size: 10
+                },
+                size: 10
+            }
+        };
+
+        const response = await handler.handle(call);
+        expect(response.content).toHaveLength(1);
+        expect(response.content[0].type).toBe('text');
+
+        const responseData = JSON.parse(response.content[0].text);
+        expect(responseData).toEqual(mockResult);
+        expect(handler['keywordService'].getKeywordTop).toHaveBeenCalledWith({
+            keyword: 'laptop',
+            se: 'g_us',
+            filters: {
+                position_to: 5,
+                top_size: 10
+            },
+            size: 10
         });
     });
 });

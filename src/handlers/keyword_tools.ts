@@ -1,7 +1,7 @@
 import { BaseHandler } from './base.js';
 import { KeywordService } from '../services/keyword_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { keywordGetSchema, getRelatedKeywordsSchema, keywordsInfoSchema, keywordSuggestionsSchema, keywordFullTopSchema, keywordTopUrlsSchema, keywordCompetitorsSchema } from '../utils/validation.js';
+import { keywordGetSchema, getRelatedKeywordsSchema, keywordsInfoSchema, keywordSuggestionsSchema, keywordFullTopSchema, keywordTopUrlsSchema, keywordCompetitorsSchema, keywordTopSchema } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 import {
@@ -25,7 +25,12 @@ import {
     MIN_KEYWORDS_INFO_ITEMS,
     MAX_KEYWORDS_INFO_ITEMS,
     MIN_KEYWORD_TOP_SIZE,
-    MAX_KEYWORD_TOP_SIZE
+    MAX_KEYWORD_TOP_SIZE,
+    DEFAULT_TOP_SIZE,
+    MAX_TOP_SIZE,
+    MIN_FILTER_POSITION,
+    MAX_FILTER_POSITION,
+    ALLOWED_PAGE_SIZES
 } from '../utils/constants.js';
 
 export class GetKeywordsHandler extends BaseHandler {
@@ -516,7 +521,7 @@ export class GetKeywordFullTopHandler extends BaseHandler {
                     type: 'integer',
                     minimum: MIN_KEYWORD_TOP_SIZE,
                     maximum: MAX_KEYWORD_TOP_SIZE,
-                    description: 'Number of results per page in response'
+                    description: 'Number of results per page in response (minimum 10, maximum 100)'
                 }
             },
             required: ['keyword', 'se'],
@@ -586,9 +591,8 @@ export class GetKeywordTopUrlsHandler extends BaseHandler {
                 },
                 page_size: {
                     type: 'integer',
-                    minimum: MIN_PAGE,
-                    maximum: MAX_PAGE_SIZE,
-                    description: 'Number of results per page'
+                    enum: ALLOWED_PAGE_SIZES,
+                    description: 'Number of results per page (allowed values: 10, 20, 30, 50, 100, 200, 500)'
                 }
             },
             required: ['keyword'],
@@ -730,6 +734,117 @@ export class GetKeywordCompetitorsHandler extends BaseHandler {
         try {
             const params = keywordCompetitorsSchema.parse(call.arguments);
             const result = await this.keywordService.getKeywordCompetitors(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetKeywordTopHandler extends BaseHandler {
+    private keywordService: KeywordService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.keywordService = new KeywordService(config);
+    }
+
+    getName(): string {
+        return 'get_keyword_top';
+    }
+
+    getDescription(): string {
+        return 'Shows Google\'s top-100 search results for the analyzed keyword. Returns position data, URLs, domains, subdomains, and SERP feature types. This method is deprecated but still functional.';
+    }
+
+    getInputSchema(): object {
+        return {
+            type: 'object',
+            properties: {
+                keyword: {
+                    type: 'string',
+                    minLength: MIN_KEYWORD_LENGTH,
+                    description: 'Keyword to search for'
+                },
+                se: {
+                    type: 'string',
+                    enum: MAIN_SEARCH_ENGINES,
+                    description: 'Search engine database ID'
+                },
+                filters: {
+                    type: 'object',
+                    properties: {
+                        top_size: {
+                            type: 'integer',
+                            minimum: MIN_KEYWORD_LENGTH,
+                            maximum: MAX_TOP_SIZE,
+                            default: DEFAULT_TOP_SIZE,
+                            description: 'The number of results to retrieve from the top search results'
+                        },
+                        position: {
+                            type: 'integer',
+                            minimum: MIN_FILTER_POSITION,
+                            maximum: MAX_FILTER_POSITION,
+                            description: 'The exact position of the keyword in search results'
+                        },
+                        position_from: {
+                            type: 'integer',
+                            minimum: MIN_FILTER_POSITION,
+                            maximum: MAX_FILTER_POSITION,
+                            description: 'The minimum position of the keyword in search results'
+                        },
+                        position_to: {
+                            type: 'integer',
+                            minimum: MIN_FILTER_POSITION,
+                            maximum: MAX_FILTER_POSITION,
+                            description: 'The maximum position of the keyword in search results'
+                        },
+                        url: {
+                            type: 'string',
+                            format: 'uri',
+                            description: 'Filters by a specific URL'
+                        },
+                        exact_url: {
+                            type: 'string',
+                            format: 'uri',
+                            description: 'Filters by an exact URL'
+                        },
+                        domain: {
+                            type: 'string',
+                            description: 'Filters by domain name'
+                        },
+                        minus_domain: {
+                            type: 'string',
+                            description: 'Excludes results from the specified domain'
+                        },
+                        subdomain: {
+                            type: 'string',
+                            description: 'Filters by subdomain'
+                        }
+                    },
+                    additionalProperties: false,
+                    description: 'Filters for search results'
+                },
+                size: {
+                    type: 'integer',
+                    minimum: MIN_KEYWORD_LENGTH,
+                    maximum: MAX_PAGE_SIZE,
+                    description: 'Number of results per page in response'
+                }
+            },
+            required: ['keyword', 'se'],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = keywordTopSchema.parse(call.arguments);
+            const result = await this.keywordService.getKeywordTop(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {

@@ -46,6 +46,9 @@ import {
     MIN_VISIBLE_VALUE,
     MIN_TRAFFIC_VALUE,
     MAX_KEYWORD_COMPETITORS_SIZE,
+    DEFAULT_TOP_SIZE,
+    MAX_TOP_SIZE,
+    ALLOWED_PAGE_SIZES,
 } from './constants.js';
 
 const searchEngineSchema = z.enum(SEARCH_ENGINES);
@@ -401,7 +404,15 @@ export const keywordTopUrlsSchema = z.object({
     sort: z.string().optional(),
     order: sortOrderSchema.optional(),
     page: z.number().int().min(MIN_PAGE).optional(),
-    page_size: z.number().int().min(MIN_KEYWORD_LENGTH).max(MAX_PAGE_SIZE).optional(),
+    page_size: z.union([
+        z.literal(10),
+        z.literal(20),
+        z.literal(30),
+        z.literal(50),
+        z.literal(100),
+        z.literal(200),
+        z.literal(500)
+    ]).optional(),
 }).strict();
 
 export type KeywordTopUrlsParams = z.infer<typeof keywordTopUrlsSchema>;
@@ -430,3 +441,22 @@ export const keywordCompetitorsSchema = z.object({
 }).strict();
 
 export type KeywordCompetitorsParams = z.infer<typeof keywordCompetitorsSchema>;
+
+export const keywordTopSchema = z.object({
+    keyword: z.string().min(MIN_KEYWORD_LENGTH),
+    se: z.enum(MAIN_SEARCH_ENGINES),
+    filters: z.object({
+        top_size: z.number().int().min(MIN_KEYWORD_LENGTH).max(MAX_TOP_SIZE).default(DEFAULT_TOP_SIZE).optional(),
+        position: z.number().int().min(MIN_FILTER_POSITION).max(MAX_FILTER_POSITION).optional(),
+        position_from: z.number().int().min(MIN_FILTER_POSITION).max(MAX_FILTER_POSITION).optional(),
+        position_to: z.number().int().min(MIN_FILTER_POSITION).max(MAX_FILTER_POSITION).optional(),
+        url: z.string().url().optional(),
+        exact_url: z.string().url().optional(),
+        domain: z.string().optional(),
+        minus_domain: z.string().optional(),
+        subdomain: z.string().optional(),
+    }).strict().optional(),
+    size: z.number().int().min(MIN_KEYWORD_LENGTH).max(MAX_PAGE_SIZE).optional(),
+}).strict();
+
+export type KeywordTopParams = z.infer<typeof keywordTopSchema>;

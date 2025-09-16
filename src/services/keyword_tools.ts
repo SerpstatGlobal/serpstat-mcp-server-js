@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { KeywordGetParams, GetRelatedKeywordsParams, KeywordsInfoParams, KeywordSuggestionsParams, KeywordFullTopParams, KeywordTopUrlsParams, KeywordCompetitorsParams } from '../utils/validation.js';
-import { KeywordGetResponse, GetRelatedKeywordsResponse, KeywordsInfoResponse, KeywordSuggestionsResponse, KeywordFullTopResponse, KeywordTopUrlsResponse, KeywordCompetitorsResponse, SerpstatRequest } from '../types/serpstat.js';
+import { KeywordGetParams, GetRelatedKeywordsParams, KeywordsInfoParams, KeywordSuggestionsParams, KeywordFullTopParams, KeywordTopUrlsParams, KeywordCompetitorsParams, KeywordTopParams } from '../utils/validation.js';
+import { KeywordGetResponse, GetRelatedKeywordsResponse, KeywordsInfoResponse, KeywordSuggestionsResponse, KeywordFullTopResponse, KeywordTopUrlsResponse, KeywordCompetitorsResponse, KeywordTopResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class KeywordService extends BaseService {
@@ -149,6 +149,29 @@ export class KeywordService extends BaseService {
         }
         logger.info('Successfully retrieved keyword competitors', {
             competitorsCount: Object.keys(response.result.data).length,
+            leftLines: response.result.summary_info.left_lines
+        });
+        return response.result;
+    }
+
+    async getKeywordTop(params: KeywordTopParams): Promise<KeywordTopResponse> {
+        logger.info('Getting keyword top results', {
+            keyword: params.keyword,
+            se: params.se,
+            size: params.size
+        });
+        const request: SerpstatRequest = {
+            id: `get_keyword_top_${Date.now()}`,
+            method: 'SerpstatKeywordProcedure.getKeywordTop',
+            params,
+        };
+        const response = await this.makeRequest<KeywordTopResponse>(request);
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+        logger.info('Successfully retrieved keyword top results', {
+            topResultsCount: response.result.data.top?.length || 0,
+            totalResults: response.result.data.results,
             leftLines: response.result.summary_info.left_lines
         });
         return response.result;

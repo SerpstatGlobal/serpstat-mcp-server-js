@@ -411,3 +411,28 @@ export interface KeywordCompetitorsResponse {
     data: Record<string, KeywordCompetitorData>;
     summary_info: KeywordCompetitorsSummaryInfo;
 }
+
+export interface KeywordTopResultData {
+    position: number;
+    url: string;
+    domain: string;
+    subdomain: string;
+    types: string[];
+}
+
+export interface KeywordTopDataResponse {
+    top?: KeywordTopResultData[];
+    ads: any[];
+    types: string[];
+    results: number;
+}
+
+export interface KeywordTopSummaryInfo {
+    page: number;
+    left_lines: number;
+}
+
+export interface KeywordTopResponse {
+    data: KeywordTopDataResponse;
+    summary_info: KeywordTopSummaryInfo;
+}

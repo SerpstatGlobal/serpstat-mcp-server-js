@@ -1,12 +1,13 @@
 # Changelog
 
-## [Unreleased] - 2025-09-16
+## [1.0.4] - 2025-09-16
 ### Added
 - Added `get_keyword_full_top` method to show Google's top-100 search results for analyzed keywords
 - Added `get_keywords_info` method to get keyword overview with volume, CPC, competition level, difficulty, and additional metrics for multiple keywords
 - Added `get_keyword_suggestions` method to show search suggestions for keywords found by full-text search with geographic names information
 - Added `get_keyword_top_urls` method to return website pages that rank for the largest amount of analyzed keyword variations with highest traffic
 - Added `get_keyword_competitors` method to list domains that rank for the given keyword in Google top-20 results with detailed competitor analysis
+- Added `get_keyword_top` method to show Google's top-100 search results for analyzed keyword with position, URL, domain and SERP features (deprecated method)
 
 ## [1.0.3] - 2025-09-09
 ### Fixed

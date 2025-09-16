@@ -85,3 +85,6 @@ export const MAX_UNIQ_KEYWORDS_MINUS_ITEMS = 100;
 export const MIN_VISIBLE_VALUE = 0;
 export const MIN_TRAFFIC_VALUE = 0;
 export const MAX_KEYWORD_COMPETITORS_SIZE = 1000;
+export const DEFAULT_TOP_SIZE = 100;
+export const MAX_TOP_SIZE = 60000;
+export const ALLOWED_PAGE_SIZES = [10, 20, 30, 50, 100, 200, 500] as const;
