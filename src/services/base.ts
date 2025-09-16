@@ -76,8 +76,8 @@ export abstract class BaseService {
             return response.data;
         } catch (error) {
             if (retries > 0 && this.isRetryableError(error)) {
-                // @ts-ignore
-                logger.warn(`Request failed, retrying... (${retries} retries left)`, { error: error.message });
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                logger.warn(`Request failed, retrying... (${retries} retries left)`, { error: errorMessage });
                 await this.delay(1000);
                 return this.makeRequest<T>(request, retries - 1);
             }

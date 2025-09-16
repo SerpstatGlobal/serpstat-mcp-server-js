@@ -36,3 +36,4 @@ serpstat-mcp-server-js.iml
 # Development files
 TODO.md
 .env
+/docs/

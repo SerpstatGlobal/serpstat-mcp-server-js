@@ -2,27 +2,6 @@ export const SORT_ORDER = ["asc", "desc"] as const;
 
 export const SEARCH_TYPES = ["domain", "domain_with_subdomains"] as const;
 
-export const KEYWORD_SORT_FIELDS = [
-    "position",
-    "region_queries_count",
-    "cost",
-    "traff",
-    "difficulty",
-    "keyword_length",
-    "concurrency"
-] as const;
-
-export const KEYWORD_GET_SORT_FIELDS = [
-    "region_queries_count",
-    "cost",
-    "difficulty",
-    "concurrency",
-    "found_results",
-    "keyword_length"
-] as const;
-
-export const URL_SORT_FIELDS = ["keywords"] as const;
-
 export const DOMAIN_REGIONS_SORT_FIELDS = [
     "keywords_count",
     "country_name_en",
@@ -59,3 +38,7 @@ export const MAIN_SEARCH_ENGINES = [
 ] as const;
 
 export const DOMAIN_NAME_REGEX  ="^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$";
+
+// Default values
+export const DEFAULT_PAGE_SIZE = 100;
+export const DEFAULT_COMPETITORS_SIZE = 20;

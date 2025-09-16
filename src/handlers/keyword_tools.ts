@@ -7,8 +7,8 @@ import { z } from 'zod';
 import {
     MAIN_SEARCH_ENGINES,
     KEYWORD_INTENTS,
-    DOMAIN_REGIONS_SORT_FIELDS,
-    SORT_ORDER
+    SORT_ORDER,
+    DEFAULT_PAGE_SIZE
 } from '../utils/constants.js';
 
 export class GetKeywordsHandler extends BaseHandler {
@@ -125,7 +125,7 @@ export class GetKeywordsHandler extends BaseHandler {
         try {
             const params = keywordGetSchema.parse(call.arguments) as KeywordGetParams;
             if (params.size === undefined) {
-                params.size = 100;
+                params.size = DEFAULT_PAGE_SIZE;
             }
             const result = await this.keywordService.getKeywords(params);
             return this.createSuccessResponse(result);
@@ -244,12 +244,15 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
         try {
             const parsed = getRelatedKeywordsSchema.parse(call.arguments);
             if (parsed.size === undefined) {
-                parsed.size = 100;
+                parsed.size = DEFAULT_PAGE_SIZE;
             }
             const result = await this.keywordService.getRelatedKeywords(parsed);
             return this.createSuccessResponse(result);
-        } catch (error: any) {
-            return this.createErrorResponse(error);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
         }
     }
 }

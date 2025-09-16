@@ -9,7 +9,9 @@ import {
     KEYWORD_INTENTS,
     DOMAIN_REGIONS_SORT_FIELDS,
     SORT_ORDER,
-    DOMAIN_NAME_REGEX
+    DOMAIN_NAME_REGEX,
+    DEFAULT_PAGE_SIZE,
+    DEFAULT_COMPETITORS_SIZE
 } from '../utils/constants.js';
 
 export class DomainsInfoHandler extends BaseHandler {
@@ -154,7 +156,7 @@ export class CompetitorsHandler extends BaseHandler {
             const params = competitorsGetSchema.parse(call.arguments) as CompetitorsGetParams;
             // sometimes llm bad at assume required size parameter, let it be 20
             if (params.size === undefined) {
-                params.size = 20;
+                params.size = DEFAULT_COMPETITORS_SIZE;
             }
             const result = await this.domainService.getCompetitors(params);
             return this.createSuccessResponse(result);
@@ -277,7 +279,7 @@ export class DomainKeywordsHandler extends BaseHandler {
         try {
             const params = domainKeywordsSchema.parse(call.arguments) as DomainKeywordsParams;
             if (params.size === undefined) {
-                params.size = 100;
+                params.size = DEFAULT_PAGE_SIZE;
             }
             const result = await this.domainService.getDomainKeywords(params);
             return this.createSuccessResponse(result);
@@ -354,7 +356,7 @@ export class DomainUrlsHandler extends BaseHandler {
         try {
             const params = domainUrlsSchema.parse(call.arguments) as DomainUrlsParams;
             if (params.size === undefined) {
-                params.size = 100;
+                params.size = DEFAULT_PAGE_SIZE;
             }
             const result = await this.domainService.getDomainUrls(params);
             return this.createSuccessResponse(result);
@@ -547,7 +549,7 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
         try {
             const params = domainUniqKeywordsSchema.parse(call.arguments) as DomainUniqKeywordsParams;
             if (params.size === undefined) {
-                params.size = 100;
+                params.size = DEFAULT_PAGE_SIZE;
             }
             const result = await this.domainService.getDomainUniqKeywords(params);
             return this.createSuccessResponse(result);
