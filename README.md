@@ -99,6 +99,7 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 - "Get top 50 keywords that example.com ranks for"
 - "Analyze backlinks summary for domain.com"
 - "Find related keywords to 'digital marketing'"
+- "Get keyword suggestions for 'iphone 15' excluding 'rent' keywords"
 - "Get comprehensive keyword data for ['iphone', 'samsung', 'google pixel'] including search volume, CPC, and difficulty"
 - "Get unique keywords for domain1.com vs domain2.com"
 
@@ -184,6 +185,7 @@ serpstat-mcp-server/
 | get_domain_regions_count  | Get keyword count by region for a domain                                                      | domain, sort, order         |
 | get_domain_uniq_keywords  | Get unique keywords for two domains not ranked by a third domain                             | se, domains, minusDomain    |
 | get_keywords              | Get related organic keywords for a given keyword                                              | keyword, se, filters        |
+| get_keyword_suggestions   | Get search suggestions for a keyword using full-text search with geographic names info       | keyword, se, filters        |
 | get_keywords_info         | Get keyword overview with volume, CPC, competition, difficulty, and SERP features            | keywords, se, withIntents   |
 | get_backlinks_summary     | Get comprehensive backlinks summary with referring domains, quality metrics, and changes     | domain, subdomain           |
 | get_related_keywords      | Get semantically related keywords with frequency, CPC, competition, and difficulty data      | keyword, se, filters, sort  |
@@ -199,6 +201,8 @@ Common search engine codes:
 - `g_fr` - Google France
 - `g_es` - Google Spain
 - `g_it` - Google Italy
+- `g_pl` - Google Poland
+- `g_ua` - Google Ukraine
 
 See a full list of [Search Engines Short Names](https://api-docs.serpstat.com/docs/serpstat-public-api/ba97ni814ao9p-search-engine-short-names)
 
