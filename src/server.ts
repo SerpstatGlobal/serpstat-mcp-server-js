@@ -6,7 +6,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { BaseHandler } from './handlers/base.js';
 import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from './handlers/domain_tools.js';
-import { BacklinksSummaryHandler } from './handlers/backlinks_tools.js';
+import { BacklinksSummaryHandler, GetAnchorsHandler } from './handlers/backlinks_tools.js';
 import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler, GetKeywordFullTopHandler, GetKeywordTopUrlsHandler, GetKeywordCompetitorsHandler, GetKeywordTopHandler } from './handlers/keyword_tools.js';
 import { logger } from './utils/logger.js';
 
@@ -39,6 +39,7 @@ export class SerpstatMCPServer {
             new DomainKeywordsHandler(),
             new DomainUrlsHandler(),
             new BacklinksSummaryHandler(),
+            new GetAnchorsHandler(),
             new DomainRegionsCountHandler(),
             new GetDomainUniqKeywordsHandler(),
             new GetKeywordsHandler(),
@@ -81,6 +82,7 @@ export class SerpstatMCPServer {
             }
 
             const result = await handler.handle({ name, arguments: args ?? {} });
+
 
             logger.info(`Tool call completed: ${name}`, {
                 success: !result.isError,

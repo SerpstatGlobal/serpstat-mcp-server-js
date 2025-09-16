@@ -2,6 +2,40 @@ export const SORT_ORDER = ["asc", "desc"] as const;
 
 export const SEARCH_TYPES = ["domain", "domain_with_subdomains"] as const;
 
+export const SEARCH_TYPES_URL = ["url", "domain", "part_url", "domain_with_subdomains"] as const;
+
+export const ANCHORS_SORT_FIELDS = [
+    "total",
+    "refDomains",
+    "nofollow",
+    "anchor",
+    "lastupdate"
+] as const;
+
+export const ANCHORS_COMPLEX_FILTER_FIELDS = [
+    "total",
+    "refDomains",
+    "nofollow",
+    "anchor",
+    "lastupdate"
+] as const;
+
+export const COMPLEX_FILTER_COMPARE_TYPES = [
+    "gt",
+    "lt",
+    "gte",
+    "lte",
+    "eq",
+    "neq",
+    "between",
+    "contains",
+    "notContains",
+    "startsWith",
+    "endsWith"
+] as const;
+
+export const ADDITIONAL_FILTERS = ["no_subdomains"] as const;
+
 export const DOMAIN_REGIONS_SORT_FIELDS = [
     "keywords_count",
     "country_name_en",

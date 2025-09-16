@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { BacklinksSummaryParams } from '../utils/validation.js';
-import { BacklinksSummaryResponse, SerpstatRequest } from '../types/serpstat.js';
+import { BacklinksSummaryParams, AnchorsParams } from '../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class BacklinksService extends BaseService {
@@ -21,6 +21,29 @@ export class BacklinksService extends BaseService {
 
         logger.info('Successfully retrieved backlinks summary', {
             leftLines: response.result.summary_info.left_lines
+        });
+
+        return response.result;
+    }
+
+    async getAnchors(params: AnchorsParams): Promise<AnchorsResponse> {
+        logger.info('Getting anchors', { query: params.query, searchType: params.searchType });
+
+        const request: SerpstatRequest = {
+            id: `anchors_${Date.now()}`,
+            method: 'SerpstatBacklinksProcedure.getAnchors',
+            params,
+        };
+
+        const response = await this.makeRequest<AnchorsResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved anchors', {
+            leftLines: response.result.summary_info.left_lines,
+            count: response.result.summary_info.count
         });
 
         return response.result;

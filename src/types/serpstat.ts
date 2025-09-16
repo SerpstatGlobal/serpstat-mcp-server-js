@@ -436,3 +436,24 @@ export interface KeywordTopResponse {
     data: KeywordTopDataResponse;
     summary_info: KeywordTopSummaryInfo;
 }
+
+export interface AnchorData {
+    anchor: string;
+    refDomains: number;
+    total: number;
+    noFollow: number;
+}
+
+export interface AnchorsSummaryInfo {
+    left_lines: number;
+    page: number;
+    count: number;
+    total: number;
+    sort: string;
+    order: string;
+}
+
+export interface AnchorsResponse {
+    data: AnchorData[];
+    summary_info: AnchorsSummaryInfo;
+}

@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema } from '../../utils/validation.js';
-import { BacklinksSummaryResponse } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -114,5 +114,143 @@ describe('BacklinksService', () => {
         // @ts-expect-error
         service.makeRequest = jest.fn().mockResolvedValue({}) as typeof service.makeRequest;
         await expect(service.getBacklinksSummary(params)).rejects.toThrow('No result data received from Serpstat API');
+    });
+
+    describe('getAnchors', () => {
+        it('should validate correct domain parameters', () => {
+            const validParams: AnchorsParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 100
+            };
+            expect(() => anchorsSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should validate correct URL parameters', () => {
+            const validParams: AnchorsParams = {
+                query: 'serpstat.com/blog/',
+                searchType: 'part_url',
+                size: 10
+            };
+            expect(() => anchorsSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should validate correct full URL parameters', () => {
+            const validParams: AnchorsParams = {
+                query: 'https://example.com/page',
+                searchType: 'url',
+                size: 50
+            };
+            expect(() => anchorsSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should fail validation for invalid domain', () => {
+            const invalidParams = {
+                query: 'bad_domain',
+                searchType: 'domain',
+                page: 1,
+                size: 100
+            };
+            expect(() => anchorsSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for invalid URL format', () => {
+            const invalidParams = {
+                query: 'not-a-valid-url-at-all',
+                searchType: 'part_url',
+                page: 1,
+                size: 100
+            };
+            expect(() => anchorsSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for missing required fields', () => {
+            const invalidParams = {
+                searchType: 'domain'
+            };
+            expect(() => anchorsSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for invalid page size', () => {
+            const invalidParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 1500
+            };
+            expect(() => anchorsSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should call getAnchors and return anchors data', async () => {
+            const params: AnchorsParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 100
+            };
+            const mockResponse: AnchorsResponse = {
+                data: [
+                    {
+                        anchor: 'example link',
+                        dofollow_backlinks: 50,
+                        nofollow_backlinks: 25,
+                        total_backlinks: 75,
+                        referring_domains: 10
+                    },
+                    {
+                        anchor: 'another link',
+                        dofollow_backlinks: 30,
+                        nofollow_backlinks: 15,
+                        total_backlinks: 45,
+                        referring_domains: 8
+                    }
+                ],
+                summary_info: {
+                    left_lines: 9999,
+                    count: 2,
+                    sort: null,
+                    order: null
+                }
+            };
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockResponse }) as typeof service.makeRequest;
+            const result = await service.getAnchors(params);
+            expect(result.data).toHaveLength(2);
+            expect(result.data[0].anchor).toBe('example link');
+            expect(result.data[0].total_backlinks).toBe(75);
+            expect(result.summary_info.count).toBe(2);
+            expect(result.summary_info.left_lines).toBe(9999);
+        });
+
+        it('should throw error if no result returned', async () => {
+            const params: AnchorsParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 100
+            };
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({}) as typeof service.makeRequest;
+            await expect(service.getAnchors(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
+
+        it('should handle optional parameters correctly', () => {
+            const minimalParams: AnchorsParams = {
+                query: 'example.com',
+                searchType: 'domain'
+            };
+            expect(() => anchorsSchema.parse(minimalParams)).not.toThrow();
+
+            const paramsWithOptional: AnchorsParams = {
+                query: 'example.com',
+                searchType: 'domain_with_subdomains',
+                page: 2,
+                size: 50,
+                sort: 'refDomains',
+                order: 'desc'
+            };
+            expect(() => anchorsSchema.parse(paramsWithOptional)).not.toThrow();
+        });
     });
 });

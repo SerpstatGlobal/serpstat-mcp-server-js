@@ -49,6 +49,11 @@ import {
     DEFAULT_TOP_SIZE,
     MAX_TOP_SIZE,
     ALLOWED_PAGE_SIZES,
+    SEARCH_TYPES_URL,
+    ANCHORS_SORT_FIELDS,
+    ANCHORS_COMPLEX_FILTER_FIELDS,
+    COMPLEX_FILTER_COMPARE_TYPES,
+    ADDITIONAL_FILTERS,
 } from './constants.js';
 
 const searchEngineSchema = z.enum(SEARCH_ENGINES);
@@ -460,3 +465,52 @@ export const keywordTopSchema = z.object({
 }).strict();
 
 export type KeywordTopParams = z.infer<typeof keywordTopSchema>;
+
+const complexFilterItemSchema = z.union([
+    z.object({
+        field: z.enum(ANCHORS_COMPLEX_FILTER_FIELDS),
+        compareType: z.enum(COMPLEX_FILTER_COMPARE_TYPES),
+        value: z.array(z.union([z.number().int(), z.string()]))
+    }),
+    z.object({
+        additional_filters: z.enum(ADDITIONAL_FILTERS)
+    })
+]);
+
+export const anchorsSchema = z.object({
+    query: z.string(),
+    searchType: z.enum(SEARCH_TYPES_URL),
+    anchor: z.string().optional(),
+    count: z.string().optional(),
+    sort: z.enum(ANCHORS_SORT_FIELDS).default("refDomains").optional(),
+    order: sortOrderSchema.default("desc").optional(),
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).optional(),
+    complexFilter: z.array(z.array(complexFilterItemSchema)).optional()
+}).strict().refine((data) => {
+    if (data.searchType === 'url' || data.searchType === 'part_url') {
+        // For URL types, ensure it looks like a valid URL path
+        // Must contain at least a domain with optional path
+        const urlPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(\/.*)?\??.*$/;
+        if (data.query.startsWith('http://') || data.query.startsWith('https://')) {
+            try {
+                new URL(data.query);
+                return true;
+            } catch {
+                return false;
+            }
+        } else {
+            return urlPattern.test(data.query);
+        }
+    } else {
+        // For domain types, use domain regex validation
+        return data.query.length >= MIN_DOMAIN_LENGTH &&
+               data.query.length <= MAX_DOMAIN_LENGTH &&
+               new RegExp(DOMAIN_NAME_REGEX).test(data.query);
+    }
+}, {
+    message: "Invalid query format for the specified search type",
+    path: ["query"]
+});
+
+export type AnchorsParams = z.infer<typeof anchorsSchema>;

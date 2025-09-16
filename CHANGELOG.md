@@ -8,6 +8,7 @@
 - Added `get_keyword_top_urls` method to return website pages that rank for the largest amount of analyzed keyword variations with highest traffic
 - Added `get_keyword_competitors` method to list domains that rank for the given keyword in Google top-20 results with detailed competitor analysis
 - Added `get_keyword_top` method to show Google's top-100 search results for analyzed keyword with position, URL, domain and SERP features (deprecated method)
+- Added `get_anchors` method to analyze anchor text distribution in backlinks with metrics on referring domains, total backlinks, and nofollow counts
 
 ## [1.0.3] - 2025-09-09
 ### Fixed
