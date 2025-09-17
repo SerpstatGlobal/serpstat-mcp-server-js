@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Added `get_active_backlinks` method to retrieve a list of active backlinks showing linking pages, target pages, link attributes, link types, external links count, anchor text, and discovery dates for domain or URL analysis
+
 ## [1.0.4] - 2025-09-16
 ### Added
 - Added `get_keyword_full_top` method to show Google's top-100 search results for analyzed keywords

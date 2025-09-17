@@ -34,7 +34,30 @@ export const COMPLEX_FILTER_COMPARE_TYPES = [
     "endsWith"
 ] as const;
 
-export const ADDITIONAL_FILTERS = ["no_subdomains"] as const;
+export const ADDITIONAL_FILTERS = ["no_subdomains", "only_main_page", "last_week"] as const;
+
+export const BACKLINKS_SORT_FIELDS = [
+    "url_from",
+    "anchor",
+    "link_nofollow",
+    "links_external",
+    "link_type",
+    "url_to",
+    "check",
+    "add",
+    "domain_rank"
+] as const;
+
+export const BACKLINKS_COMPLEX_FILTER_FIELDS = [
+    "url_from",
+    "anchor",
+    "link_nofollow",
+    "links_external",
+    "link_type",
+    "url_to",
+    "check",
+    "add"
+] as const;
 
 export const DOMAIN_REGIONS_SORT_FIELDS = [
     "keywords_count",

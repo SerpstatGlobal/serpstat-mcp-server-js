@@ -133,6 +133,7 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 ### Backlink Analysis
 - "Analyze backlinks summary for **domain.com**"
 - "Get anchor text analysis for **domain.com** backlinks"
+- "Get active backlinks for **domain.com** showing linking pages and target URLs"
 
 ## MCP Tools
 
@@ -153,6 +154,7 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 | get_keyword_top          | Get Google's top-100 search results for the analyzed keyword with position, URL, domain and SERP features      | keyword, se, filters, size      |
 | get_backlinks_summary    | Get comprehensive backlinks summary with referring domains, quality metrics, and changes                       | domain, subdomain               |
 | get_anchors              | Get anchor text analysis for backlinks with metrics on referring domains, total backlinks, and nofollow counts | query, searchType, anchor, sort |
+| get_active_backlinks     | Get a list of active backlinks showing linking pages, target pages, link attributes, and discovery dates       | query, searchType, sort, page   |
 | get_related_keywords     | Get semantically related keywords with frequency, CPC, competition, and difficulty data                        | keyword, se, filters, sort      |
 
 ### Search Engines (se parameter)

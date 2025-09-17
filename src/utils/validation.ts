@@ -54,6 +54,8 @@ import {
     ANCHORS_COMPLEX_FILTER_FIELDS,
     COMPLEX_FILTER_COMPARE_TYPES,
     ADDITIONAL_FILTERS,
+    BACKLINKS_SORT_FIELDS,
+    BACKLINKS_COMPLEX_FILTER_FIELDS,
 } from './constants.js';
 
 const searchEngineSchema = z.enum(SEARCH_ENGINES);
@@ -514,3 +516,48 @@ export const anchorsSchema = z.object({
 });
 
 export type AnchorsParams = z.infer<typeof anchorsSchema>;
+
+const backlinksComplexFilterItemSchema = z.union([
+    z.object({
+        field: z.enum(BACKLINKS_COMPLEX_FILTER_FIELDS),
+        compareType: z.enum(COMPLEX_FILTER_COMPARE_TYPES),
+        value: z.array(z.union([z.number().int(), z.string()]))
+    }),
+    z.object({
+        additional_filters: z.enum(ADDITIONAL_FILTERS)
+    })
+]);
+
+export const getActiveBacklinksSchema = z.object({
+    query: z.string(),
+    searchType: z.enum(SEARCH_TYPES_URL).default("domain"),
+    sort: z.enum(BACKLINKS_SORT_FIELDS).default("check").optional(),
+    order: sortOrderSchema.optional(),
+    linkPerDomain: z.number().int().min(1).max(1).optional(),
+    complexFilter: z.array(z.array(backlinksComplexFilterItemSchema)).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).optional()
+}).strict().refine((data) => {
+    if (data.searchType === 'url' || data.searchType === 'part_url') {
+        const urlPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(\/.*)?\??.*$/;
+        if (data.query.startsWith('http://') || data.query.startsWith('https://')) {
+            try {
+                new URL(data.query);
+                return true;
+            } catch {
+                return false;
+            }
+        } else {
+            return urlPattern.test(data.query);
+        }
+    } else {
+        return data.query.length >= MIN_DOMAIN_LENGTH &&
+               data.query.length <= MAX_DOMAIN_LENGTH &&
+               new RegExp(DOMAIN_NAME_REGEX).test(data.query);
+    }
+}, {
+    message: "Invalid query format for the specified search type",
+    path: ["query"]
+});
+
+export type GetActiveBacklinksParams = z.infer<typeof getActiveBacklinksSchema>;

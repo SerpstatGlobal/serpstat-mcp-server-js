@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema } from '../../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -251,6 +251,224 @@ describe('BacklinksService', () => {
                 order: 'desc'
             };
             expect(() => anchorsSchema.parse(paramsWithOptional)).not.toThrow();
+        });
+    });
+
+    describe('getActiveBacklinks', () => {
+        it('should validate correct domain parameters', () => {
+            const validParams: GetActiveBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 100
+            };
+            expect(() => getActiveBacklinksSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should validate correct URL parameters', () => {
+            const validParams: GetActiveBacklinksParams = {
+                query: 'serpstat.com/blog/',
+                searchType: 'part_url',
+                size: 10
+            };
+            expect(() => getActiveBacklinksSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should validate correct full URL parameters', () => {
+            const validParams: GetActiveBacklinksParams = {
+                query: 'https://example.com/page',
+                searchType: 'url',
+                size: 50,
+                sort: 'domain_rank',
+                order: 'desc'
+            };
+            expect(() => getActiveBacklinksSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should validate complex filter parameters', () => {
+            const validParams: GetActiveBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                complexFilter: [
+                    [
+                        {
+                            field: 'url_from',
+                            compareType: 'notContains',
+                            value: ['spam']
+                        },
+                        {
+                            field: 'anchor',
+                            compareType: 'contains',
+                            value: ['example']
+                        }
+                    ],
+                    [
+                        {
+                            additional_filters: 'no_subdomains'
+                        }
+                    ]
+                ]
+            };
+            expect(() => getActiveBacklinksSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should fail validation for invalid domain', () => {
+            const invalidParams = {
+                query: 'bad_domain',
+                searchType: 'domain',
+                page: 1,
+                size: 100
+            };
+            expect(() => getActiveBacklinksSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for invalid URL format', () => {
+            const invalidParams = {
+                query: 'not-a-valid-url-at-all',
+                searchType: 'part_url',
+                page: 1,
+                size: 100
+            };
+            expect(() => getActiveBacklinksSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for missing required fields', () => {
+            const invalidParams = {
+                searchType: 'domain'
+            };
+            expect(() => getActiveBacklinksSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for invalid page size', () => {
+            const invalidParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 1500
+            };
+            expect(() => getActiveBacklinksSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for invalid sort field', () => {
+            const invalidParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                sort: 'invalid_field'
+            };
+            expect(() => getActiveBacklinksSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should call getActiveBacklinks and return backlinks data', async () => {
+            const params: GetActiveBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 2
+            };
+            const mockResponse: ActiveBacklinksResponse = {
+                data: [
+                    {
+                        url_from: 'https://www.topicalauthority.digital/',
+                        url_to: 'https://example.com/blog/post',
+                        nofollow: 'follow',
+                        link_type: 'href',
+                        links_ext: 92,
+                        link_text: 'Read More',
+                        first_seen: '2023-07-02',
+                        last_visited: '2024-11-23 21:32:02',
+                        domain_rank: '25'
+                    },
+                    {
+                        url_from: 'https://www.schweiz-navigator.de/',
+                        url_to: 'https://example.com/login/',
+                        nofollow: 'follow',
+                        link_type: 'redirect',
+                        links_ext: 1,
+                        link_text: '',
+                        first_seen: '2022-07-25',
+                        last_visited: '2025-01-30 20:22:03',
+                        domain_rank: '18'
+                    }
+                ],
+                summary_info: {
+                    left_lines: 9999,
+                    page: 1,
+                    count: 2,
+                    total: 62,
+                    sort: 'url_from',
+                    order: 'desc'
+                }
+            };
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockResponse }) as typeof service.makeRequest;
+            const result = await service.getActiveBacklinks(params);
+            expect(result.data).toHaveLength(2);
+            expect(result.data[0].url_from).toBe('https://www.topicalauthority.digital/');
+            expect(result.data[0].link_type).toBe('href');
+            expect(result.data[0].domain_rank).toBe('25');
+            expect(result.summary_info.count).toBe(2);
+            expect(result.summary_info.total).toBe(62);
+            expect(result.summary_info.left_lines).toBe(9999);
+        });
+
+        it('should throw error if no result returned', async () => {
+            const params: GetActiveBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain'
+            };
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({}) as typeof service.makeRequest;
+            await expect(service.getActiveBacklinks(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
+
+        it('should handle optional parameters correctly', () => {
+            const minimalParams: GetActiveBacklinksParams = {
+                query: 'example.com'
+            };
+            expect(() => getActiveBacklinksSchema.parse(minimalParams)).not.toThrow();
+
+            const paramsWithOptional: GetActiveBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain_with_subdomains',
+                page: 2,
+                size: 50,
+                sort: 'check',
+                order: 'desc',
+                linkPerDomain: 1
+            };
+            expect(() => getActiveBacklinksSchema.parse(paramsWithOptional)).not.toThrow();
+        });
+
+        it('should handle all sort fields correctly', () => {
+            const sortFields = ['url_from', 'anchor', 'link_nofollow', 'links_external', 'link_type', 'url_to', 'check', 'add', 'domain_rank'];
+
+            sortFields.forEach(sort => {
+                const params: GetActiveBacklinksParams = {
+                    query: 'example.com',
+                    searchType: 'domain',
+                    sort: sort as any
+                };
+                expect(() => getActiveBacklinksSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should handle all search types correctly', () => {
+            const searchTypes = ['domain', 'domain_with_subdomains', 'url', 'part_url'];
+
+            searchTypes.forEach(searchType => {
+                let query = 'example.com';
+                if (searchType === 'url') {
+                    query = 'https://example.com/page';
+                } else if (searchType === 'part_url') {
+                    query = 'example.com/page';
+                }
+
+                const params: GetActiveBacklinksParams = {
+                    query,
+                    searchType: searchType as any
+                };
+                expect(() => getActiveBacklinksSchema.parse(params)).not.toThrow();
+            });
         });
     });
 });

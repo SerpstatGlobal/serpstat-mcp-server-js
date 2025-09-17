@@ -457,3 +457,29 @@ export interface AnchorsResponse {
     data: AnchorData[];
     summary_info: AnchorsSummaryInfo;
 }
+
+export interface ActiveBacklinkData {
+    url_from: string;
+    url_to: string;
+    nofollow: string;
+    link_type: "href" | "image" | "redirect" | "frame" | "rss" | "alternate" | "form" | "canonical";
+    links_ext: number;
+    link_text: string;
+    first_seen: string;
+    last_visited: string;
+    domain_rank: string;
+}
+
+export interface ActiveBacklinksSummaryInfo {
+    left_lines: number;
+    page: number;
+    count: number;
+    total: number;
+    sort: string;
+    order: "asc" | "desc";
+}
+
+export interface ActiveBacklinksResponse {
+    data: ActiveBacklinkData[];
+    summary_info: ActiveBacklinksSummaryInfo;
+}
