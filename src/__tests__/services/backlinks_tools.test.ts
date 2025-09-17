@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema } from '../../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -468,6 +468,202 @@ describe('BacklinksService', () => {
                     searchType: searchType as any
                 };
                 expect(() => getActiveBacklinksSchema.parse(params)).not.toThrow();
+            });
+        });
+    });
+
+    describe('getReferringDomains', () => {
+        it('should validate correct domain parameters', () => {
+            const validParams: GetReferringDomainsParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 100
+            };
+            expect(() => getReferringDomainsSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should validate domain with subdomains parameters', () => {
+            const validParams: GetReferringDomainsParams = {
+                query: 'serpstat.com',
+                searchType: 'domain_with_subdomains',
+                size: 10
+            };
+            expect(() => getReferringDomainsSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should validate complex filter parameters', () => {
+            const validParams: GetReferringDomainsParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                complexFilter: [
+                    [
+                        {
+                            field: 'domain_from',
+                            compareType: 'contains',
+                            value: ['.com']
+                        },
+                        {
+                            field: 'domain_rank',
+                            compareType: 'gte',
+                            value: [1]
+                        }
+                    ],
+                    [
+                        {
+                            additional_filters: 'no_subdomains'
+                        }
+                    ]
+                ]
+            };
+            expect(() => getReferringDomainsSchema.parse(validParams)).not.toThrow();
+        });
+
+        it('should fail validation for invalid domain', () => {
+            const invalidParams = {
+                query: 'bad_domain',
+                searchType: 'domain',
+                page: 1,
+                size: 100
+            };
+            expect(() => getReferringDomainsSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for missing required fields', () => {
+            const invalidParams = {
+                searchType: 'domain'
+            };
+            expect(() => getReferringDomainsSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for invalid page size', () => {
+            const invalidParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 1500
+            };
+            expect(() => getReferringDomainsSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should fail validation for invalid sort field', () => {
+            const invalidParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                sort: 'invalid_field'
+            };
+            expect(() => getReferringDomainsSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should call getReferringDomains and return referring domains data', async () => {
+            const params: GetReferringDomainsParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                page: 1,
+                size: 2
+            };
+            const mockResponse: ReferringDomainsResponse = {
+                data: [
+                    {
+                        domain_from: 'elsner.com',
+                        ref_pages: '2',
+                        domainRank: '47'
+                    },
+                    {
+                        domain_from: 'telnyx.com',
+                        ref_pages: '3',
+                        domainRank: '46'
+                    }
+                ],
+                summary_info: {
+                    left_lines: 9999,
+                    page: 1,
+                    count: 2,
+                    total: 26,
+                    sort: 'domain_rank',
+                    order: 'desc'
+                }
+            };
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockResponse }) as typeof service.makeRequest;
+            const result = await service.getReferringDomains(params);
+            expect(result.data).toHaveLength(2);
+            expect(result.data[0].domain_from).toBe('elsner.com');
+            expect(result.data[0].ref_pages).toBe('2');
+            expect(result.data[0].domainRank).toBe('47');
+            expect(result.summary_info.count).toBe(2);
+            expect(result.summary_info.total).toBe(26);
+            expect(result.summary_info.left_lines).toBe(9999);
+        });
+
+        it('should throw error if no result returned', async () => {
+            const params: GetReferringDomainsParams = {
+                query: 'example.com',
+                searchType: 'domain'
+            };
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({}) as typeof service.makeRequest;
+            await expect(service.getReferringDomains(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
+
+        it('should handle optional parameters correctly', () => {
+            const minimalParams: GetReferringDomainsParams = {
+                query: 'example.com'
+            };
+            expect(() => getReferringDomainsSchema.parse(minimalParams)).not.toThrow();
+
+            const paramsWithOptional: GetReferringDomainsParams = {
+                query: 'example.com',
+                searchType: 'domain_with_subdomains',
+                page: 2,
+                size: 50,
+                sort: 'domain_rank',
+                order: 'desc'
+            };
+            expect(() => getReferringDomainsSchema.parse(paramsWithOptional)).not.toThrow();
+        });
+
+        it('should handle all sort fields correctly', () => {
+            const sortFields = ['domain_links', 'domain_from', 'domain_rank', 'check'];
+
+            sortFields.forEach(sort => {
+                const params: GetReferringDomainsParams = {
+                    query: 'example.com',
+                    searchType: 'domain',
+                    sort: sort as any
+                };
+                expect(() => getReferringDomainsSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should handle all search types correctly', () => {
+            const searchTypes = ['domain', 'domain_with_subdomains'];
+
+            searchTypes.forEach(searchType => {
+                const params: GetReferringDomainsParams = {
+                    query: 'example.com',
+                    searchType: searchType as any
+                };
+                expect(() => getReferringDomainsSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should validate additional filters correctly', () => {
+            const additionalFilters = ['no_subdomains', 'only_subdomains', 'only_hosts', 'last_week'];
+
+            additionalFilters.forEach(filter => {
+                const params: GetReferringDomainsParams = {
+                    query: 'example.com',
+                    searchType: 'domain',
+                    complexFilter: [
+                        [
+                            {
+                                additional_filters: filter as any
+                            }
+                        ]
+                    ]
+                };
+                expect(() => getReferringDomainsSchema.parse(params)).not.toThrow();
             });
         });
     });

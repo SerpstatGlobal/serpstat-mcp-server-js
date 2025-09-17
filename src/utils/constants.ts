@@ -34,7 +34,7 @@ export const COMPLEX_FILTER_COMPARE_TYPES = [
     "endsWith"
 ] as const;
 
-export const ADDITIONAL_FILTERS = ["no_subdomains", "only_main_page", "last_week"] as const;
+export const ADDITIONAL_FILTERS = ["no_subdomains", "only_main_page", "last_week", "only_subdomains", "only_hosts"] as const;
 
 export const BACKLINKS_SORT_FIELDS = [
     "url_from",
@@ -57,6 +57,19 @@ export const BACKLINKS_COMPLEX_FILTER_FIELDS = [
     "url_to",
     "check",
     "add"
+] as const;
+
+export const REFERRING_DOMAINS_SORT_FIELDS = [
+    "domain_links",
+    "domain_from",
+    "domain_rank",
+    "check"
+] as const;
+
+export const REFERRING_DOMAINS_COMPLEX_FILTER_FIELDS = [
+    "domain_links",
+    "domain_from",
+    "domain_rank"
 ] as const;
 
 export const DOMAIN_REGIONS_SORT_FIELDS = [

@@ -1,10 +1,10 @@
 import { BaseHandler } from './base.js';
 import { BacklinksService } from '../services/backlinks_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams } from '../utils/validation.js';
+import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams, getReferringDomainsSchema, GetReferringDomainsParams } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
-import { SEARCH_TYPES, SEARCH_TYPES_URL, DOMAIN_NAME_REGEX, ANCHORS_SORT_FIELDS, BACKLINKS_SORT_FIELDS, SORT_ORDER, DEFAULT_PAGE_SIZE, MIN_PAGE, MAX_PAGE_SIZE } from '../utils/constants.js';
+import { SEARCH_TYPES, SEARCH_TYPES_URL, DOMAIN_NAME_REGEX, ANCHORS_SORT_FIELDS, BACKLINKS_SORT_FIELDS, REFERRING_DOMAINS_SORT_FIELDS, SORT_ORDER, DEFAULT_PAGE_SIZE, MIN_PAGE, MAX_PAGE_SIZE } from '../utils/constants.js';
 
 export class BacklinksSummaryHandler extends BaseHandler {
     private backlinksService: BacklinksService;
@@ -226,6 +226,84 @@ export class GetActiveBacklinksHandler extends BaseHandler {
         } catch (error) {
             if (error instanceof z.ZodError) {
                 return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetReferringDomainsHandler extends BaseHandler {
+    private backlinksService: BacklinksService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.backlinksService = new BacklinksService(config);
+    }
+
+    getName(): string {
+        return 'get_referring_domains';
+    }
+
+    getDescription(): string {
+        return 'Get a list of referring domains using Serpstat API. Returns referring domains that link to the analyzed site with domain rank metrics, referring pages count, and filtering options for comprehensive backlink analysis.';
+    }
+
+    getInputSchema(): object {
+        return {
+            type: "object",
+            properties: {
+                query: {
+                    type: "string",
+                    pattern: DOMAIN_NAME_REGEX,
+                    minLength: 4,
+                    maxLength: 253,
+                    description: "Domain to analyze for referring domains"
+                },
+                searchType: {
+                    type: "string",
+                    enum: SEARCH_TYPES,
+                    default: "domain",
+                    description: "Type of search query (domain, domain_with_subdomains)"
+                },
+                sort: {
+                    type: "string",
+                    enum: REFERRING_DOMAINS_SORT_FIELDS,
+                    default: "check",
+                    description: "Sort results by field (domain_links, domain_from, domain_rank, check)"
+                },
+                order: {
+                    type: "string",
+                    enum: SORT_ORDER,
+                    description: "Sort order (asc, desc)"
+                },
+                page: {
+                    type: "integer",
+                    minimum: MIN_PAGE,
+                    default: 1,
+                    description: "Page number for pagination"
+                },
+                size: {
+                    type: "integer",
+                    minimum: 1,
+                    maximum: MAX_PAGE_SIZE,
+                    default: DEFAULT_PAGE_SIZE,
+                    description: "Number of results per page"
+                }
+            },
+            required: ["query"],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = getReferringDomainsSchema.parse(call.arguments) as GetReferringDomainsParams;
+            const result = await this.backlinksService.getReferringDomains(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error('Invalid parameters: ' + error.errors.map(e => e.path.join('.') + ': ' + e.message).join(', ')));
             }
             return this.createErrorResponse(error as Error);
         }

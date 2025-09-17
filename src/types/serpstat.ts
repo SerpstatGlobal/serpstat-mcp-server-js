@@ -483,3 +483,23 @@ export interface ActiveBacklinksResponse {
     data: ActiveBacklinkData[];
     summary_info: ActiveBacklinksSummaryInfo;
 }
+
+export interface ReferringDomainData {
+    domain_from: string;
+    ref_pages: string;
+    domainRank: string;
+}
+
+export interface ReferringDomainsSummaryInfo {
+    left_lines: number;
+    page: number;
+    count: number;
+    total: number;
+    sort: string;
+    order: "asc" | "desc";
+}
+
+export interface ReferringDomainsResponse {
+    data: ReferringDomainData[];
+    summary_info: ReferringDomainsSummaryInfo;
+}

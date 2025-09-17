@@ -56,6 +56,8 @@ import {
     ADDITIONAL_FILTERS,
     BACKLINKS_SORT_FIELDS,
     BACKLINKS_COMPLEX_FILTER_FIELDS,
+    REFERRING_DOMAINS_SORT_FIELDS,
+    REFERRING_DOMAINS_COMPLEX_FILTER_FIELDS,
 } from './constants.js';
 
 const searchEngineSchema = z.enum(SEARCH_ENGINES);
@@ -561,3 +563,29 @@ export const getActiveBacklinksSchema = z.object({
 });
 
 export type GetActiveBacklinksParams = z.infer<typeof getActiveBacklinksSchema>;
+
+const referringDomainsComplexFilterItemSchema = z.union([
+    z.object({
+        field: z.enum(REFERRING_DOMAINS_COMPLEX_FILTER_FIELDS),
+        compareType: z.enum(COMPLEX_FILTER_COMPARE_TYPES),
+        value: z.array(z.union([z.number().int(), z.string()]))
+    }),
+    z.object({
+        additional_filters: z.enum(ADDITIONAL_FILTERS)
+    })
+]);
+
+export const getReferringDomainsSchema = z.object({
+    query: z.string()
+        .min(MIN_DOMAIN_LENGTH)
+        .max(MAX_DOMAIN_LENGTH)
+        .regex(new RegExp(DOMAIN_NAME_REGEX)),
+    searchType: z.enum(SEARCH_TYPES).default("domain"),
+    sort: z.enum(REFERRING_DOMAINS_SORT_FIELDS).default("check").optional(),
+    order: sortOrderSchema.optional(),
+    complexFilter: z.array(z.array(referringDomainsComplexFilterItemSchema)).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).optional()
+}).strict();
+
+export type GetReferringDomainsParams = z.infer<typeof getReferringDomainsSchema>;
