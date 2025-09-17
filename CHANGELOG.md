@@ -1,7 +1,6 @@
 # Changelog
 
-## [Unreleased]
-### Added
+## [1.0.5] - 2025-09-18
 - Added `get_active_backlinks` method to retrieve a list of active backlinks showing linking pages, target pages, link attributes, link types, external links count, anchor text, and discovery dates for domain or URL analysis
 - Added `get_referring_domains` method to retrieve a list of referring domains that link to the analyzed site with domain rank metrics, referring pages count, and filtering options for comprehensive backlink analysis
 - Added `get_lost_backlinks` method to retrieve a list of lost backlinks showing linking pages, target pages, link attributes, and deletion dates for domain or URL analysis

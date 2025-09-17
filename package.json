@@ -1,6 +1,6 @@
 {
   "name": "@serpstat/serpstat-mcp-server",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Serpstat MCP Server for Serpstat API. Allows you to automate your daily SEO tasks and get results in a few seconds.",
   "license": "MIT",
   "main": "index.js",
