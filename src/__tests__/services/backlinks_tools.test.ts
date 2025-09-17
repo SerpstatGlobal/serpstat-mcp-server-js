@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, GetLostBacklinksParams, getLostBacklinksSchema } from '../../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -192,33 +192,34 @@ describe('BacklinksService', () => {
             const mockResponse: AnchorsResponse = {
                 data: [
                     {
-                        anchor: 'example link',
-                        dofollow_backlinks: 50,
-                        nofollow_backlinks: 25,
-                        total_backlinks: 75,
-                        referring_domains: 10
+                        anchor: "www.serpstat.com",
+                        refDomains: 10,
+                        total: 11,
+                        noFollow: 1
                     },
                     {
-                        anchor: 'another link',
-                        dofollow_backlinks: 30,
-                        nofollow_backlinks: 15,
-                        total_backlinks: 45,
-                        referring_domains: 8
+                        anchor: "serpstat.com/ru",
+                        refDomains: 4,
+                        total: 6,
+                        noFollow: 3
                     }
+
                 ],
                 summary_info: {
                     left_lines: 9999,
+                    page: 1,
                     count: 2,
-                    sort: null,
-                    order: null
+                    total: 2,
+                    sort: "anchor",
+                    order: "desc"
                 }
             };
             // @ts-expect-error
             service.makeRequest = jest.fn().mockResolvedValue({ result: mockResponse }) as typeof service.makeRequest;
             const result = await service.getAnchors(params);
             expect(result.data).toHaveLength(2);
-            expect(result.data[0].anchor).toBe('example link');
-            expect(result.data[0].total_backlinks).toBe(75);
+            expect(result.data[0].anchor).toBe('www.serpstat.com');
+            expect(result.data[0].total).toBe(11);
             expect(result.summary_info.count).toBe(2);
             expect(result.summary_info.left_lines).toBe(9999);
         });
@@ -423,7 +424,8 @@ describe('BacklinksService', () => {
 
         it('should handle optional parameters correctly', () => {
             const minimalParams: GetActiveBacklinksParams = {
-                query: 'example.com'
+                query: 'example.com',
+                searchType: 'domain'
             };
             expect(() => getActiveBacklinksSchema.parse(minimalParams)).not.toThrow();
 
@@ -565,12 +567,12 @@ describe('BacklinksService', () => {
             const mockResponse: ReferringDomainsResponse = {
                 data: [
                     {
-                        domain_from: 'elsner.com',
+                        domain_from: 'baba.com',
                         ref_pages: '2',
                         domainRank: '47'
                     },
                     {
-                        domain_from: 'telnyx.com',
+                        domain_from: 'luba.com',
                         ref_pages: '3',
                         domainRank: '46'
                     }
@@ -588,7 +590,7 @@ describe('BacklinksService', () => {
             service.makeRequest = jest.fn().mockResolvedValue({ result: mockResponse }) as typeof service.makeRequest;
             const result = await service.getReferringDomains(params);
             expect(result.data).toHaveLength(2);
-            expect(result.data[0].domain_from).toBe('elsner.com');
+            expect(result.data[0].domain_from).toBe('baba.com');
             expect(result.data[0].ref_pages).toBe('2');
             expect(result.data[0].domainRank).toBe('47');
             expect(result.summary_info.count).toBe(2);
@@ -608,7 +610,8 @@ describe('BacklinksService', () => {
 
         it('should handle optional parameters correctly', () => {
             const minimalParams: GetReferringDomainsParams = {
-                query: 'example.com'
+                query: 'example.com',
+                searchType: 'domain'
             };
             expect(() => getReferringDomainsSchema.parse(minimalParams)).not.toThrow();
 

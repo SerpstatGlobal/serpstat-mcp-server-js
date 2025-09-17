@@ -4,7 +4,8 @@ export const SEARCH_TYPES = ["domain", "domain_with_subdomains"] as const;
 
 export const SEARCH_TYPES_URL = ["url", "domain", "part_url", "domain_with_subdomains"] as const;
 
-export const ANCHORS_SORT_FIELDS = [
+// Base fields for anchors (используется как для сортировки, так и для сложных фильтров)
+export const ANCHORS_FIELDS = [
     "total",
     "refDomains",
     "nofollow",
@@ -12,13 +13,9 @@ export const ANCHORS_SORT_FIELDS = [
     "lastupdate"
 ] as const;
 
-export const ANCHORS_COMPLEX_FILTER_FIELDS = [
-    "total",
-    "refDomains",
-    "nofollow",
-    "anchor",
-    "lastupdate"
-] as const;
+// Алиасы для обратной совместимости и семантической ясности
+export const ANCHORS_SORT_FIELDS = ANCHORS_FIELDS;
+export const ANCHORS_COMPLEX_FILTER_FIELDS = ANCHORS_FIELDS;
 
 export const COMPLEX_FILTER_COMPARE_TYPES = [
     "gt",
@@ -36,63 +33,66 @@ export const COMPLEX_FILTER_COMPARE_TYPES = [
 
 export const ADDITIONAL_FILTERS = ["no_subdomains", "only_main_page", "last_week", "only_subdomains", "only_hosts"] as const;
 
-export const BACKLINKS_SORT_FIELDS = [
+// Базовые поля для backlinks
+export const BACKLINKS_BASE_FIELDS = [
     "url_from",
     "anchor",
     "link_nofollow",
     "links_external",
     "link_type",
     "url_to",
-    "check",
+    "check"
+] as const;
+
+// Поля для сортировки backlinks (включает дополнительные поля)
+export const BACKLINKS_SORT_FIELDS = [
+    ...BACKLINKS_BASE_FIELDS,
     "add",
     "domain_rank"
 ] as const;
 
+// Поля для сложных фильтров backlinks (только базовые + add)
 export const BACKLINKS_COMPLEX_FILTER_FIELDS = [
-    "url_from",
-    "anchor",
-    "link_nofollow",
-    "links_external",
-    "link_type",
-    "url_to",
-    "check",
+    ...BACKLINKS_BASE_FIELDS,
     "add"
 ] as const;
 
-export const REFERRING_DOMAINS_SORT_FIELDS = [
-    "domain_links",
-    "domain_from",
-    "domain_rank",
-    "check"
-] as const;
-
-export const REFERRING_DOMAINS_COMPLEX_FILTER_FIELDS = [
+// Базовые поля для referring domains (используется как для сортировки, так и для сложных фильтров)
+export const REFERRING_DOMAINS_FIELDS = [
     "domain_links",
     "domain_from",
     "domain_rank"
 ] as const;
 
-export const LOST_BACKLINKS_SORT_FIELDS = [
+// Поля для сортировки referring domains (включает дополнительное поле check)
+export const REFERRING_DOMAINS_SORT_FIELDS = [
+    ...REFERRING_DOMAINS_FIELDS,
+    "check"
+] as const;
+
+// Поля для сложных фильтров referring domains (только базовые)
+export const REFERRING_DOMAINS_COMPLEX_FILTER_FIELDS = REFERRING_DOMAINS_FIELDS;
+
+// Базовые поля для lost backlinks
+export const LOST_BACKLINKS_BASE_FIELDS = [
     "url_from",
     "anchor",
     "link_nofollow",
     "links_external",
     "link_type",
     "url_to",
-    "check",
+    "check"
+] as const;
+
+// Lost backlinks поля (используется как для сортировки, так и для сложных фильтров)
+export const LOST_BACKLINKS_FIELDS = [
+    ...LOST_BACKLINKS_BASE_FIELDS,
     "date_del"
 ] as const;
 
-export const LOST_BACKLINKS_COMPLEX_FILTER_FIELDS = [
-    "url_from",
-    "anchor",
-    "link_nofollow",
-    "links_external",
-    "link_type",
-    "url_to",
-    "check",
-    "date_del"
-] as const;
+// Алиасы для обратной совместимости
+export const LOST_BACKLINKS_SORT_FIELDS = LOST_BACKLINKS_FIELDS;
+export const LOST_BACKLINKS_COMPLEX_FILTER_FIELDS = LOST_BACKLINKS_FIELDS;
 
 export const DOMAIN_REGIONS_SORT_FIELDS = [
     "keywords_count",
@@ -108,6 +108,17 @@ export const KEYWORD_INTENTS = [
 ] as const;
 
 export const LOG_LEVELS = ["error", "warn", "info", "debug"] as const;
+
+export const LINK_TYPES = [
+    "href",
+    "image",
+    "redirect",
+    "frame",
+    "rss",
+    "alternate",
+    "form",
+    "canonical"
+] as const;
 
 export const MAIN_SEARCH_ENGINES = [
     'g_af', 'g_al', 'g_dz', 'g_as', 'g_ad', 'g_ao', 'g_ai', 'g_ag', 'g_ar', 'g_am', 'g_aw', 'g_au', 'g_at', 'g_az',
