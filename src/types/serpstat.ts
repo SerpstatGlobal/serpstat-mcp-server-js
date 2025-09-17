@@ -503,3 +503,30 @@ export interface ReferringDomainsResponse {
     data: ReferringDomainData[];
     summary_info: ReferringDomainsSummaryInfo;
 }
+
+export interface LostBacklinkData {
+    url_from: string;
+    url_to: string;
+    anchor: string;
+    date_add: string;
+    date_del: string;
+    check: string;
+    link_nofollow: string;
+    link_external: string;
+    link_type: string;
+    domain_rank: number;
+}
+
+export interface LostBacklinksSummaryInfo {
+    left_lines: number;
+    page: number;
+    count: number;
+    total: number;
+    sort: string;
+    order: "asc" | "desc";
+}
+
+export interface LostBacklinksResponse {
+    data: LostBacklinkData[];
+    summary_info: LostBacklinksSummaryInfo;
+}

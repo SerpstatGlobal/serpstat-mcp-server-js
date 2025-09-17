@@ -58,6 +58,8 @@ import {
     BACKLINKS_COMPLEX_FILTER_FIELDS,
     REFERRING_DOMAINS_SORT_FIELDS,
     REFERRING_DOMAINS_COMPLEX_FILTER_FIELDS,
+    LOST_BACKLINKS_SORT_FIELDS,
+    LOST_BACKLINKS_COMPLEX_FILTER_FIELDS,
 } from './constants.js';
 
 const searchEngineSchema = z.enum(SEARCH_ENGINES);
@@ -589,3 +591,35 @@ export const getReferringDomainsSchema = z.object({
 }).strict();
 
 export type GetReferringDomainsParams = z.infer<typeof getReferringDomainsSchema>;
+
+// Lost backlinks validation schema
+const lostBacklinksComplexFilterItemSchema = z.object({
+    name: z.enum(LOST_BACKLINKS_COMPLEX_FILTER_FIELDS),
+    operator: z.enum(COMPLEX_FILTER_COMPARE_TYPES),
+    value: z.union([z.string(), z.number(), z.array(z.union([z.string(), z.number()]))])
+});
+
+export const getLostBacklinksSchema = z.object({
+    query: z.string()
+        .min(MIN_DOMAIN_LENGTH)
+        .max(MAX_DOMAIN_LENGTH),
+    searchType: z.enum(SEARCH_TYPES_URL).default("domain"),
+    sort: z.enum(LOST_BACKLINKS_SORT_FIELDS).default("check").optional(),
+    order: sortOrderSchema.optional(),
+    complexFilter: z.array(z.array(lostBacklinksComplexFilterItemSchema)).optional(),
+    additionalFilters: z.array(z.enum(ADDITIONAL_FILTERS)).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).optional()
+}).strict().refine((data) => {
+    if (data.searchType === "url" || data.searchType === "part_url") {
+        // For URL type searches, allow any valid URL
+        return true;
+    } else {
+        // For domain searches, validate domain format
+        return new RegExp(DOMAIN_NAME_REGEX).test(data.query);
+    }
+}, {
+    message: "Invalid domain format for domain search type"
+});
+
+export type GetLostBacklinksParams = z.infer<typeof getLostBacklinksSchema>;

@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams } from '../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, SerpstatRequest } from '../types/serpstat.js';
+import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams } from '../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class BacklinksService extends BaseService {
@@ -89,6 +89,36 @@ export class BacklinksService extends BaseService {
         }
 
         logger.info('Successfully retrieved referring domains', {
+            leftLines: response.result.summary_info.left_lines,
+            count: response.result.summary_info.count,
+            total: response.result.summary_info.total
+        });
+
+        return response.result;
+    }
+
+    async getLostBacklinks(params: GetLostBacklinksParams): Promise<LostBacklinksResponse> {
+        logger.info('Getting lost backlinks', {
+            query: params.query,
+            searchType: params.searchType,
+            sort: params.sort,
+            page: params.page,
+            size: params.size
+        });
+
+        const request: SerpstatRequest = {
+            id: `lost_backlinks_${Date.now()}`,
+            method: 'SerpstatBacklinksProcedure.getLostBacklinks',
+            params,
+        };
+
+        const response = await this.makeRequest<LostBacklinksResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved lost backlinks', {
             leftLines: response.result.summary_info.left_lines,
             count: response.result.summary_info.count,
             total: response.result.summary_info.total

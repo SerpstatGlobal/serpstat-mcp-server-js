@@ -72,6 +72,28 @@ export const REFERRING_DOMAINS_COMPLEX_FILTER_FIELDS = [
     "domain_rank"
 ] as const;
 
+export const LOST_BACKLINKS_SORT_FIELDS = [
+    "url_from",
+    "anchor",
+    "link_nofollow",
+    "links_external",
+    "link_type",
+    "url_to",
+    "check",
+    "date_del"
+] as const;
+
+export const LOST_BACKLINKS_COMPLEX_FILTER_FIELDS = [
+    "url_from",
+    "anchor",
+    "link_nofollow",
+    "links_external",
+    "link_type",
+    "url_to",
+    "check",
+    "date_del"
+] as const;
+
 export const DOMAIN_REGIONS_SORT_FIELDS = [
     "keywords_count",
     "country_name_en",

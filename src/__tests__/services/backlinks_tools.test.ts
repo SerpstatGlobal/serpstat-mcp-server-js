@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema } from '../../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, GetLostBacklinksParams, getLostBacklinksSchema } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -666,5 +666,257 @@ describe('BacklinksService', () => {
                 expect(() => getReferringDomainsSchema.parse(params)).not.toThrow();
             });
         });
+    });
+
+    describe('getLostBacklinks method', () => {
+        const mockLostBacklinksResponse = {
+            data: [
+                {
+                    url_from: "https://example.com/page1",
+                    url_to: "https://target.com/product",
+                    anchor: "Target Product",
+                    date_add: "2023-10-15",
+                    date_del: "2024-01-15",
+                    check: "2024-01-15",
+                    link_nofollow: "false",
+                    link_external: "10",
+                    link_type: "text",
+                    domain_rank: 45
+                },
+                {
+                    url_from: "https://blog.example.com/article",
+                    url_to: "https://target.com/",
+                    anchor: "Target Website",
+                    date_add: "2023-09-20",
+                    date_del: "2024-01-10",
+                    check: "2024-01-10",
+                    link_nofollow: "true",
+                    link_external: "25",
+                    link_type: "image",
+                    domain_rank: 38
+                }
+            ],
+            summary_info: {
+                left_lines: 150,
+                page: 1,
+                count: 2,
+                total: 152,
+                sort: "check",
+                order: "desc"
+            }
+        };
+
+        it('should get lost backlinks successfully with minimal params', async () => {
+            const params = {
+                query: 'target.com',
+                searchType: 'domain' as const
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockLostBacklinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getLostBacklinks(params);
+
+            expect(result).toEqual(mockLostBacklinksResponse);
+        });
+
+        it('should handle all parameters correctly', async () => {
+            const params = {
+                query: 'target.com',
+                searchType: 'domain_with_subdomains' as const,
+                sort: 'date_del' as const,
+                order: 'asc' as const,
+                complexFilter: [
+                    [
+                        {
+                            name: 'link_nofollow' as const,
+                            operator: 'eq' as const,
+                            value: 'false'
+                        }
+                    ]
+                ],
+                additionalFilters: ['no_subdomains' as const],
+                page: 2,
+                size: 50
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockLostBacklinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getLostBacklinks(params);
+
+            expect(result).toEqual(mockLostBacklinksResponse);
+        });
+
+        it('should handle URL search type', async () => {
+            const params = {
+                query: 'https://target.com/specific-page',
+                searchType: 'url' as const,
+                sort: 'url_from' as const
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockLostBacklinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getLostBacklinks(params);
+
+            expect(result).toEqual(mockLostBacklinksResponse);
+        });
+
+        it('should handle complex filters correctly', async () => {
+            const params = {
+                query: 'target.com',
+                searchType: 'domain' as const,
+                complexFilter: [
+                    [
+                        {
+                            name: 'links_external' as const,
+                            operator: 'gte' as const,
+                            value: 5
+                        },
+                        {
+                            name: 'anchor' as const,
+                            operator: 'contains' as const,
+                            value: 'product'
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockLostBacklinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getLostBacklinks(params);
+
+            expect(result).toEqual(mockLostBacklinksResponse);
+        });
+
+        it('should throw error when API returns no result', async () => {
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({}) as typeof service.makeRequest;
+
+            const params = {
+                query: 'target.com',
+                searchType: 'domain' as const
+            };
+
+            await expect(service.getLostBacklinks(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
+    });
+});
+
+// Lost Backlinks Schema Validation Tests
+describe('getLostBacklinksSchema validation', () => {
+    it('should validate required parameters', () => {
+        const validParams = {
+            query: 'example.com'
+        };
+        expect(() => getLostBacklinksSchema.parse(validParams)).not.toThrow();
+    });
+
+    it('should reject invalid query formats for domain search', () => {
+        const invalidParams = {
+            query: 'invalid-domain',
+            searchType: 'domain'
+        };
+        expect(() => getLostBacklinksSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should accept URLs for URL search types', () => {
+        const validParams = {
+            query: 'https://example.com/page',
+            searchType: 'url'
+        };
+        expect(() => getLostBacklinksSchema.parse(validParams)).not.toThrow();
+    });
+
+    it('should validate optional parameters correctly', () => {
+        const paramsWithOptional = {
+            query: 'example.com',
+            searchType: 'domain_with_subdomains' as const,
+            sort: 'date_del' as const,
+            order: 'desc' as const
+        };
+        expect(() => getLostBacklinksSchema.parse(paramsWithOptional)).not.toThrow();
+    });
+
+    it('should handle all sort fields correctly', () => {
+        const sortFields = ['url_from', 'anchor', 'link_nofollow', 'links_external', 'link_type', 'url_to', 'check', 'date_del'];
+
+        sortFields.forEach(sort => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const,
+                sort: sort as any
+            };
+            expect(() => getLostBacklinksSchema.parse(params)).not.toThrow();
+        });
+    });
+
+    it('should handle all search types correctly', () => {
+        const searchTypes = ['domain', 'domain_with_subdomains', 'url', 'part_url'];
+
+        searchTypes.forEach(searchType => {
+            const params = {
+                query: searchType === 'url' || searchType === 'part_url' ? 'https://example.com' : 'example.com',
+                searchType: searchType as any
+            };
+            expect(() => getLostBacklinksSchema.parse(params)).not.toThrow();
+        });
+    });
+
+    it('should validate complex filter structure correctly', () => {
+        const params = {
+            query: 'example.com',
+            searchType: 'domain' as const,
+            complexFilter: [
+                [
+                    {
+                        name: 'link_nofollow' as const,
+                        operator: 'eq' as const,
+                        value: 'false'
+                    },
+                    {
+                        name: 'links_external' as const,
+                        operator: 'gte' as const,
+                        value: 10
+                    }
+                ]
+            ]
+        };
+        expect(() => getLostBacklinksSchema.parse(params)).not.toThrow();
+    });
+
+    it('should validate additional filters correctly', () => {
+        const additionalFilters = ['no_subdomains', 'only_subdomains', 'only_hosts', 'last_week', 'only_main_page'];
+
+        additionalFilters.forEach(filter => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const,
+                additionalFilters: [filter as any]
+            };
+            expect(() => getLostBacklinksSchema.parse(params)).not.toThrow();
+        });
+    });
+
+    it('should validate pagination parameters', () => {
+        const params = {
+            query: 'example.com',
+            searchType: 'domain' as const,
+            page: 3,
+            size: 200
+        };
+        expect(() => getLostBacklinksSchema.parse(params)).not.toThrow();
+    });
+
+    it('should reject invalid pagination parameters', () => {
+        const invalidParams = {
+            query: 'example.com',
+            searchType: 'domain' as const,
+            page: 0, // Invalid: must be >= 1
+            size: 2000 // Invalid: exceeds maximum
+        };
+        expect(() => getLostBacklinksSchema.parse(invalidParams)).toThrow();
     });
 });
