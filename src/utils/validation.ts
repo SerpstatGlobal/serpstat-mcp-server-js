@@ -568,3 +568,11 @@ export const getLostBacklinksSchema = z.object({
 });
 
 export type GetLostBacklinksParams = z.infer<typeof getLostBacklinksSchema>;
+
+// Top anchors validation schema
+export const getTopAnchorsSchema = z.object({
+    query: domainSchema,
+    searchType: z.enum(SEARCH_TYPES).default("domain")
+}).strict();
+
+export type GetTopAnchorsParams = z.infer<typeof getTopAnchorsSchema>;

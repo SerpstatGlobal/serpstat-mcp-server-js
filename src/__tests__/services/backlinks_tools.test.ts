@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema } from '../../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema, getTopAnchorsSchema, GetTopAnchorsParams } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, TopAnchorsResponse } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -921,5 +921,173 @@ describe('getLostBacklinksSchema validation', () => {
             size: 2000 // Invalid: exceeds maximum
         };
         expect(() => getLostBacklinksSchema.parse(invalidParams)).toThrow();
+    });
+});
+
+// Top Anchors Schema Validation Tests
+describe('getTopAnchorsSchema validation', () => {
+    it('should validate required parameters', () => {
+        const validParams = {
+            query: 'facebook.com'
+        };
+        expect(() => getTopAnchorsSchema.parse(validParams)).not.toThrow();
+    });
+
+    it('should apply default searchType', () => {
+        const params = {
+            query: 'facebook.com'
+        };
+        const parsed = getTopAnchorsSchema.parse(params);
+        expect(parsed.searchType).toBe('domain');
+    });
+
+    it('should validate searchType enum values', () => {
+        const validParams = {
+            query: 'facebook.com',
+            searchType: 'domain_with_subdomains' as const
+        };
+        expect(() => getTopAnchorsSchema.parse(validParams)).not.toThrow();
+    });
+
+    it('should reject invalid searchType values', () => {
+        const invalidParams = {
+            query: 'facebook.com',
+            searchType: 'url' // Not allowed for this method
+        };
+        expect(() => getTopAnchorsSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should reject invalid domain format', () => {
+        const invalidParams = {
+            query: 'invalid-domain',
+            searchType: 'domain'
+        };
+        expect(() => getTopAnchorsSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should reject missing required fields', () => {
+        const invalidParams = {
+            searchType: 'domain'
+        };
+        expect(() => getTopAnchorsSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should reject additional properties', () => {
+        const invalidParams = {
+            query: 'facebook.com',
+            searchType: 'domain',
+            extraProperty: 'not allowed'
+        };
+        expect(() => getTopAnchorsSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should validate domain length constraints', () => {
+        const shortDomain = 'a.b'; // Too short
+        const validDomain = 'facebook.com';
+
+        expect(() => getTopAnchorsSchema.parse({ query: shortDomain })).toThrow();
+        expect(() => getTopAnchorsSchema.parse({ query: validDomain })).not.toThrow();
+    });
+});
+
+describe('BacklinksService - getTopAnchors', () => {
+    let service: BacklinksService;
+    let mockConfig: any;
+
+    beforeEach(() => {
+        mockConfig = {
+            serpstatApiToken: 'test-token',
+            serpstatApiUrl: 'https://api.serpstat.com/v4',
+            logLevel: "error",
+            maxRetries: 1,
+            requestTimeout: 5000,
+        };
+        service = new BacklinksService(mockConfig);
+    });
+
+    describe('getTopAnchors method', () => {
+        const mockTopAnchorsResponse = {
+            data: [
+                {
+                    anchor: "",
+                    backlinks_count: 7914025436,
+                    domains_count: 17592749
+                },
+                {
+                    anchor: "Facebook",
+                    backlinks_count: 3319036490,
+                    domains_count: 10189878
+                },
+                {
+                    anchor: "facebook",
+                    backlinks_count: 434658846,
+                    domains_count: 1099827
+                },
+                {
+                    anchor: "Facebook-f",
+                    backlinks_count: 102491202,
+                    domains_count: 537848
+                },
+                {
+                    anchor: "Share",
+                    backlinks_count: 127086911,
+                    domains_count: 403456
+                }
+            ],
+            summary_info: {
+                sort: "referring_domains",
+                order: "desc",
+                left_lines: 9999887,
+                referring_domains: 33399805,
+                backlinks: 16307137490,
+                unique_anchors: 75739546
+            }
+        };
+
+        it('should get top anchors successfully with minimal params', async () => {
+            const params = {
+                query: 'facebook.com',
+                searchType: 'domain' as const
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockTopAnchorsResponse }) as typeof service.makeRequest;
+
+            const result = await service.getTopAnchors(params);
+
+            expect(result).toEqual(mockTopAnchorsResponse);
+            expect(result.data).toHaveLength(5);
+            expect(result.data[0].anchor).toBe("");
+            expect(result.data[1].anchor).toBe("Facebook");
+        });
+
+        it('should handle domain_with_subdomains search type', async () => {
+            const params = {
+                query: 'facebook.com',
+                searchType: 'domain_with_subdomains' as const
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockTopAnchorsResponse }) as typeof service.makeRequest;
+
+            const result = await service.getTopAnchors(params);
+
+            expect(result).toEqual(mockTopAnchorsResponse);
+            expect(result.summary_info.referring_domains).toBe(33399805);
+            expect(result.summary_info.backlinks).toBe(16307137490);
+            expect(result.summary_info.unique_anchors).toBe(75739546);
+        });
+
+        it('should throw error when API returns no result', async () => {
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({}) as typeof service.makeRequest;
+
+            const params = {
+                query: 'facebook.com',
+                searchType: 'domain' as const
+            };
+
+            await expect(service.getTopAnchors(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
     });
 });

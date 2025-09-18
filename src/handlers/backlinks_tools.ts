@@ -1,7 +1,7 @@
 import { BaseHandler } from './base.js';
 import { BacklinksService } from '../services/backlinks_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams, getReferringDomainsSchema, GetReferringDomainsParams, getLostBacklinksSchema, GetLostBacklinksParams } from '../utils/validation.js';
+import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams, getReferringDomainsSchema, GetReferringDomainsParams, getLostBacklinksSchema, GetLostBacklinksParams, getTopAnchorsSchema, GetTopAnchorsParams } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 import { SEARCH_TYPES, SEARCH_TYPES_URL, DOMAIN_NAME_REGEX, ANCHORS_SORT_FIELDS, BACKLINKS_SORT_FIELDS, REFERRING_DOMAINS_SORT_FIELDS, LOST_BACKLINKS_SORT_FIELDS, SORT_ORDER, DEFAULT_PAGE_SIZE, MIN_PAGE, MAX_PAGE_SIZE, MIN_DOMAIN_LENGTH, MAX_DOMAIN_LENGTH, LOST_BACKLINKS_COMPLEX_FILTER_FIELDS, COMPLEX_FILTER_COMPARE_TYPES, ADDITIONAL_FILTERS } from '../utils/constants.js';
@@ -414,6 +414,59 @@ export class GetLostBacklinksHandler extends BaseHandler {
         try {
             const params = getLostBacklinksSchema.parse(call.arguments) as GetLostBacklinksParams;
             const result = await this.backlinksService.getLostBacklinks(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error('Invalid parameters: ' + error.errors.map(e => e.path.join('.') + ': ' + e.message).join(', ')));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetTopAnchorsHandler extends BaseHandler {
+    private backlinksService: BacklinksService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.backlinksService = new BacklinksService(config);
+    }
+
+    getName(): string {
+        return 'get_top10_anchors';
+    }
+
+    getDescription(): string {
+        return 'Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis';
+    }
+
+    getInputSchema(): Record<string, any> {
+        return {
+            type: "object",
+            properties: {
+                query: {
+                    type: "string",
+                    minLength: MIN_DOMAIN_LENGTH,
+                    maxLength: MAX_DOMAIN_LENGTH,
+                    description: "Domain name to analyze"
+                },
+                searchType: {
+                    type: "string",
+                    enum: SEARCH_TYPES,
+                    default: "domain",
+                    description: "Type of search: domain or domain_with_subdomains"
+                }
+            },
+            required: ["query"],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = getTopAnchorsSchema.parse(call.arguments) as GetTopAnchorsParams;
+            const result = await this.backlinksService.getTopAnchors(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {

@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams } from '../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, SerpstatRequest } from '../types/serpstat.js';
+import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams, GetTopAnchorsParams } from '../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, TopAnchorsResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class BacklinksService extends BaseService {
@@ -122,6 +122,33 @@ export class BacklinksService extends BaseService {
             leftLines: response.result.summary_info.left_lines,
             count: response.result.summary_info.count,
             total: response.result.summary_info.total
+        });
+
+        return response.result;
+    }
+
+    async getTopAnchors(params: GetTopAnchorsParams): Promise<TopAnchorsResponse> {
+        logger.info('Getting top anchors', {
+            query: params.query,
+            searchType: params.searchType
+        });
+
+        const request: SerpstatRequest = {
+            id: `top_anchors_${Date.now()}`,
+            method: 'SerpstatBacklinksProcedure.getTopAnchors',
+            params,
+        };
+
+        const response = await this.makeRequest<TopAnchorsResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved top anchors', {
+            leftLines: response.result.summary_info.left_lines,
+            dataCount: response.result.data.length,
+            uniqueAnchors: response.result.summary_info.unique_anchors
         });
 
         return response.result;

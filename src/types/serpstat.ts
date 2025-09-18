@@ -476,3 +476,20 @@ export interface LostBacklinksResponse {
     data: LostBacklinkData[];
     summary_info: LostBacklinksSummaryInfo;
 }
+
+export interface TopAnchorData {
+    anchor: string;
+    backlinks_count: number;
+    domains_count: number;
+}
+
+export interface TopAnchorsSummaryInfo extends SortableSummaryInfo {
+    referring_domains: number;
+    backlinks: number;
+    unique_anchors: number;
+}
+
+export interface TopAnchorsResponse {
+    data: TopAnchorData[];
+    summary_info: TopAnchorsSummaryInfo;
+}
