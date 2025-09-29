@@ -164,6 +164,7 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 | get_top_pages_by_backlinks | Get a list of top pages by backlinks with various filtering and sorting parameters                             | query, searchType, sort, size   |
 | get_top10_anchors          | Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis                      | query, searchType               |
 | get_backlinks_intersection | Get backlinks from domains that link to multiple analyzed sites simultaneously for competitive analysis        | query, intersect, sort, page    |
+| get_active_outlinks       | Get active outbound links from a domain or URL with target URLs, anchor text, and link attributes             | query, searchType, sort, filters |
 | get_related_keywords       | Get semantically related keywords with frequency, CPC, competition, and difficulty data                        | keyword, se, filters, sort      |
 
 ### Search Engines (se parameter)

@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams, GetTopAnchorsParams, GetTopPagesByBacklinksParams, GetBacklinksIntersectionParams } from '../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, TopAnchorsResponse, TopPagesByBacklinksResponse, BacklinksIntersectionResponse, SerpstatRequest } from '../types/serpstat.js';
+import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams, GetTopAnchorsParams, GetTopPagesByBacklinksParams, GetBacklinksIntersectionParams, GetActiveOutlinksParams } from '../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, TopAnchorsResponse, TopPagesByBacklinksResponse, BacklinksIntersectionResponse, ActiveOutlinksResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class BacklinksService extends BaseService {
@@ -206,6 +206,36 @@ export class BacklinksService extends BaseService {
         }
 
         logger.info('Successfully retrieved backlinks intersection', {
+            leftLines: response.result.summary_info.left_lines,
+            count: response.result.summary_info.count,
+            total: response.result.summary_info.total
+        });
+
+        return response.result;
+    }
+
+    async getActiveOutlinks(params: GetActiveOutlinksParams): Promise<ActiveOutlinksResponse> {
+        logger.info('Getting active outlinks', {
+            query: params.query,
+            searchType: params.searchType,
+            sort: params.sort,
+            page: params.page,
+            size: params.size
+        });
+
+        const request: SerpstatRequest = {
+            id: `active_outlinks_${Date.now()}`,
+            method: 'SerpstatBacklinksProcedure.getOutlinks',
+            params,
+        };
+
+        const response = await this.makeRequest<ActiveOutlinksResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved active outlinks', {
             leftLines: response.result.summary_info.left_lines,
             count: response.result.summary_info.count,
             total: response.result.summary_info.total

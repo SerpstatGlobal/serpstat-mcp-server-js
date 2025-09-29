@@ -3,6 +3,7 @@
 ## [1.0.6] - 2025-09-29
 - Added `get_top_pages_by_backlinks` method to retrieve a list of top pages by backlinks with various filtering and sorting parameters
 - Added `get_backlinks_intersection` method to get backlinks from domains that link to multiple analyzed sites simultaneously, useful for competitive backlink analysis and identifying potential link sources
+- Added `get_active_outlinks` method to get active outbound links from a domain or URL, including target URLs, anchor text, link attributes (nofollow/dofollow), link types, and discovery dates for analyzing linking strategies and partnership opportunities
 
 
 ## [1.0.5] - 2025-09-18

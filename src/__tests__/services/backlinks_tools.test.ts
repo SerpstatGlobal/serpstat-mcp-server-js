@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema, getTopAnchorsSchema, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams, getBacklinksIntersectionSchema, GetBacklinksIntersectionParams } from '../../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, BacklinksIntersectionResponse  } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema, getTopAnchorsSchema, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams, getBacklinksIntersectionSchema, GetBacklinksIntersectionParams, getActiveOutlinksSchema, GetActiveOutlinksParams } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, BacklinksIntersectionResponse, ActiveOutlinksResponse } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -2069,6 +2069,512 @@ describe('BacklinksService - getBacklinksIntersection', () => {
                 method: 'SerpstatBacklinksProcedure.getIntersect',
                 params: params
             });
+        });
+    });
+
+    describe('getActiveOutlinks method', () => {
+        const mockActiveOutlinksResponse: ActiveOutlinksResponse = {
+            data: [
+                {
+                    url_from: 'https://serpstat.com/blog/author/379380-379380/',
+                    url_to: 'https://microsoftedge.microsoft.com/addons/detail/serpstat-website-seo-chec/aidfflgbhbapkopbikhgapbcimkpipbf?hl=en',
+                    nofollow: 'follow',
+                    link_type: 'href',
+                    links_ext: 13,
+                    link_text: 'Install for Microsoft Edge',
+                    first_seen: '2022-09-16',
+                    last_visited: '2025-02-04 21:37:16',
+                    date_del: null
+                },
+                {
+                    url_from: 'https://serpstat.com/blog/author/379380-379380/',
+                    url_to: 'https://x.com/serpstat',
+                    nofollow: 'follow',
+                    link_type: 'href',
+                    links_ext: 13,
+                    link_text: '',
+                    first_seen: '2025-02-04',
+                    last_visited: '2025-02-04 21:37:16',
+                    date_del: null
+                }
+            ],
+            summary_info: {
+                left_lines: 971509,
+                page: 1,
+                count: 2,
+                total: 99241,
+                sort: 'url_from',
+                order: 'desc'
+            }
+        };
+
+        it('should get active outlinks successfully with minimal params', async () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain'
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getActiveOutlinks(params);
+
+            expect(result).toEqual(mockActiveOutlinksResponse);
+            expect(result.data).toHaveLength(2);
+            expect(result.data[0].url_from).toBe('https://serpstat.com/blog/author/379380-379380/');
+            expect(result.data[0].url_to).toBe('https://microsoftedge.microsoft.com/addons/detail/serpstat-website-seo-chec/aidfflgbhbapkopbikhgapbcimkpipbf?hl=en');
+            expect(result.data[0].nofollow).toBe('follow');
+            expect(result.data[0].link_type).toBe('href');
+        });
+
+        it('should handle all parameters correctly', async () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain_with_subdomains',
+                sort: 'anchor',
+                order: 'asc',
+                linkPerDomain: 5,
+                complexFilter: [
+                    [
+                        {
+                            field: 'url_from',
+                            compareType: 'contains',
+                            value: ['serpstat']
+                        }
+                    ]
+                ],
+                page: 2,
+                size: 50
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getActiveOutlinks(params);
+
+            expect(result).toEqual(mockActiveOutlinksResponse);
+        });
+
+        it('should handle complex filters correctly', async () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                complexFilter: [
+                    [
+                        {
+                            field: 'url_from',
+                            compareType: 'contains',
+                            value: ['blog']
+                        },
+                        {
+                            field: 'link_nofollow',
+                            compareType: 'eq',
+                            value: ['follow']
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getActiveOutlinks(params);
+
+            expect(result).toEqual(mockActiveOutlinksResponse);
+        });
+
+        it('should handle date filtering correctly', async () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                complexFilter: [
+                    [
+                        {
+                            field: 'check',
+                            compareType: 'gte',
+                            value: ['1.1.2023']
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getActiveOutlinks(params);
+
+            expect(result).toEqual(mockActiveOutlinksResponse);
+        });
+
+        it('should handle numeric filtering correctly', async () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                complexFilter: [
+                    [
+                        {
+                            field: 'links_external',
+                            compareType: 'between',
+                            value: [1, 50]
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getActiveOutlinks(params);
+
+            expect(result).toEqual(mockActiveOutlinksResponse);
+        });
+
+        it('should handle all sort fields correctly', async () => {
+            const sortFields = ['url_from', 'anchor', 'link_nofollow', 'links_external', 'link_type', 'url_to', 'check'];
+
+            for (const sort of sortFields) {
+                // @ts-ignore
+                const params: GetActiveOutlinksParams = {
+                    query: 'serpstat.com',
+                    searchType: 'domain',
+                    sort: sort as any
+                };
+
+                // @ts-expect-error
+                service.makeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse }) as typeof service.makeRequest;
+
+                const result = await service.getActiveOutlinks(params);
+                expect(result).toEqual(mockActiveOutlinksResponse);
+            }
+        });
+
+        it('should handle pagination correctly', async () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                page: 3,
+                size: 25
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getActiveOutlinks(params);
+
+            expect(result).toEqual(mockActiveOutlinksResponse);
+        });
+
+        it('should throw error when API returns no result', async () => {
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({}) as typeof service.makeRequest;
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain'
+            };
+
+            await expect(service.getActiveOutlinks(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
+
+        it('should handle optional parameters correctly', () => {
+            // @ts-ignore
+            const minimalParams: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain'
+            };
+            expect(() => getActiveOutlinksSchema.parse(minimalParams)).not.toThrow();
+
+            const paramsWithOptional: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain_with_subdomains',
+                sort: 'url_from',
+                order: 'desc',
+                page: 2,
+                size: 50,
+                linkPerDomain: 10
+            };
+            expect(() => getActiveOutlinksSchema.parse(paramsWithOptional)).not.toThrow();
+        });
+
+        it('should handle all order types correctly', () => {
+            const orders = ['asc', 'desc'];
+
+            orders.forEach(order => {
+                // @ts-ignore
+                const params: GetActiveOutlinksParams = {
+                    query: 'serpstat.com',
+                    searchType: 'domain',
+                    order: order as any
+                };
+                expect(() => getActiveOutlinksSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should handle all search types correctly', () => {
+            const searchTypes = ['domain', 'domain_with_subdomains'];
+
+            searchTypes.forEach(searchType => {
+                // @ts-ignore
+                const params: GetActiveOutlinksParams = {
+                    query: 'serpstat.com',
+                    searchType: searchType as any
+                };
+                expect(() => getActiveOutlinksSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should validate complex filter field types correctly', () => {
+            const filterFields = ['url_from', 'anchor', 'link_nofollow', 'links_external', 'link_type', 'url_to', 'check'];
+
+            filterFields.forEach(field => {
+                // @ts-ignore
+                const params: GetActiveOutlinksParams = {
+                    query: 'serpstat.com',
+                    searchType: 'domain',
+                    complexFilter: [
+                        [
+                            {
+                                field: field as any,
+                                compareType: 'contains',
+                                value: ['test']
+                            }
+                        ]
+                    ]
+                };
+                expect(() => getActiveOutlinksSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should validate complex filter compare types correctly', () => {
+            const compareTypes = ['gt', 'lt', 'gte', 'lte', 'eq', 'neq', 'between', 'contains', 'notContains', 'startsWith', 'endsWith'];
+
+            compareTypes.forEach(compareType => {
+                // @ts-ignore
+                const params: GetActiveOutlinksParams = {
+                    query: 'serpstat.com',
+                    searchType: 'domain',
+                    complexFilter: [
+                        [
+                            {
+                                field: 'url_from',
+                                compareType: compareType as any,
+                                value: ['test']
+                            }
+                        ]
+                    ]
+                };
+                expect(() => getActiveOutlinksSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should validate link attributes correctly', () => {
+            const linkAttributes = ['follow', 'nofollow', 'ugc', 'sponsored'];
+
+            linkAttributes.forEach(attribute => {
+                // @ts-ignore
+                const params: GetActiveOutlinksParams = {
+                    query: 'serpstat.com',
+                    searchType: 'domain',
+                    complexFilter: [
+                        [
+                            {
+                                field: 'link_nofollow',
+                                compareType: 'eq',
+                                value: [attribute]
+                            }
+                        ]
+                    ]
+                };
+                expect(() => getActiveOutlinksSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should validate link types correctly', () => {
+            const linkTypes = ['text', 'redirect', 'iframe', 'form', 'canonical', 'rss', 'alternate', 'image'];
+
+            linkTypes.forEach(linkType => {
+                // @ts-ignore
+                const params: GetActiveOutlinksParams = {
+                    query: 'serpstat.com',
+                    searchType: 'domain',
+                    complexFilter: [
+                        [
+                            {
+                                field: 'link_type',
+                                compareType: 'eq',
+                                value: [linkType]
+                            }
+                        ]
+                    ]
+                };
+                expect(() => getActiveOutlinksSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should handle multiple complex filter groups correctly', async () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                complexFilter: [
+                    [
+                        {
+                            field: 'url_from',
+                            compareType: 'contains',
+                            value: ['blog']
+                        }
+                    ],
+                    [
+                        {
+                            field: 'link_type',
+                            compareType: 'eq',
+                            value: ['text']
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getActiveOutlinks(params);
+
+            expect(result).toEqual(mockActiveOutlinksResponse);
+        });
+
+        it('should handle mixed value types in complex filters correctly', async () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                complexFilter: [
+                    [
+                        {
+                            field: 'url_from',
+                            compareType: 'contains',
+                            value: ['blog']
+                        },
+                        {
+                            field: 'links_external',
+                            compareType: 'gte',
+                            value: [5]
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getActiveOutlinks(params);
+
+            expect(result).toEqual(mockActiveOutlinksResponse);
+        });
+
+        it('should properly use method name in API request', async () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain'
+            };
+
+            // @ts-ignore
+            const mockMakeRequest = jest.fn().mockResolvedValue({ result: mockActiveOutlinksResponse });
+            // @ts-expect-error
+            service.makeRequest = mockMakeRequest;
+
+            await service.getActiveOutlinks(params);
+
+            expect(mockMakeRequest).toHaveBeenCalledWith({
+                id: expect.stringMatching(/^active_outlinks_\d+$/),
+                method: 'SerpstatBacklinksProcedure.getOutlinks',
+                params: params
+            });
+        });
+
+        it('should validate query length correctly', () => {
+            const validQueries = ['example.com', 'sub.example.com', 'example-site.co.uk', 'https://example.com/path'];
+            const invalidQueries = ['abc', 'a'.repeat(260)]; // Too short (< 4 chars) and too long (> 253 chars)
+
+            validQueries.forEach(query => {
+                // @ts-ignore
+                const params: GetActiveOutlinksParams = {
+                    query: query,
+                    searchType: 'domain'
+                };
+                expect(() => getActiveOutlinksSchema.parse(params)).not.toThrow();
+            });
+
+            invalidQueries.forEach(query => {
+                // @ts-ignore
+                const params: GetActiveOutlinksParams = {
+                    query: query,
+                    searchType: 'domain'
+                };
+                expect(() => getActiveOutlinksSchema.parse(params)).toThrow();
+            });
+        });
+
+        it('should validate page and size limits correctly', () => {
+            // Test valid page and size
+            // @ts-ignore
+            const validParams: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                page: 10,
+                size: 100
+            };
+            expect(() => getActiveOutlinksSchema.parse(validParams)).not.toThrow();
+
+            // Test minimum page
+            // @ts-ignore
+            const validParams2: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                page: 1,
+                size: 1
+            };
+            expect(() => getActiveOutlinksSchema.parse(validParams2)).not.toThrow();
+
+            // Test maximum size
+            // @ts-ignore
+            const validParams3: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                size: 1000
+            };
+            expect(() => getActiveOutlinksSchema.parse(validParams3)).not.toThrow();
+        });
+
+        it('should validate linkPerDomain parameter correctly', () => {
+            // @ts-ignore
+            const params: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain',
+                linkPerDomain: 5
+            };
+            expect(() => getActiveOutlinksSchema.parse(params)).not.toThrow();
+        });
+
+        it('should apply default values correctly', () => {
+            // @ts-ignore
+            const minimalParams: GetActiveOutlinksParams = {
+                query: 'serpstat.com',
+                searchType: 'domain'
+            };
+
+            const parsedParams = getActiveOutlinksSchema.parse(minimalParams);
+
+            expect(parsedParams.sort).toBe('check');
+            expect(parsedParams.order).toBe('desc');
+            expect(parsedParams.page).toBe(1);
+            expect(parsedParams.size).toBe(100);
         });
     });
 });

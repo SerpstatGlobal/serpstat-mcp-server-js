@@ -64,6 +64,8 @@ import {
     BACKLINKS_INTERSECTION_SORT_FIELDS,
     BACKLINKS_INTERSECTION_COMPLEX_FILTER_FIELDS,
     MAX_INTERSECT_DOMAINS,
+    ACTIVE_OUTLINKS_SORT_FIELDS,
+    ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS,
 } from './constants.js';
 
 // Common schemas
@@ -620,3 +622,21 @@ export const getBacklinksIntersectionSchema = z.object({
 }).strict();
 
 export type GetBacklinksIntersectionParams = z.infer<typeof getBacklinksIntersectionSchema>;
+
+// Active outlinks validation schema
+const activeOutlinksComplexFilterItemSchema = createComplexFilterSchema(ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS);
+
+export const getActiveOutlinksSchema = z.object({
+    query: z.string()
+        .min(MIN_DOMAIN_LENGTH)
+        .max(MAX_DOMAIN_LENGTH),
+    searchType: z.enum(SEARCH_TYPES_URL).default("domain"),
+    sort: z.enum(ACTIVE_OUTLINKS_SORT_FIELDS).default("check"),
+    order: sortOrderSchema.default("desc"),
+    linkPerDomain: z.number().int().min(1).optional(),
+    complexFilter: z.array(z.array(activeOutlinksComplexFilterItemSchema)).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
+}).strict();
+
+export type GetActiveOutlinksParams = z.infer<typeof getActiveOutlinksSchema>;

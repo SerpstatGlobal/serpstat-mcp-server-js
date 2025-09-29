@@ -217,4 +217,18 @@ export const BACKLINKS_INTERSECTION_COMPLEX_FILTER_FIELDS = BACKLINKS_INTERSECTI
 
 export const MAX_INTERSECT_DOMAINS = 2;
 
+// Active outlinks fields
+export const ACTIVE_OUTLINKS_FIELDS = [
+    "url_from",
+    "anchor",
+    "link_nofollow",
+    "links_external",
+    "link_type",
+    "url_to",
+    "check"
+] as const;
+
+export const ACTIVE_OUTLINKS_SORT_FIELDS = ACTIVE_OUTLINKS_FIELDS;
+export const ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS = ACTIVE_OUTLINKS_FIELDS;
+
 export const DEFAULT_REQUEST_TIMEOUT = 60000;

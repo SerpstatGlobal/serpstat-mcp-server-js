@@ -519,3 +519,20 @@ export interface BacklinksIntersectionResponse {
     data: BacklinksIntersectionData[];
     summary_info: PaginatedSortableSummaryInfo;
 }
+
+export interface ActiveOutlinksData {
+    url_from: string;
+    url_to: string;
+    nofollow: string;
+    link_type: string;
+    links_ext: number;
+    link_text: string;
+    first_seen: string;
+    last_visited: string;
+    date_del: string | null;
+}
+
+export interface ActiveOutlinksResponse {
+    data: ActiveOutlinksData[];
+    summary_info: PaginatedSortableSummaryInfo;
+}
