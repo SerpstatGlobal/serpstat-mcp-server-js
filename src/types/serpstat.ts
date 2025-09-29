@@ -536,3 +536,14 @@ export interface ActiveOutlinksResponse {
     data: ActiveOutlinksData[];
     summary_info: PaginatedSortableSummaryInfo;
 }
+
+export interface ActiveOutlinkDomainsData {
+    domains_to: string;
+    domain_links: string;
+    domain_rank: string;
+}
+
+export interface ActiveOutlinkDomainsResponse {
+    data: ActiveOutlinkDomainsData[];
+    summary_info: PaginatedSortableSummaryInfo;
+}

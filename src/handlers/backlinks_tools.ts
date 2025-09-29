@@ -1,10 +1,10 @@
 import { BaseHandler } from './base.js';
 import { BacklinksService } from '../services/backlinks_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams, getReferringDomainsSchema, GetReferringDomainsParams, getLostBacklinksSchema, GetLostBacklinksParams, getTopAnchorsSchema, GetTopAnchorsParams, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams, getBacklinksIntersectionSchema, GetBacklinksIntersectionParams, getActiveOutlinksSchema, GetActiveOutlinksParams } from '../utils/validation.js';
+import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams, getReferringDomainsSchema, GetReferringDomainsParams, getLostBacklinksSchema, GetLostBacklinksParams, getTopAnchorsSchema, GetTopAnchorsParams, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams, getBacklinksIntersectionSchema, GetBacklinksIntersectionParams, getActiveOutlinksSchema, GetActiveOutlinksParams, getActiveOutlinkDomainsSchema } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
-import { SEARCH_TYPES, SEARCH_TYPES_URL, DOMAIN_NAME_REGEX, ANCHORS_SORT_FIELDS, BACKLINKS_SORT_FIELDS, REFERRING_DOMAINS_SORT_FIELDS, LOST_BACKLINKS_SORT_FIELDS, TOP_PAGES_SORT_FIELDS, TOP_PAGES_COMPLEX_FILTER_FIELDS, BACKLINKS_INTERSECTION_SORT_FIELDS, BACKLINKS_INTERSECTION_COMPLEX_FILTER_FIELDS, ACTIVE_OUTLINKS_SORT_FIELDS, ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS, SORT_ORDER, DEFAULT_PAGE_SIZE, MIN_PAGE, MAX_PAGE_SIZE, MIN_DOMAIN_LENGTH, MAX_DOMAIN_LENGTH, LOST_BACKLINKS_COMPLEX_FILTER_FIELDS, COMPLEX_FILTER_COMPARE_TYPES, ADDITIONAL_FILTERS, MAX_INTERSECT_DOMAINS } from '../utils/constants.js';
+import { SEARCH_TYPES, SEARCH_TYPES_URL, DOMAIN_NAME_REGEX, ANCHORS_SORT_FIELDS, BACKLINKS_SORT_FIELDS, REFERRING_DOMAINS_SORT_FIELDS, LOST_BACKLINKS_SORT_FIELDS, TOP_PAGES_SORT_FIELDS, TOP_PAGES_COMPLEX_FILTER_FIELDS, BACKLINKS_INTERSECTION_SORT_FIELDS, BACKLINKS_INTERSECTION_COMPLEX_FILTER_FIELDS, ACTIVE_OUTLINKS_SORT_FIELDS, ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS, ACTIVE_OUTLINK_DOMAINS_SORT_FIELDS, ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS, SORT_ORDER, DEFAULT_PAGE_SIZE, MIN_PAGE, MAX_PAGE_SIZE, MIN_DOMAIN_LENGTH, MAX_DOMAIN_LENGTH, LOST_BACKLINKS_COMPLEX_FILTER_FIELDS, COMPLEX_FILTER_COMPARE_TYPES, ADDITIONAL_FILTERS, MAX_INTERSECT_DOMAINS } from '../utils/constants.js';
 
 export class BacklinksSummaryHandler extends BaseHandler {
     private backlinksService: BacklinksService;
@@ -848,6 +848,128 @@ export class GetActiveOutlinksHandler extends BaseHandler {
         try {
             const params = getActiveOutlinksSchema.parse(call.arguments) as GetActiveOutlinksParams;
             const result = await this.backlinksService.getActiveOutlinks(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error('Invalid parameters: ' + error.errors.map(e => e.path.join('.') + ': ' + e.message).join(', ')));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetActiveOutlinkDomainsHandler extends BaseHandler {
+    private backlinksService: BacklinksService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.backlinksService = new BacklinksService(config);
+    }
+
+    getName(): string {
+        return 'get_active_outlink_domains';
+    }
+
+    getDescription(): string {
+        return 'Get external domains that receive outbound links from the analyzed domain. Returns target domains with total link counts, revealing partnership networks, referenced sources, and linking patterns. Helps identify collaboration opportunities by analyzing which domains competitors link to.';
+    }
+
+    getInputSchema(): Record<string, any> {
+        return {
+            type: "object",
+            properties: {
+                query: {
+                    type: "string",
+                    description: "Domain name to analyze outbound link destinations",
+                    minLength: MIN_DOMAIN_LENGTH,
+                    maxLength: MAX_DOMAIN_LENGTH
+                },
+                searchType: {
+                    type: "string",
+                    enum: SEARCH_TYPES_URL,
+                    description: "Search type for analysis",
+                    default: "domain"
+                },
+                sort: {
+                    type: "string",
+                    enum: ACTIVE_OUTLINK_DOMAINS_SORT_FIELDS,
+                    description: "Field to sort results by",
+                    default: "domain_rank"
+                },
+                order: {
+                    type: "string",
+                    enum: SORT_ORDER,
+                    description: "Sort order",
+                    default: "desc"
+                },
+                complexFilter: {
+                    type: "array",
+                    description: "Complex filtering conditions",
+                    items: {
+                        type: "array",
+                        items: {
+                            anyOf: [
+                                {
+                                    type: "object",
+                                    properties: {
+                                        field: {
+                                            type: "string",
+                                            enum: ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS
+                                        },
+                                        compareType: {
+                                            type: "string",
+                                            enum: COMPLEX_FILTER_COMPARE_TYPES
+                                        },
+                                        value: {
+                                            type: "array",
+                                            items: {
+                                                oneOf: [
+                                                    { type: "integer" },
+                                                    { type: "string" }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    required: ["field", "compareType", "value"]
+                                },
+                                {
+                                    type: "object",
+                                    properties: {
+                                        additional_filters: {
+                                            type: "string",
+                                            enum: ["only_subdomains", "only_hosts", "last_week"]
+                                        }
+                                    },
+                                    required: ["additional_filters"]
+                                }
+                            ]
+                        }
+                    }
+                },
+                page: {
+                    type: "integer",
+                    description: "Page number for pagination",
+                    minimum: MIN_PAGE,
+                    default: 1
+                },
+                size: {
+                    type: "integer",
+                    description: "Number of results per page",
+                    minimum: 1,
+                    maximum: MAX_PAGE_SIZE,
+                    default: DEFAULT_PAGE_SIZE
+                }
+            },
+            required: ["query", "searchType"],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = getActiveOutlinkDomainsSchema.parse(call.arguments);
+            const result = await this.backlinksService.getActiveOutlinkDomains(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {

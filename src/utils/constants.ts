@@ -231,4 +231,17 @@ export const ACTIVE_OUTLINKS_FIELDS = [
 export const ACTIVE_OUTLINKS_SORT_FIELDS = ACTIVE_OUTLINKS_FIELDS;
 export const ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS = ACTIVE_OUTLINKS_FIELDS;
 
+// Active outlink domains fields
+export const ACTIVE_OUTLINK_DOMAINS_SORT_FIELDS = [
+    "domain_links",
+    "domain_to",
+    "domain_rank"
+] as const;
+
+export const ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS = [
+    "domain_links",
+    "domain_from",
+    "domain_rank"
+] as const;
+
 export const DEFAULT_REQUEST_TIMEOUT = 60000;

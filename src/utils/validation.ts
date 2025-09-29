@@ -66,6 +66,8 @@ import {
     MAX_INTERSECT_DOMAINS,
     ACTIVE_OUTLINKS_SORT_FIELDS,
     ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS,
+    ACTIVE_OUTLINK_DOMAINS_SORT_FIELDS,
+    ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS,
 } from './constants.js';
 
 // Common schemas
@@ -640,3 +642,20 @@ export const getActiveOutlinksSchema = z.object({
 }).strict();
 
 export type GetActiveOutlinksParams = z.infer<typeof getActiveOutlinksSchema>;
+
+// Active outlink domains validation schema
+const activeOutlinkDomainsComplexFilterItemSchema = createComplexFilterSchema(ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS);
+
+export const getActiveOutlinkDomainsSchema = z.object({
+    query: z.string()
+        .min(MIN_DOMAIN_LENGTH)
+        .max(MAX_DOMAIN_LENGTH),
+    searchType: z.enum(SEARCH_TYPES_URL).default("domain"),
+    sort: z.enum(ACTIVE_OUTLINK_DOMAINS_SORT_FIELDS).default("domain_rank"),
+    order: sortOrderSchema.default("desc"),
+    complexFilter: z.array(z.array(activeOutlinkDomainsComplexFilterItemSchema)).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
+}).strict();
+
+export type GetActiveOutlinkDomainsParams = z.infer<typeof getActiveOutlinkDomainsSchema>;
