@@ -59,6 +59,8 @@ import {
     REFERRING_DOMAINS_COMPLEX_FILTER_FIELDS,
     LOST_BACKLINKS_SORT_FIELDS,
     LOST_BACKLINKS_COMPLEX_FILTER_FIELDS,
+    TOP_PAGES_SORT_FIELDS,
+    TOP_PAGES_COMPLEX_FILTER_FIELDS,
 } from './constants.js';
 
 // Common schemas
@@ -576,3 +578,27 @@ export const getTopAnchorsSchema = z.object({
 }).strict();
 
 export type GetTopAnchorsParams = z.infer<typeof getTopAnchorsSchema>;
+
+// Top pages validation schema
+const topPagesComplexFilterItemSchema = z.union([
+    z.object({
+        field: z.enum(TOP_PAGES_COMPLEX_FILTER_FIELDS),
+        compareType: z.enum(COMPLEX_FILTER_COMPARE_TYPES),
+        value: z.array(z.union([z.string(), z.number()]))
+    }),
+    z.object({
+        additional_filters: z.enum(ADDITIONAL_FILTERS)
+    })
+]);
+
+export const getTopPagesByBacklinksSchema = z.object({
+    query: domainSchema,
+    searchType: z.enum(SEARCH_TYPES).default("domain"),
+    sort: z.enum(TOP_PAGES_SORT_FIELDS).default("lastupdate"),
+    order: sortOrderSchema.default("desc"),
+    complexFilter: z.array(z.array(topPagesComplexFilterItemSchema)).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
+}).strict();
+
+export type GetTopPagesByBacklinksParams = z.infer<typeof getTopPagesByBacklinksSchema>;

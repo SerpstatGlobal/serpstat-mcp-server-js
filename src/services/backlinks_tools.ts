@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams, GetTopAnchorsParams } from '../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, TopAnchorsResponse, SerpstatRequest } from '../types/serpstat.js';
+import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams, GetTopAnchorsParams, GetTopPagesByBacklinksParams } from '../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, TopAnchorsResponse, TopPagesByBacklinksResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class BacklinksService extends BaseService {
@@ -149,6 +149,36 @@ export class BacklinksService extends BaseService {
             leftLines: response.result.summary_info.left_lines,
             dataCount: response.result.data.length,
             uniqueAnchors: response.result.summary_info.unique_anchors
+        });
+
+        return response.result;
+    }
+
+    async getTopPagesByBacklinks(params: GetTopPagesByBacklinksParams): Promise<TopPagesByBacklinksResponse> {
+        logger.info('Getting top pages by backlinks', {
+            query: params.query,
+            searchType: params.searchType,
+            sort: params.sort,
+            page: params.page,
+            size: params.size
+        });
+
+        const request: SerpstatRequest = {
+            id: `top_pages_${Date.now()}`,
+            method: 'SerpstatBacklinksProcedure.getTopPages',
+            params,
+        };
+
+        const response = await this.makeRequest<TopPagesByBacklinksResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved top pages by backlinks', {
+            leftLines: response.result.summary_info.left_lines,
+            count: response.result.summary_info.count,
+            total: response.result.summary_info.total
         });
 
         return response.result;

@@ -140,28 +140,29 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 
 ## MCP Tools
 
-| Tool Name                | Description                                                                                                    | Key Parameters                  |
-|--------------------------|----------------------------------------------------------------------------------------------------------------|---------------------------------|
-| get_domains_info         | Get SEO information for multiple domains                                                                       | domains, se, filters            |
-| get_domain_competitors   | Get list of competitor domains                                                                                 | domain, se, size, filters       |
-| get_domain_keywords      | Get keywords that domain ranks for                                                                             | domain, se, page, size          |
-| get_domain_urls          | Get URLs within a domain and their keyword counts                                                              | domain, se, page, size          |
-| get_domain_regions_count | Get keyword count by region for a domain                                                                       | domain, sort, order             |
-| get_domain_uniq_keywords | Get unique keywords for two domains not ranked by a third domain                                               | se, domains, minusDomain        |
-| get_keywords             | Get related organic keywords for a given keyword                                                               | keyword, se, filters            |
-| get_keyword_suggestions  | Get search suggestions for a keyword using full-text search with geographic names info                         | keyword, se, filters            |
-| get_keywords_info        | Get keyword overview with volume, CPC, competition, difficulty, and SERP features                              | keywords, se, withIntents       |
-| get_keyword_full_top     | Get Google's top-100 search results for analyzed keywords                                                      | keyword, se, size               |
-| get_keyword_top_urls     | Get website pages that rank for the largest amount of analyzed keyword variations with highest traffic         | keyword, se, page, page_size    |
-| get_keyword_competitors  | Get domains that rank for the given keyword in Google top-20 results with competitor analysis                  | keyword, se, filters, sort      |
-| get_keyword_top          | Get Google's top-100 search results for the analyzed keyword with position, URL, domain and SERP features      | keyword, se, filters, size      |
-| get_backlinks_summary    | Get comprehensive backlinks summary with referring domains, quality metrics, and changes                       | domain, subdomain               |
-| get_anchors              | Get anchor text analysis for backlinks with metrics on referring domains, total backlinks, and nofollow counts | query, searchType, anchor, sort |
-| get_active_backlinks     | Get a list of active backlinks showing linking pages, target pages, link attributes, and discovery dates       | query, searchType, sort, page   |
-| get_referring_domains    | Get a list of referring domains with domain rank metrics, referring pages count, and filtering options         | query, searchType, sort, page   |
-| get_lost_backlinks       | Get a list of lost backlinks showing linking pages, target pages, link attributes, and deletion dates          | query, searchType, sort, page   |
-| get_top10_anchors        | Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis                      | query, searchType               |
-| get_related_keywords     | Get semantically related keywords with frequency, CPC, competition, and difficulty data                        | keyword, se, filters, sort      |
+| Tool Name                  | Description                                                                                                    | Key Parameters                  |
+|----------------------------|----------------------------------------------------------------------------------------------------------------|---------------------------------|
+| get_domains_info           | Get SEO information for multiple domains                                                                       | domains, se, filters            |
+| get_domain_competitors     | Get list of competitor domains                                                                                 | domain, se, size, filters       |
+| get_domain_keywords        | Get keywords that domain ranks for                                                                             | domain, se, page, size          |
+| get_domain_urls            | Get URLs within a domain and their keyword counts                                                              | domain, se, page, size          |
+| get_domain_regions_count   | Get keyword count by region for a domain                                                                       | domain, sort, order             |
+| get_domain_uniq_keywords   | Get unique keywords for two domains not ranked by a third domain                                               | se, domains, minusDomain        |
+| get_keywords               | Get related organic keywords for a given keyword                                                               | keyword, se, filters            |
+| get_keyword_suggestions    | Get search suggestions for a keyword using full-text search with geographic names info                         | keyword, se, filters            |
+| get_keywords_info          | Get keyword overview with volume, CPC, competition, difficulty, and SERP features                              | keywords, se, withIntents       |
+| get_keyword_full_top       | Get Google's top-100 search results for analyzed keywords                                                      | keyword, se, size               |
+| get_keyword_top_urls       | Get website pages that rank for the largest amount of analyzed keyword variations with highest traffic         | keyword, se, page, page_size    |
+| get_keyword_competitors    | Get domains that rank for the given keyword in Google top-20 results with competitor analysis                  | keyword, se, filters, sort      |
+| get_keyword_top            | Get Google's top-100 search results for the analyzed keyword with position, URL, domain and SERP features      | keyword, se, filters, size      |
+| get_backlinks_summary      | Get comprehensive backlinks summary with referring domains, quality metrics, and changes                       | domain, subdomain               |
+| get_anchors                | Get anchor text analysis for backlinks with metrics on referring domains, total backlinks, and nofollow counts | query, searchType, anchor, sort |
+| get_active_backlinks       | Get a list of active backlinks showing linking pages, target pages, link attributes, and discovery dates       | query, searchType, sort, page   |
+| get_referring_domains      | Get a list of referring domains with domain rank metrics, referring pages count, and filtering options         | query, searchType, sort, page   |
+| get_lost_backlinks         | Get a list of lost backlinks showing linking pages, target pages, link attributes, and deletion dates          | query, searchType, sort, page   |
+| get_top_pages_by_backlinks | Get a list of top pages by backlinks with various filtering and sorting parameters                             | query, searchType, sort, size   |
+| get_top10_anchors          | Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis                      | query, searchType               |
+| get_related_keywords       | Get semantically related keywords with frequency, CPC, competition, and difficulty data                        | keyword, se, filters, sort      |
 
 ### Search Engines (se parameter)
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.6] - 2025-09-29
+- Added `get_top_pages_by_backlinks` method to retrieve a list of top pages by backlinks with various filtering and sorting parameters
+
 ## [1.0.5] - 2025-09-18
 - Added `get_active_backlinks` method to retrieve a list of active backlinks showing linking pages, target pages, link attributes, link types, external links count, anchor text, and discovery dates for domain or URL analysis
 - Added `get_referring_domains` method to retrieve a list of referring domains that link to the analyzed site with domain rank metrics, referring pages count, and filtering options for comprehensive backlink analysis

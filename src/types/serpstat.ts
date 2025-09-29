@@ -493,3 +493,18 @@ export interface TopAnchorsResponse {
     data: TopAnchorData[];
     summary_info: TopAnchorsSummaryInfo;
 }
+
+export interface TopPageData {
+    url: string;
+    ref_pages: number;
+    ref_domains: number;
+    ips: number;
+    urlTo: string;
+}
+
+export interface TopPagesSummaryInfo extends PaginatedSortableSummaryInfo {}
+
+export interface TopPagesByBacklinksResponse {
+    data: TopPageData[];
+    summary_info: TopPagesSummaryInfo;
+}

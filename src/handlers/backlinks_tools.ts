@@ -1,10 +1,10 @@
 import { BaseHandler } from './base.js';
 import { BacklinksService } from '../services/backlinks_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams, getReferringDomainsSchema, GetReferringDomainsParams, getLostBacklinksSchema, GetLostBacklinksParams, getTopAnchorsSchema, GetTopAnchorsParams } from '../utils/validation.js';
+import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams, getReferringDomainsSchema, GetReferringDomainsParams, getLostBacklinksSchema, GetLostBacklinksParams, getTopAnchorsSchema, GetTopAnchorsParams, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
-import { SEARCH_TYPES, SEARCH_TYPES_URL, DOMAIN_NAME_REGEX, ANCHORS_SORT_FIELDS, BACKLINKS_SORT_FIELDS, REFERRING_DOMAINS_SORT_FIELDS, LOST_BACKLINKS_SORT_FIELDS, SORT_ORDER, DEFAULT_PAGE_SIZE, MIN_PAGE, MAX_PAGE_SIZE, MIN_DOMAIN_LENGTH, MAX_DOMAIN_LENGTH, LOST_BACKLINKS_COMPLEX_FILTER_FIELDS, COMPLEX_FILTER_COMPARE_TYPES, ADDITIONAL_FILTERS } from '../utils/constants.js';
+import { SEARCH_TYPES, SEARCH_TYPES_URL, DOMAIN_NAME_REGEX, ANCHORS_SORT_FIELDS, BACKLINKS_SORT_FIELDS, REFERRING_DOMAINS_SORT_FIELDS, LOST_BACKLINKS_SORT_FIELDS, TOP_PAGES_SORT_FIELDS, TOP_PAGES_COMPLEX_FILTER_FIELDS, SORT_ORDER, DEFAULT_PAGE_SIZE, MIN_PAGE, MAX_PAGE_SIZE, MIN_DOMAIN_LENGTH, MAX_DOMAIN_LENGTH, LOST_BACKLINKS_COMPLEX_FILTER_FIELDS, COMPLEX_FILTER_COMPARE_TYPES, ADDITIONAL_FILTERS } from '../utils/constants.js';
 
 export class BacklinksSummaryHandler extends BaseHandler {
     private backlinksService: BacklinksService;
@@ -324,7 +324,7 @@ export class GetLostBacklinksHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get a list of lost backlinks showing linking pages, target pages, link attributes, and deletion dates for domain or URL analysis';
+        return 'Get a list of lost backlinks showing linking pages, target pages, link attributes, and deletion dates for domain or URL analysis, **use sort by check desc** to get recently lost backlinks';
     }
 
     getInputSchema(): Record<string, any> {
@@ -438,7 +438,7 @@ export class GetTopAnchorsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis';
+        return 'Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis, use this method is you need a fast brief way to get info about top 10 anchors';
     }
 
     getInputSchema(): Record<string, any> {
@@ -467,6 +467,129 @@ export class GetTopAnchorsHandler extends BaseHandler {
         try {
             const params = getTopAnchorsSchema.parse(call.arguments) as GetTopAnchorsParams;
             const result = await this.backlinksService.getTopAnchors(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error('Invalid parameters: ' + error.errors.map(e => e.path.join('.') + ': ' + e.message).join(', ')));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetTopPagesByBacklinksHandler extends BaseHandler {
+    private backlinksService: BacklinksService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.backlinksService = new BacklinksService(config);
+    }
+
+    getName(): string {
+        return 'get_top_pages_by_backlinks';
+    }
+
+    getDescription(): string {
+        return 'Get leading pages by backlinks using Serpstat API. Returns pages with the highest number of referring pages, domains, and IP addresses for comprehensive backlink analysis.';
+    }
+
+    getInputSchema(): Record<string, any> {
+        return {
+            type: "object",
+            properties: {
+                query: {
+                    type: "string",
+                    minLength: MIN_DOMAIN_LENGTH,
+                    maxLength: MAX_DOMAIN_LENGTH,
+                    description: "Domain name to analyze"
+                },
+                searchType: {
+                    type: "string",
+                    enum: SEARCH_TYPES,
+                    default: "domain",
+                    description: "Type of search: domain or domain_with_subdomains"
+                },
+                sort: {
+                    type: "string",
+                    enum: TOP_PAGES_SORT_FIELDS,
+                    default: "lastupdate",
+                    description: "Field to sort results by"
+                },
+                order: {
+                    type: "string",
+                    enum: SORT_ORDER,
+                    description: "Sort order: asc or desc"
+                },
+                complexFilter: {
+                    type: "array",
+                    items: {
+                        type: "array",
+                        items: {
+                            oneOf: [
+                                {
+                                    type: "object",
+                                    properties: {
+                                        field: {
+                                            type: "string",
+                                            enum: TOP_PAGES_COMPLEX_FILTER_FIELDS
+                                        },
+                                        compareType: {
+                                            type: "string",
+                                            enum: COMPLEX_FILTER_COMPARE_TYPES
+                                        },
+                                        value: {
+                                            type: "array",
+                                            items: {
+                                                oneOf: [
+                                                    { type: "string" },
+                                                    { type: "number" }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    required: ["field", "compareType", "value"],
+                                    additionalProperties: false
+                                },
+                                {
+                                    type: "object",
+                                    properties: {
+                                        additional_filters: {
+                                            type: "string",
+                                            enum: ADDITIONAL_FILTERS
+                                        }
+                                    },
+                                    required: ["additional_filters"],
+                                    additionalProperties: false
+                                }
+                            ]
+                        }
+                    },
+                    description: "Complex filters for advanced filtering"
+                },
+                page: {
+                    type: "integer",
+                    minimum: MIN_PAGE,
+                    default: 1,
+                    description: "Page number for pagination"
+                },
+                size: {
+                    type: "integer",
+                    minimum: 1,
+                    maximum: MAX_PAGE_SIZE,
+                    default: DEFAULT_PAGE_SIZE,
+                    description: "Number of results per page"
+                }
+            },
+            required: ["query"],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = getTopPagesByBacklinksSchema.parse(call.arguments) as GetTopPagesByBacklinksParams;
+            const result = await this.backlinksService.getTopPagesByBacklinks(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {

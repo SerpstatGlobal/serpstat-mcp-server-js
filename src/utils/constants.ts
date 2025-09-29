@@ -94,6 +94,19 @@ export const LOST_BACKLINKS_FIELDS = [
 export const LOST_BACKLINKS_SORT_FIELDS = LOST_BACKLINKS_FIELDS;
 export const LOST_BACKLINKS_COMPLEX_FILTER_FIELDS = LOST_BACKLINKS_FIELDS;
 
+// Top pages поля (используется как для сортировки, так и для сложных фильтров)
+export const TOP_PAGES_FIELDS = [
+    "ips",
+    "count",
+    "domains",
+    "url_to",
+    "lastupdate"
+] as const;
+
+// Алиасы для обратной совместимости
+export const TOP_PAGES_SORT_FIELDS = TOP_PAGES_FIELDS;
+export const TOP_PAGES_COMPLEX_FILTER_FIELDS = TOP_PAGES_FIELDS;
+
 export const DOMAIN_REGIONS_SORT_FIELDS = [
     "keywords_count",
     "country_name_en",

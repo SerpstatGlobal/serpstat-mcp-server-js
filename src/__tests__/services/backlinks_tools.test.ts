@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema, getTopAnchorsSchema, GetTopAnchorsParams } from '../../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, TopAnchorsResponse } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema, getTopAnchorsSchema, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse  } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -1088,6 +1088,463 @@ describe('BacklinksService - getTopAnchors', () => {
             };
 
             await expect(service.getTopAnchors(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
+    });
+});
+
+// Top Pages by Backlinks Schema Validation Tests
+describe('getTopPagesByBacklinksSchema validation', () => {
+    it('should validate required parameters', () => {
+        const validParams = {
+            query: 'example.com'
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(validParams)).not.toThrow();
+    });
+
+    it('should apply default values', () => {
+        const params = {
+            query: 'example.com'
+        };
+        const parsed = getTopPagesByBacklinksSchema.parse(params);
+        expect(parsed.searchType).toBe('domain');
+        expect(parsed.sort).toBe('lastupdate');
+        expect(parsed.order).toBe('desc');
+        expect(parsed.page).toBe(1);
+        expect(parsed.size).toBe(100);
+    });
+
+    it('should validate searchType enum values', () => {
+        const validParams = {
+            query: 'example.com',
+            searchType: 'domain_with_subdomains' as const
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(validParams)).not.toThrow();
+    });
+
+    it('should reject invalid searchType values', () => {
+        const invalidParams = {
+            query: 'example.com',
+            searchType: 'url' // Not allowed for this method
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should validate all sort fields correctly', () => {
+        const sortFields = ['ips', 'count', 'domains', 'url_to', 'lastupdate'];
+
+        sortFields.forEach(sort => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const,
+                sort: sort as any
+            };
+            expect(() => getTopPagesByBacklinksSchema.parse(params)).not.toThrow();
+        });
+    });
+
+    it('should reject invalid sort field', () => {
+        const invalidParams = {
+            query: 'example.com',
+            searchType: 'domain',
+            sort: 'invalid_field'
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should validate complex filter structure correctly', () => {
+        const params = {
+            query: 'example.com',
+            searchType: 'domain' as const,
+            complexFilter: [
+                [
+                    {
+                        field: 'ips' as const,
+                        compareType: 'gte' as const,
+                        value: [5]
+                    },
+                    {
+                        field: 'url_to' as const,
+                        compareType: 'contains' as const,
+                        value: ['blog']
+                    }
+                ]
+            ]
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(params)).not.toThrow();
+    });
+
+    it('should validate additional filters correctly', () => {
+        const params = {
+            query: 'example.com',
+            searchType: 'domain' as const,
+            complexFilter: [
+                [
+                    {
+                        additional_filters: 'no_subdomains' as const
+                    }
+                ]
+            ]
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(params)).not.toThrow();
+    });
+
+    it('should validate complex filter structure with mixed types', () => {
+        const params = {
+            query: 'example.com',
+            searchType: 'domain' as const,
+            complexFilter: [
+                [
+                    {
+                        field: 'count' as const,
+                        compareType: 'between' as const,
+                        value: [10, 100]
+                    }
+                ],
+                [
+                    {
+                        additional_filters: 'only_main_page' as const
+                    }
+                ]
+            ]
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(params)).not.toThrow();
+    });
+
+    it('should reject invalid domain format', () => {
+        const invalidParams = {
+            query: 'invalid-domain',
+            searchType: 'domain'
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should reject missing required fields', () => {
+        const invalidParams = {
+            searchType: 'domain'
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should validate pagination parameters', () => {
+        const params = {
+            query: 'example.com',
+            searchType: 'domain' as const,
+            page: 3,
+            size: 200
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(params)).not.toThrow();
+    });
+
+    it('should reject invalid pagination parameters', () => {
+        const invalidParams = {
+            query: 'example.com',
+            searchType: 'domain' as const,
+            page: 0, // Invalid: must be >= 1
+            size: 2000 // Invalid: exceeds maximum
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should reject additional properties', () => {
+        const invalidParams = {
+            query: 'example.com',
+            searchType: 'domain',
+            extraProperty: 'not allowed'
+        };
+        expect(() => getTopPagesByBacklinksSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should validate domain length constraints', () => {
+        const shortDomain = 'a.b'; // Too short
+        const validDomain = 'example.com';
+
+        expect(() => getTopPagesByBacklinksSchema.parse({ query: shortDomain })).toThrow();
+        expect(() => getTopPagesByBacklinksSchema.parse({ query: validDomain })).not.toThrow();
+    });
+
+    it('should handle all compareType values correctly', () => {
+        const compareTypes = ['gt', 'lt', 'gte', 'lte', 'eq', 'neq', 'between', 'contains', 'notContains', 'startsWith', 'endsWith'];
+
+        compareTypes.forEach(compareType => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const,
+                complexFilter: [
+                    [
+                        {
+                            field: 'ips' as const,
+                            compareType: compareType as any,
+                            value: [1]
+                        }
+                    ]
+                ]
+            };
+            expect(() => getTopPagesByBacklinksSchema.parse(params)).not.toThrow();
+        });
+    });
+
+    it('should handle all additional filters correctly', () => {
+        const additionalFilters = ['no_subdomains', 'only_main_page', 'last_week', 'only_subdomains', 'only_hosts'];
+
+        additionalFilters.forEach(filter => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const,
+                complexFilter: [
+                    [
+                        {
+                            additional_filters: filter as any
+                        }
+                    ]
+                ]
+            };
+            expect(() => getTopPagesByBacklinksSchema.parse(params)).not.toThrow();
+        });
+    });
+});
+
+describe('BacklinksService - getTopPagesByBacklinks', () => {
+    let service: BacklinksService;
+    let mockConfig: any;
+
+    beforeEach(() => {
+        mockConfig = {
+            serpstatApiToken: 'test-token',
+            serpstatApiUrl: 'https://api.serpstat.com/v4',
+            logLevel: "error",
+            maxRetries: 1,
+            requestTimeout: 5000,
+        };
+        service = new BacklinksService(mockConfig);
+    });
+
+    describe('getTopPagesByBacklinks method', () => {
+        const mockTopPagesResponse = {
+            data: [
+                {
+                    url: "https://example.com/",
+                    ref_pages: 1247,
+                    ref_domains: 856,
+                    ips: 645,
+                    urlTo: "https://example.com/"
+                },
+                {
+                    url: "https://example.com/blog/",
+                    ref_pages: 423,
+                    ref_domains: 298,
+                    ips: 231,
+                    urlTo: "https://example.com/blog/"
+                },
+                {
+                    url: "https://example.com/products/",
+                    ref_pages: 321,
+                    ref_domains: 189,
+                    ips: 156,
+                    urlTo: "https://example.com/products/"
+                }
+            ],
+            summary_info: {
+                left_lines: 9998,
+                page: 1,
+                count: 3,
+                total: 245,
+                sort: "lastupdate",
+                order: "desc"
+            }
+        };
+
+        it('should get top pages by backlinks successfully with minimal params', async () => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockTopPagesResponse }) as typeof service.makeRequest;
+            // @ts-ignore
+            const result = await service.getTopPagesByBacklinks(params);
+
+            expect(result).toEqual(mockTopPagesResponse);
+            expect(result.data).toHaveLength(3);
+            expect(result.data[0].url).toBe("https://example.com/");
+            expect(result.data[0].ref_pages).toBe(1247);
+            expect(result.data[0].ref_domains).toBe(856);
+            expect(result.data[0].ips).toBe(645);
+        });
+
+        it('should handle domain_with_subdomains search type', async () => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain_with_subdomains' as const
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockTopPagesResponse }) as typeof service.makeRequest;
+            // @ts-ignore
+            const result = await service.getTopPagesByBacklinks(params);
+
+            expect(result).toEqual(mockTopPagesResponse);
+            expect(result.summary_info.count).toBe(3);
+            expect(result.summary_info.total).toBe(245);
+            expect(result.summary_info.left_lines).toBe(9998);
+        });
+
+        it('should handle all parameters correctly', async () => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const,
+                sort: 'ips' as const,
+                order: 'asc' as const,
+                complexFilter: [
+                    [
+                        {
+                            field: 'count' as const,
+                            compareType: 'gte' as const,
+                            value: [100]
+                        }
+                    ]
+                ],
+                page: 2,
+                size: 50
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockTopPagesResponse }) as typeof service.makeRequest;
+
+            const result = await service.getTopPagesByBacklinks(params);
+
+            expect(result).toEqual(mockTopPagesResponse);
+        });
+
+        it('should handle complex filters correctly', async () => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const,
+                complexFilter: [
+                    [
+                        {
+                            field: 'ref_domains' as const,
+                            compareType: 'gte' as const,
+                            value: [50] as number[],
+                        },
+                        {
+                            field: 'url_to' as const,
+                            compareType: 'contains' as const,
+                            value: ['blog'] as string[],
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockTopPagesResponse }) as typeof service.makeRequest;
+
+            // @ts-ignore
+            const result = await service.getTopPagesByBacklinks(params);
+
+            expect(result).toEqual(mockTopPagesResponse);
+        });
+
+        it('should handle additional filters correctly', async () => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const,
+                complexFilter: [
+                    [
+                        {
+                            additional_filters: 'no_subdomains' as const
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockTopPagesResponse }) as typeof service.makeRequest;
+            // @ts-ignore
+            const result = await service.getTopPagesByBacklinks(params);
+
+            expect(result).toEqual(mockTopPagesResponse);
+        });
+
+        it('should handle all sort fields correctly', async () => {
+            const sortFields = ['ips', 'count', 'domains', 'url_to', 'lastupdate'];
+
+            for (const sort of sortFields) {
+                const params = {
+                    query: 'example.com',
+                    searchType: 'domain' as const,
+                    sort: sort as any
+                };
+
+                // @ts-expect-error
+                service.makeRequest = jest.fn().mockResolvedValue({ result: mockTopPagesResponse }) as typeof service.makeRequest;
+                // @ts-ignore
+                const result = await service.getTopPagesByBacklinks(params);
+                expect(result).toEqual(mockTopPagesResponse);
+            }
+        });
+
+        it('should handle pagination correctly', async () => {
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const,
+                page: 3,
+                size: 25
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockTopPagesResponse }) as typeof service.makeRequest;
+            // @ts-ignore
+            const result = await service.getTopPagesByBacklinks(params);
+
+            expect(result).toEqual(mockTopPagesResponse);
+        });
+
+        it('should throw error when API returns no result', async () => {
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({}) as typeof service.makeRequest;
+
+            const params = {
+                query: 'example.com',
+                searchType: 'domain' as const
+            };
+            // @ts-ignore
+            await expect(service.getTopPagesByBacklinks(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
+
+        it('should validate all search types correctly', () => {
+            const searchTypes = ['domain', 'domain_with_subdomains'];
+
+            searchTypes.forEach(searchType => {
+                // @ts-ignore
+                const params: GetTopPagesByBacklinksParams = {
+                    query: 'example.com',
+                    searchType: searchType as any
+                };
+                expect(() => getTopPagesByBacklinksSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should handle optional parameters correctly', () => {
+            const minimalParams: GetTopPagesByBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                sort: 'url_to',
+                order: 'desc',
+                page: 1,
+                size: 1
+            };
+            expect(() => getTopPagesByBacklinksSchema.parse(minimalParams)).not.toThrow();
+
+            const paramsWithOptional: GetTopPagesByBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain_with_subdomains',
+                page: 2,
+                size: 50,
+                sort: 'ips',
+                order: 'desc'
+            };
+            expect(() => getTopPagesByBacklinksSchema.parse(paramsWithOptional)).not.toThrow();
         });
     });
 });
