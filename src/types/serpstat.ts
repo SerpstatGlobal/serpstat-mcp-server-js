@@ -547,3 +547,17 @@ export interface ActiveOutlinkDomainsResponse {
     data: ActiveOutlinkDomainsData[];
     summary_info: PaginatedSortableSummaryInfo;
 }
+
+export interface ThreatBacklinksData {
+    domain: string;
+    link_from: string;
+    link_to: string;
+    platform_type: string[];
+    threat_type: string[];
+    lastupdate: string;
+}
+
+export interface ThreatBacklinksResponse {
+    data: ThreatBacklinksData[];
+    summary_info: PaginatedSortableSummaryInfo;
+}

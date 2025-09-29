@@ -244,4 +244,15 @@ export const ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS = [
     "domain_rank"
 ] as const;
 
+// Threat backlinks fields
+export const BACKLINKS_THREAT_SORT_FIELDS = [
+    "lastupdate",
+    "url_from",
+    "url_to",
+    "platform_type",
+    "threat_type"
+] as const;
+
+export const BACKLINKS_THREAT_COMPLEX_FILTER_FIELDS = BACKLINKS_THREAT_SORT_FIELDS;
+
 export const DEFAULT_REQUEST_TIMEOUT = 60000;

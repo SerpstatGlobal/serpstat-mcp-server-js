@@ -6,7 +6,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { BaseHandler } from './handlers/base.js';
 import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from './handlers/domain_tools.js';
-import { BacklinksSummaryHandler, GetAnchorsHandler, GetActiveBacklinksHandler, GetReferringDomainsHandler, GetLostBacklinksHandler, GetTopAnchorsHandler, GetTopPagesByBacklinksHandler, GetBacklinksIntersectionHandler, GetActiveOutlinksHandler, GetActiveOutlinkDomainsHandler } from './handlers/backlinks_tools.js';
+import { BacklinksSummaryHandler, GetAnchorsHandler, GetActiveBacklinksHandler, GetReferringDomainsHandler, GetLostBacklinksHandler, GetTopAnchorsHandler, GetTopPagesByBacklinksHandler, GetBacklinksIntersectionHandler, GetActiveOutlinksHandler, GetActiveOutlinkDomainsHandler, GetThreatBacklinksHandler } from './handlers/backlinks_tools.js';
 import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler, GetKeywordFullTopHandler, GetKeywordTopUrlsHandler, GetKeywordCompetitorsHandler, GetKeywordTopHandler } from './handlers/keyword_tools.js';
 import { logger } from './utils/logger.js';
 
@@ -18,7 +18,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.0.5',
+                version: '1.0.6',
             },
             {
                 capabilities: {
@@ -48,6 +48,7 @@ export class SerpstatMCPServer {
             new GetBacklinksIntersectionHandler(),
             new GetActiveOutlinksHandler(),
             new GetActiveOutlinkDomainsHandler(),
+            new GetThreatBacklinksHandler(),
             new DomainRegionsCountHandler(),
             new GetDomainUniqKeywordsHandler(),
             new GetKeywordsHandler(),

@@ -5,6 +5,7 @@
 - Added `get_backlinks_intersection` method to get backlinks from domains that link to multiple analyzed sites simultaneously, useful for competitive backlink analysis and identifying potential link sources
 - Added `get_active_outlinks` method to get active outbound links from a domain or URL, including target URLs, anchor text, link attributes (nofollow/dofollow), link types, and discovery dates for analyzing linking strategies and partnership opportunities
 - Added `get_active_outlink_domains` method to get external domains that receive outbound links from the analyzed domain, revealing partnership networks, referenced sources, and linking patterns for identifying collaboration opportunities
+- Added `get_threat_backlinks` method to identify malicious backlinks pointing to the analyzed domain, including links from sites flagged for threats like social engineering, malware, or unwanted software, with detailed threat classification and platform information
 
 
 ## [1.0.5] - 2025-09-18

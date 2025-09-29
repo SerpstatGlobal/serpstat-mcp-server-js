@@ -68,6 +68,8 @@ import {
     ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS,
     ACTIVE_OUTLINK_DOMAINS_SORT_FIELDS,
     ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS,
+    BACKLINKS_THREAT_SORT_FIELDS,
+    BACKLINKS_THREAT_COMPLEX_FILTER_FIELDS,
 } from './constants.js';
 
 // Common schemas
@@ -659,3 +661,19 @@ export const getActiveOutlinkDomainsSchema = z.object({
 }).strict();
 
 export type GetActiveOutlinkDomainsParams = z.infer<typeof getActiveOutlinkDomainsSchema>;
+
+// Threat backlinks validation schema
+const threatBacklinksComplexFilterItemSchema = createComplexFilterSchema(BACKLINKS_THREAT_COMPLEX_FILTER_FIELDS);
+
+export const getThreatBacklinksSchema = z.object({
+    query: domainSchema,
+    searchType: z.enum(SEARCH_TYPES).default("domain"),
+    sort: z.enum(BACKLINKS_THREAT_SORT_FIELDS).default("lastupdate"),
+    order: sortOrderSchema.default("desc"),
+    linkPerDomain: z.number().int().min(1).optional(),
+    complexFilter: z.array(z.array(threatBacklinksComplexFilterItemSchema)).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
+}).strict();
+
+export type GetThreatBacklinksParams = z.infer<typeof getThreatBacklinksSchema>;

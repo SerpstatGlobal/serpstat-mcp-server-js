@@ -138,6 +138,7 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 - "Get lost backlinks for **domain.com** showing removed links and deletion dates"
 - "Get top 10 anchors for **domain.com** with backlink counts and referring domains"
 - "Get backlinks intersection for **domain.com** vs **competitor1.com** and **competitor2.com** showing shared referring domains"
+- "Get threat backlinks for **domain.com** showing malicious links from sites flagged for security threats"
 
 ## MCP Tools
 
@@ -166,6 +167,7 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 | get_backlinks_intersection | Get backlinks from domains that link to multiple analyzed sites simultaneously for competitive analysis        | query, intersect, sort, page    |
 | get_active_outlinks       | Get active outbound links from a domain or URL with target URLs, anchor text, and link attributes             | query, searchType, sort, filters |
 | get_active_outlink_domains | Get external domains that receive outbound links from analyzed domain revealing partnership networks          | query, searchType, sort, filters |
+| get_threat_backlinks       | Get malicious backlinks pointing to analyzed domain from sites flagged for security threats                    | query, searchType, sort, filters |
 | get_related_keywords       | Get semantically related keywords with frequency, CPC, competition, and difficulty data                        | keyword, se, filters, sort      |
 
 ### Search Engines (se parameter)

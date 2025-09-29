@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams, GetTopAnchorsParams, GetTopPagesByBacklinksParams, GetBacklinksIntersectionParams, GetActiveOutlinksParams, GetActiveOutlinkDomainsParams } from '../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, TopAnchorsResponse, TopPagesByBacklinksResponse, BacklinksIntersectionResponse, ActiveOutlinksResponse, ActiveOutlinkDomainsResponse, SerpstatRequest } from '../types/serpstat.js';
+import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams, GetTopAnchorsParams, GetTopPagesByBacklinksParams, GetBacklinksIntersectionParams, GetActiveOutlinksParams, GetActiveOutlinkDomainsParams, GetThreatBacklinksParams } from '../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, TopAnchorsResponse, TopPagesByBacklinksResponse, BacklinksIntersectionResponse, ActiveOutlinksResponse, ActiveOutlinkDomainsResponse, ThreatBacklinksResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class BacklinksService extends BaseService {
@@ -266,6 +266,36 @@ export class BacklinksService extends BaseService {
         }
 
         logger.info('Successfully retrieved active outlink domains', {
+            leftLines: response.result.summary_info.left_lines,
+            count: response.result.summary_info.count,
+            total: response.result.summary_info.total
+        });
+
+        return response.result;
+    }
+
+    async getThreatBacklinks(params: GetThreatBacklinksParams): Promise<ThreatBacklinksResponse> {
+        logger.info('Getting threat backlinks', {
+            query: params.query,
+            searchType: params.searchType,
+            sort: params.sort,
+            page: params.page,
+            size: params.size
+        });
+
+        const request: SerpstatRequest = {
+            id: `threat_backlinks_${Date.now()}`,
+            method: 'SerpstatBacklinksProcedure.getThreatsLinks',
+            params,
+        };
+
+        const response = await this.makeRequest<ThreatBacklinksResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved threat backlinks', {
             leftLines: response.result.summary_info.left_lines,
             count: response.result.summary_info.count,
             total: response.result.summary_info.total

@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema, getTopAnchorsSchema, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams, getBacklinksIntersectionSchema, GetBacklinksIntersectionParams, getActiveOutlinksSchema, GetActiveOutlinksParams, getActiveOutlinkDomainsSchema, GetActiveOutlinkDomainsParams } from '../../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, BacklinksIntersectionResponse, ActiveOutlinksResponse, ActiveOutlinkDomainsResponse } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema, getTopAnchorsSchema, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams, getBacklinksIntersectionSchema, GetBacklinksIntersectionParams, getActiveOutlinksSchema, GetActiveOutlinksParams, getActiveOutlinkDomainsSchema, GetActiveOutlinkDomainsParams, getThreatBacklinksSchema, GetThreatBacklinksParams } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, BacklinksIntersectionResponse, ActiveOutlinksResponse, ActiveOutlinkDomainsResponse, ThreatBacklinksResponse } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -2787,6 +2787,199 @@ describe('BacklinksService - getBacklinksIntersection', () => {
             expect(mockMakeRequest).toHaveBeenCalledWith({
                 id: expect.stringMatching(/^active_outlink_domains_\d+$/),
                 method: 'SerpstatBacklinksProcedure.getOutDomains',
+                params: params
+            });
+        });
+    });
+
+    describe('getThreatBacklinks method', () => {
+        const mockThreatBacklinksResponse: ThreatBacklinksResponse = {
+            data: [
+                {
+                    domain: "malicious.com",
+                    link_from: "https://malicious.com/page",
+                    link_to: "https://example.com/target",
+                    platform_type: ["windows", "linux"],
+                    threat_type: ["malware", "social engineering"],
+                    lastupdate: "2025-01-15"
+                }
+            ],
+            summary_info: {
+                left_lines: 1000,
+                page: 1,
+                count: 1,
+                total: 5,
+                sort: "lastupdate",
+                order: "desc"
+            }
+        };
+
+        it('should get threat backlinks successfully with minimal params', async () => {
+            const params: GetThreatBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                sort: 'lastupdate',
+                order: 'desc',
+                page: 1,
+                size: 100
+            };
+
+            // @ts-ignore
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockThreatBacklinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getThreatBacklinks(params);
+
+            expect(result).toEqual(mockThreatBacklinksResponse);
+        });
+
+        it('should get threat backlinks with all parameters', async () => {
+            const params: GetThreatBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain_with_subdomains',
+                sort: 'url_from',
+                order: 'asc',
+                linkPerDomain: 5,
+                complexFilter: [
+                    [
+                        {
+                            field: 'threat_type',
+                            compareType: 'contains',
+                            value: ['malware']
+                        }
+                    ]
+                ],
+                page: 2,
+                size: 50
+            };
+
+            // @ts-ignore
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockThreatBacklinksResponse }) as typeof service.makeRequest;
+
+            const result = await service.getThreatBacklinks(params);
+            expect(result).toEqual(mockThreatBacklinksResponse);
+        });
+
+        it('should handle API error gracefully', async () => {
+            const params: GetThreatBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                sort: 'lastupdate',
+                order: 'desc',
+                page: 1,
+                size: 100
+            };
+            // @ts-ignore
+            service.makeRequest = jest.fn().mockResolvedValue({ result: null });
+
+            await expect(service.getThreatBacklinks(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
+
+        it('should validate minimal parameters correctly', () => {
+            const validParams: GetThreatBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                sort: 'lastupdate',
+                order: 'desc',
+                page: 1,
+                size: 100
+            };
+            expect(() => getThreatBacklinksSchema.parse(validParams)).not.toThrow();
+
+            const paramsWithDefaults = getThreatBacklinksSchema.parse({ query: 'example.com' });
+            expect(paramsWithDefaults.searchType).toBe('domain');
+            expect(paramsWithDefaults.sort).toBe('lastupdate');
+            expect(paramsWithDefaults.order).toBe('desc');
+            expect(paramsWithDefaults.page).toBe(1);
+            expect(paramsWithDefaults.size).toBe(100);
+        });
+
+        it('should validate all sort fields', () => {
+            const sortFields = ['lastupdate', 'url_from', 'url_to', 'platform_type', 'threat_type'];
+            sortFields.forEach(sort => {
+                const params: GetThreatBacklinksParams = {
+                    query: 'example.com',
+                    sort: sort as any,
+                    searchType: 'domain',
+                    order: 'desc',
+                    page: 1,
+                    size: 100
+                };
+                expect(() => getThreatBacklinksSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should validate complex filters correctly', () => {
+            const params: GetThreatBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                sort: 'lastupdate',
+                order: 'desc',
+                complexFilter: [
+                    [
+                        {
+                            field: 'threat_type',
+                            compareType: 'eq',
+                            value: ['malware']
+                        },
+                        {
+                            field: 'platform_type',
+                            compareType: 'contains',
+                            value: ['windows']
+                        }
+                    ]
+                ],
+                page: 1,
+                size: 100
+            };
+
+            expect(() => getThreatBacklinksSchema.parse(params)).not.toThrow();
+        });
+
+        it('should reject invalid domain format', () => {
+            const invalidParams = {
+                query: 'invalid_domain_format',
+                searchType: 'domain'
+            };
+            expect(() => getThreatBacklinksSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should reject invalid sort field', () => {
+            const invalidParams = {
+                query: 'example.com',
+                sort: 'invalid_sort_field',
+                searchType: 'domain'
+            };
+            expect(() => getThreatBacklinksSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should reject additional properties', () => {
+            const invalidParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                extraProperty: 'not allowed'
+            };
+            expect(() => getThreatBacklinksSchema.parse(invalidParams)).toThrow();
+        });
+
+        it('should verify API method name in request', async () => {
+            const params: GetThreatBacklinksParams = {
+                query: 'example.com',
+                searchType: 'domain',
+                sort: 'lastupdate',
+                order: 'desc',
+                page: 1,
+                size: 100
+            };
+            // @ts-ignore
+            const mockMakeRequest = jest.fn().mockResolvedValue({ result: mockThreatBacklinksResponse });
+            // @ts-ignore
+            service.makeRequest = mockMakeRequest;
+
+            await service.getThreatBacklinks(params);
+
+            expect(mockMakeRequest).toHaveBeenCalledWith({
+                id: expect.stringMatching(/^threat_backlinks_\d+$/),
+                method: 'SerpstatBacklinksProcedure.getThreatsLinks',
                 params: params
             });
         });
