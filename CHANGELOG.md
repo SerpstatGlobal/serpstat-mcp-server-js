@@ -1,4 +1,10 @@
 # Changelog
+## [1.0.7] - 2025-09-30
+
+### Fixed
+- **Gemini API Compatibility**: Removed `complexFilter` parameter from backlinks methods (get_lost_backlinks, get_active_backlinks, get_threat_backlinks, etc.) to resolve JSON schema nesting depth error
+    - Standard filtering via `sort`, `order`, `size` fully supported
+    - Breaking change: users with `complexFilter` usage must migrate to client-side filtering
 
 ## [1.0.6] - 2025-09-29
 - Added `get_top_pages_by_backlinks` method to retrieve a list of top pages by backlinks with various filtering and sorting parameters

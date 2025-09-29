@@ -4,7 +4,10 @@ import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams, getReferringDomainsSchema, GetReferringDomainsParams, getLostBacklinksSchema, GetLostBacklinksParams, getTopAnchorsSchema, GetTopAnchorsParams, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams, getBacklinksIntersectionSchema, GetBacklinksIntersectionParams, getActiveOutlinksSchema, GetActiveOutlinksParams, getActiveOutlinkDomainsSchema, getThreatBacklinksSchema } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
-import { SEARCH_TYPES, SEARCH_TYPES_URL, DOMAIN_NAME_REGEX, ANCHORS_SORT_FIELDS, BACKLINKS_SORT_FIELDS, REFERRING_DOMAINS_SORT_FIELDS, LOST_BACKLINKS_SORT_FIELDS, TOP_PAGES_SORT_FIELDS, TOP_PAGES_COMPLEX_FILTER_FIELDS, BACKLINKS_INTERSECTION_SORT_FIELDS, BACKLINKS_INTERSECTION_COMPLEX_FILTER_FIELDS, ACTIVE_OUTLINKS_SORT_FIELDS, ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS, ACTIVE_OUTLINK_DOMAINS_SORT_FIELDS, ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS, BACKLINKS_THREAT_SORT_FIELDS, BACKLINKS_THREAT_COMPLEX_FILTER_FIELDS, SORT_ORDER, DEFAULT_PAGE_SIZE, MIN_PAGE, MAX_PAGE_SIZE, MIN_DOMAIN_LENGTH, MAX_DOMAIN_LENGTH, LOST_BACKLINKS_COMPLEX_FILTER_FIELDS, COMPLEX_FILTER_COMPARE_TYPES, ADDITIONAL_FILTERS, MAX_INTERSECT_DOMAINS } from '../utils/constants.js';
+import { SEARCH_TYPES, SEARCH_TYPES_URL, DOMAIN_NAME_REGEX, ANCHORS_SORT_FIELDS, BACKLINKS_SORT_FIELDS,
+    REFERRING_DOMAINS_SORT_FIELDS, LOST_BACKLINKS_SORT_FIELDS, TOP_PAGES_SORT_FIELDS, BACKLINKS_INTERSECTION_SORT_FIELDS,
+    ACTIVE_OUTLINKS_SORT_FIELDS, ACTIVE_OUTLINK_DOMAINS_SORT_FIELDS, BACKLINKS_THREAT_SORT_FIELDS, SORT_ORDER,
+    DEFAULT_PAGE_SIZE, MIN_PAGE, MAX_PAGE_SIZE, MIN_DOMAIN_LENGTH, MAX_DOMAIN_LENGTH, ADDITIONAL_FILTERS, MAX_INTERSECT_DOMAINS } from '../utils/constants.js';
 
 export class BacklinksSummaryHandler extends BaseHandler {
     private backlinksService: BacklinksService;
@@ -354,35 +357,6 @@ export class GetLostBacklinksHandler extends BaseHandler {
                     enum: SORT_ORDER,
                     description: "Sort order: asc or desc"
                 },
-                complexFilter: {
-                    type: "array",
-                    items: {
-                        type: "array",
-                        items: {
-                            type: "object",
-                            properties: {
-                                name: {
-                                    type: "string",
-                                    enum: LOST_BACKLINKS_COMPLEX_FILTER_FIELDS
-                                },
-                                operator: {
-                                    type: "string",
-                                    enum: COMPLEX_FILTER_COMPARE_TYPES
-                                },
-                                value: {
-                                    oneOf: [
-                                        { type: "string" },
-                                        { type: "number" },
-                                        { type: "array", items: { oneOf: [{ type: "string" }, { type: "number" }] } }
-                                    ]
-                                }
-                            },
-                            required: ["name", "operator", "value"],
-                            additionalProperties: false
-                        }
-                    },
-                    description: "Complex filters for advanced filtering"
-                },
                 additionalFilters: {
                     type: "array",
                     items: {
@@ -521,52 +495,6 @@ export class GetTopPagesByBacklinksHandler extends BaseHandler {
                     enum: SORT_ORDER,
                     description: "Sort order: asc or desc"
                 },
-                complexFilter: {
-                    type: "array",
-                    items: {
-                        type: "array",
-                        items: {
-                            oneOf: [
-                                {
-                                    type: "object",
-                                    properties: {
-                                        field: {
-                                            type: "string",
-                                            enum: TOP_PAGES_COMPLEX_FILTER_FIELDS
-                                        },
-                                        compareType: {
-                                            type: "string",
-                                            enum: COMPLEX_FILTER_COMPARE_TYPES
-                                        },
-                                        value: {
-                                            type: "array",
-                                            items: {
-                                                oneOf: [
-                                                    { type: "string" },
-                                                    { type: "number" }
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    required: ["field", "compareType", "value"],
-                                    additionalProperties: false
-                                },
-                                {
-                                    type: "object",
-                                    properties: {
-                                        additional_filters: {
-                                            type: "string",
-                                            enum: ADDITIONAL_FILTERS
-                                        }
-                                    },
-                                    required: ["additional_filters"],
-                                    additionalProperties: false
-                                }
-                            ]
-                        }
-                    },
-                    description: "Complex filters for advanced filtering"
-                },
                 page: {
                     type: "integer",
                     minimum: MIN_PAGE,
@@ -649,52 +577,6 @@ export class GetBacklinksIntersectionHandler extends BaseHandler {
                     enum: SORT_ORDER,
                     default: "desc",
                     description: "Sort order: asc or desc"
-                },
-                complexFilter: {
-                    type: "array",
-                    items: {
-                        type: "array",
-                        items: {
-                            oneOf: [
-                                {
-                                    type: "object",
-                                    properties: {
-                                        field: {
-                                            type: "string",
-                                            enum: BACKLINKS_INTERSECTION_COMPLEX_FILTER_FIELDS
-                                        },
-                                        compareType: {
-                                            type: "string",
-                                            enum: COMPLEX_FILTER_COMPARE_TYPES
-                                        },
-                                        value: {
-                                            type: "array",
-                                            items: {
-                                                oneOf: [
-                                                    { type: "string" },
-                                                    { type: "number" }
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    required: ["field", "compareType", "value"],
-                                    additionalProperties: false
-                                },
-                                {
-                                    type: "object",
-                                    properties: {
-                                        additional_filters: {
-                                            type: "string",
-                                            enum: ADDITIONAL_FILTERS
-                                        }
-                                    },
-                                    required: ["additional_filters"],
-                                    additionalProperties: false
-                                }
-                            ]
-                        }
-                    },
-                    description: "Complex filters for advanced filtering"
                 },
                 page: {
                     type: "integer",
@@ -779,52 +661,6 @@ export class GetActiveOutlinksHandler extends BaseHandler {
                     minimum: 1,
                     description: "Maximum number of links to return per domain"
                 },
-                complexFilter: {
-                    type: "array",
-                    items: {
-                        type: "array",
-                        items: {
-                            oneOf: [
-                                {
-                                    type: "object",
-                                    properties: {
-                                        field: {
-                                            type: "string",
-                                            enum: ACTIVE_OUTLINKS_COMPLEX_FILTER_FIELDS
-                                        },
-                                        compareType: {
-                                            type: "string",
-                                            enum: COMPLEX_FILTER_COMPARE_TYPES
-                                        },
-                                        value: {
-                                            type: "array",
-                                            items: {
-                                                oneOf: [
-                                                    { type: "string" },
-                                                    { type: "number" }
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    required: ["field", "compareType", "value"],
-                                    additionalProperties: false
-                                },
-                                {
-                                    type: "object",
-                                    properties: {
-                                        additional_filters: {
-                                            type: "string",
-                                            enum: ADDITIONAL_FILTERS
-                                        }
-                                    },
-                                    required: ["additional_filters"],
-                                    additionalProperties: false
-                                }
-                            ]
-                        }
-                    },
-                    description: "Complex filters for advanced filtering"
-                },
                 page: {
                     type: "integer",
                     minimum: MIN_PAGE,
@@ -902,50 +738,6 @@ export class GetActiveOutlinkDomainsHandler extends BaseHandler {
                     enum: SORT_ORDER,
                     description: "Sort order",
                     default: "desc"
-                },
-                complexFilter: {
-                    type: "array",
-                    description: "Complex filtering conditions",
-                    items: {
-                        type: "array",
-                        items: {
-                            anyOf: [
-                                {
-                                    type: "object",
-                                    properties: {
-                                        field: {
-                                            type: "string",
-                                            enum: ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS
-                                        },
-                                        compareType: {
-                                            type: "string",
-                                            enum: COMPLEX_FILTER_COMPARE_TYPES
-                                        },
-                                        value: {
-                                            type: "array",
-                                            items: {
-                                                oneOf: [
-                                                    { type: "integer" },
-                                                    { type: "string" }
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    required: ["field", "compareType", "value"]
-                                },
-                                {
-                                    type: "object",
-                                    properties: {
-                                        additional_filters: {
-                                            type: "string",
-                                            enum: ["only_subdomains", "only_hosts", "last_week"]
-                                        }
-                                    },
-                                    required: ["additional_filters"]
-                                }
-                            ]
-                        }
-                    }
                 },
                 page: {
                     type: "integer",
@@ -1030,40 +822,6 @@ export class GetThreatBacklinksHandler extends BaseHandler {
                     type: "integer",
                     minimum: 1,
                     description: "Maximum number of links per domain to return"
-                },
-                complexFilter: {
-                    type: "array",
-                    description: "Complex filtering conditions using field-value pairs with comparison operators",
-                    items: {
-                        type: "array",
-                        items: {
-                            type: "object",
-                            properties: {
-                                field: {
-                                    type: "string",
-                                    enum: BACKLINKS_THREAT_COMPLEX_FILTER_FIELDS,
-                                    description: "Field to filter by"
-                                },
-                                compareType: {
-                                    type: "string",
-                                    enum: COMPLEX_FILTER_COMPARE_TYPES,
-                                    description: "Comparison operator for filtering"
-                                },
-                                value: {
-                                    type: "array",
-                                    description: "Values to compare against",
-                                    items: {
-                                        oneOf: [
-                                            { type: "integer" },
-                                            { type: "string" }
-                                        ]
-                                    }
-                                }
-                            },
-                            required: ["field", "compareType", "value"],
-                            additionalProperties: false
-                        }
-                    }
                 },
                 page: {
                     type: "integer",

@@ -18,7 +18,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.0.6',
+                version: '1.0.7',
             },
             {
                 capabilities: {
