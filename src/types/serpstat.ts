@@ -508,3 +508,14 @@ export interface TopPagesByBacklinksResponse {
     data: TopPageData[];
     summary_info: TopPagesSummaryInfo;
 }
+
+export interface BacklinksIntersectionData {
+    Domain: string;
+    SDR: number;
+    [key: string]: string | number; // Dynamic keys for "Links count for domain #1 {domain_name}", etc.
+}
+
+export interface BacklinksIntersectionResponse {
+    data: BacklinksIntersectionData[];
+    summary_info: PaginatedSortableSummaryInfo;
+}

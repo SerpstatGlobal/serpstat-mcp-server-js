@@ -137,6 +137,7 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 - "Get referring domains for **domain.com** with domain authority metrics"
 - "Get lost backlinks for **domain.com** showing removed links and deletion dates"
 - "Get top 10 anchors for **domain.com** with backlink counts and referring domains"
+- "Get backlinks intersection for **domain.com** vs **competitor1.com** and **competitor2.com** showing shared referring domains"
 
 ## MCP Tools
 
@@ -162,6 +163,7 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 | get_lost_backlinks         | Get a list of lost backlinks showing linking pages, target pages, link attributes, and deletion dates          | query, searchType, sort, page   |
 | get_top_pages_by_backlinks | Get a list of top pages by backlinks with various filtering and sorting parameters                             | query, searchType, sort, size   |
 | get_top10_anchors          | Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis                      | query, searchType               |
+| get_backlinks_intersection | Get backlinks from domains that link to multiple analyzed sites simultaneously for competitive analysis        | query, intersect, sort, page    |
 | get_related_keywords       | Get semantically related keywords with frequency, CPC, competition, and difficulty data                        | keyword, se, filters, sort      |
 
 ### Search Engines (se parameter)

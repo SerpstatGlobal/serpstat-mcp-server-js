@@ -1,6 +1,6 @@
 import { BaseService } from './base.js';
-import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams, GetTopAnchorsParams, GetTopPagesByBacklinksParams } from '../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, TopAnchorsResponse, TopPagesByBacklinksResponse, SerpstatRequest } from '../types/serpstat.js';
+import { BacklinksSummaryParams, AnchorsParams, GetActiveBacklinksParams, GetReferringDomainsParams, GetLostBacklinksParams, GetTopAnchorsParams, GetTopPagesByBacklinksParams, GetBacklinksIntersectionParams } from '../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, LostBacklinksResponse, TopAnchorsResponse, TopPagesByBacklinksResponse, BacklinksIntersectionResponse, SerpstatRequest } from '../types/serpstat.js';
 import { logger } from '../utils/logger.js';
 
 export class BacklinksService extends BaseService {
@@ -176,6 +176,36 @@ export class BacklinksService extends BaseService {
         }
 
         logger.info('Successfully retrieved top pages by backlinks', {
+            leftLines: response.result.summary_info.left_lines,
+            count: response.result.summary_info.count,
+            total: response.result.summary_info.total
+        });
+
+        return response.result;
+    }
+
+    async getBacklinksIntersection(params: GetBacklinksIntersectionParams): Promise<BacklinksIntersectionResponse> {
+        logger.info('Getting backlinks intersection', {
+            query: params.query,
+            intersect: params.intersect,
+            sort: params.sort,
+            page: params.page,
+            size: params.size
+        });
+
+        const request: SerpstatRequest = {
+            id: `backlinks_intersection_${Date.now()}`,
+            method: 'SerpstatBacklinksProcedure.getIntersect',
+            params,
+        };
+
+        const response = await this.makeRequest<BacklinksIntersectionResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved backlinks intersection', {
             leftLines: response.result.summary_info.left_lines,
             count: response.result.summary_info.count,
             total: response.result.summary_info.total

@@ -61,6 +61,9 @@ import {
     LOST_BACKLINKS_COMPLEX_FILTER_FIELDS,
     TOP_PAGES_SORT_FIELDS,
     TOP_PAGES_COMPLEX_FILTER_FIELDS,
+    BACKLINKS_INTERSECTION_SORT_FIELDS,
+    BACKLINKS_INTERSECTION_COMPLEX_FILTER_FIELDS,
+    MAX_INTERSECT_DOMAINS,
 } from './constants.js';
 
 // Common schemas
@@ -602,3 +605,18 @@ export const getTopPagesByBacklinksSchema = z.object({
 }).strict();
 
 export type GetTopPagesByBacklinksParams = z.infer<typeof getTopPagesByBacklinksSchema>;
+
+// Backlinks intersection validation schema
+const backlinksIntersectionComplexFilterItemSchema = createComplexFilterSchema(BACKLINKS_INTERSECTION_COMPLEX_FILTER_FIELDS);
+
+export const getBacklinksIntersectionSchema = z.object({
+    query: domainSchema,
+    intersect: z.array(domainSchema).min(1).max(MAX_INTERSECT_DOMAINS),
+    sort: z.enum(BACKLINKS_INTERSECTION_SORT_FIELDS).default("domain_rank"),
+    order: sortOrderSchema.default("desc"),
+    complexFilter: z.array(z.array(backlinksIntersectionComplexFilterItemSchema)).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
+}).strict();
+
+export type GetBacklinksIntersectionParams = z.infer<typeof getBacklinksIntersectionSchema>;

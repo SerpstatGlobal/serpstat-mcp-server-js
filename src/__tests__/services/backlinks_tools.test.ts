@@ -1,6 +1,6 @@
 import { BacklinksService } from '../../services/backlinks_tools.js';
-import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema, getTopAnchorsSchema, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams } from '../../utils/validation.js';
-import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse  } from '../../types/serpstat.js';
+import { BacklinksSummaryParams, backlinksSummarySchema, AnchorsParams, anchorsSchema, GetActiveBacklinksParams, getActiveBacklinksSchema, GetReferringDomainsParams, getReferringDomainsSchema, getLostBacklinksSchema, getTopAnchorsSchema, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams, getBacklinksIntersectionSchema, GetBacklinksIntersectionParams } from '../../utils/validation.js';
+import { BacklinksSummaryResponse, AnchorsResponse, ActiveBacklinksResponse, ReferringDomainsResponse, BacklinksIntersectionResponse  } from '../../types/serpstat.js';
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
 process.env.SERPSTAT_API_TOKEN = 'test-token';
@@ -1545,6 +1545,530 @@ describe('BacklinksService - getTopPagesByBacklinks', () => {
                 order: 'desc'
             };
             expect(() => getTopPagesByBacklinksSchema.parse(paramsWithOptional)).not.toThrow();
+        });
+    });
+});
+
+// Backlinks Intersection Schema Validation Tests
+describe('getBacklinksIntersectionSchema validation', () => {
+    it('should validate required parameters', () => {
+        const validParams = {
+            query: 'example.com',
+            intersect: ['competitor1.com', 'competitor2.com']
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(validParams)).not.toThrow();
+    });
+
+    it('should apply default values', () => {
+        const params = {
+            query: 'example.com',
+            intersect: ['competitor1.com']
+        };
+        const parsed = getBacklinksIntersectionSchema.parse(params);
+        expect(parsed.sort).toBe('domain_rank');
+        expect(parsed.order).toBe('desc');
+        expect(parsed.page).toBe(1);
+        expect(parsed.size).toBe(100);
+    });
+
+    it('should validate all sort fields correctly', () => {
+        const sortFields = ['domain_rank', 'links_count1', 'links_count2', 'links_count3'];
+
+        sortFields.forEach(sort => {
+            const params = {
+                query: 'example.com',
+                intersect: ['competitor1.com'],
+                sort: sort as any
+            };
+            expect(() => getBacklinksIntersectionSchema.parse(params)).not.toThrow();
+        });
+    });
+
+    it('should reject invalid sort field', () => {
+        const invalidParams = {
+            query: 'example.com',
+            intersect: ['competitor1.com'],
+            sort: 'invalid_field'
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should validate intersect array with correct size limits', () => {
+        // Valid with 1 domain
+        const validParams1 = {
+            query: 'example.com',
+            intersect: ['competitor1.com']
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(validParams1)).not.toThrow();
+
+        // Valid with 2 domains
+        const validParams2 = {
+            query: 'example.com',
+            intersect: ['competitor1.com', 'competitor2.com']
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(validParams2)).not.toThrow();
+
+        // Invalid with empty array
+        const invalidParams1 = {
+            query: 'example.com',
+            intersect: []
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(invalidParams1)).toThrow();
+
+        // Invalid with too many domains
+        const invalidParams2 = {
+            query: 'example.com',
+            intersect: ['competitor1.com', 'competitor2.com', 'competitor3.com']
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(invalidParams2)).toThrow();
+    });
+
+    it('should validate domain formats in query and intersect', () => {
+        const validParams = {
+            query: 'example.com',
+            intersect: ['valid-domain.com', 'another-site.org']
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(validParams)).not.toThrow();
+
+        // Invalid main query domain
+        const invalidParams1 = {
+            query: 'invalid-domain',
+            intersect: ['competitor1.com']
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(invalidParams1)).toThrow();
+
+        // Invalid intersect domain
+        const invalidParams2 = {
+            query: 'example.com',
+            intersect: ['invalid-domain']
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(invalidParams2)).toThrow();
+    });
+
+    it('should validate complex filter structure correctly', () => {
+        const params = {
+            query: 'example.com',
+            intersect: ['competitor1.com'],
+            complexFilter: [
+                [
+                    {
+                        field: 'domain_rank' as const,
+                        compareType: 'gte' as const,
+                        value: [10]
+                    },
+                    {
+                        field: 'links_count1' as const,
+                        compareType: 'gte' as const,
+                        value: [5]
+                    }
+                ]
+            ]
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(params)).not.toThrow();
+    });
+
+    it('should validate additional filters correctly', () => {
+        const params = {
+            query: 'example.com',
+            intersect: ['competitor1.com'],
+            complexFilter: [
+                [
+                    {
+                        additional_filters: 'no_subdomains' as const
+                    }
+                ]
+            ]
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(params)).not.toThrow();
+    });
+
+    it('should reject missing required fields', () => {
+        // Missing query
+        const invalidParams1 = {
+            intersect: ['competitor1.com']
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(invalidParams1)).toThrow();
+
+        // Missing intersect
+        const invalidParams2 = {
+            query: 'example.com'
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(invalidParams2)).toThrow();
+    });
+
+    it('should validate pagination parameters', () => {
+        const params = {
+            query: 'example.com',
+            intersect: ['competitor1.com'],
+            page: 3,
+            size: 200
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(params)).not.toThrow();
+    });
+
+    it('should reject invalid pagination parameters', () => {
+        const invalidParams = {
+            query: 'example.com',
+            intersect: ['competitor1.com'],
+            page: 0, // Invalid: must be >= 1
+            size: 2000 // Invalid: exceeds maximum
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should reject additional properties', () => {
+        const invalidParams = {
+            query: 'example.com',
+            intersect: ['competitor1.com'],
+            extraProperty: 'not allowed'
+        };
+        expect(() => getBacklinksIntersectionSchema.parse(invalidParams)).toThrow();
+    });
+
+    it('should handle all compareType values correctly', () => {
+        const compareTypes = ['gt', 'lt', 'gte', 'lte', 'eq', 'neq', 'between', 'contains', 'notContains', 'startsWith', 'endsWith'];
+
+        compareTypes.forEach(compareType => {
+            const params = {
+                query: 'example.com',
+                intersect: ['competitor1.com'],
+                complexFilter: [
+                    [
+                        {
+                            field: 'domain_rank' as const,
+                            compareType: compareType as any,
+                            value: [1]
+                        }
+                    ]
+                ]
+            };
+            expect(() => getBacklinksIntersectionSchema.parse(params)).not.toThrow();
+        });
+    });
+
+    it('should handle all additional filters correctly', () => {
+        const additionalFilters = ['no_subdomains', 'only_main_page', 'last_week', 'only_subdomains', 'only_hosts'];
+
+        additionalFilters.forEach(filter => {
+            const params = {
+                query: 'example.com',
+                intersect: ['competitor1.com'],
+                complexFilter: [
+                    [
+                        {
+                            additional_filters: filter as any
+                        }
+                    ]
+                ]
+            };
+            expect(() => getBacklinksIntersectionSchema.parse(params)).not.toThrow();
+        });
+    });
+});
+
+describe('BacklinksService - getBacklinksIntersection', () => {
+    let service: BacklinksService;
+    let mockConfig: any;
+
+    beforeEach(() => {
+        mockConfig = {
+            serpstatApiToken: 'test-token',
+            serpstatApiUrl: 'https://api.serpstat.com/v4',
+            logLevel: "error",
+            maxRetries: 1,
+            requestTimeout: 5000,
+        };
+        service = new BacklinksService(mockConfig);
+    });
+
+    describe('getBacklinksIntersection method', () => {
+        const mockBacklinksIntersectionResponse: BacklinksIntersectionResponse = {
+            data: [
+                {
+                    Domain: 'znaxarenko.mybb.ru',
+                    SDR: 5,
+                    'Links count for domain #1 gepur.com': 177,
+                    'Links count for domain #2 klubok.com': 3,
+                    'Links count for domain #3 issaplus.com': 0
+                },
+                {
+                    Domain: 'speshka.com',
+                    SDR: 30,
+                    'Links count for domain #1 gepur.com': 61,
+                    'Links count for domain #2 klubok.com': 1,
+                    'Links count for domain #3 issaplus.com': 92
+                }
+            ],
+            summary_info: {
+                left_lines: 972852,
+                page: 1,
+                count: 2,
+                total: 233,
+                sort: 'links_count1',
+                order: 'desc'
+            }
+        };
+
+        it('should get backlinks intersection successfully with minimal params', async () => {
+            // @ts-ignore
+            const params: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com', 'issaplus.com']
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockBacklinksIntersectionResponse }) as typeof service.makeRequest;
+
+            const result = await service.getBacklinksIntersection(params);
+
+            expect(result).toEqual(mockBacklinksIntersectionResponse);
+            expect(result.data).toHaveLength(2);
+            expect(result.data[0].Domain).toBe('znaxarenko.mybb.ru');
+            expect(result.data[0].SDR).toBe(5);
+            expect(result.data[0]['Links count for domain #1 gepur.com']).toBe(177);
+        });
+
+        it('should handle all parameters correctly', async () => {
+            const params: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com', 'issaplus.com'],
+                sort: 'links_count1',
+                order: 'desc',
+                complexFilter: [
+                    [
+                        {
+                            field: 'domain_rank',
+                            compareType: 'gte',
+                            value: [1]
+                        },
+                        {
+                            field: 'links_count1',
+                            compareType: 'gte',
+                            value: [1]
+                        }
+                    ]
+                ],
+                page: 2,
+                size: 50
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockBacklinksIntersectionResponse }) as typeof service.makeRequest;
+
+            const result = await service.getBacklinksIntersection(params);
+
+            expect(result).toEqual(mockBacklinksIntersectionResponse);
+        });
+
+        it('should handle single competitor correctly', async () => {
+            // @ts-ignore
+            const params: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com']
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockBacklinksIntersectionResponse }) as typeof service.makeRequest;
+
+            const result = await service.getBacklinksIntersection(params);
+
+            expect(result).toEqual(mockBacklinksIntersectionResponse);
+            expect(result.summary_info.count).toBe(2);
+            expect(result.summary_info.total).toBe(233);
+            expect(result.summary_info.left_lines).toBe(972852);
+        });
+
+        it('should handle complex filters correctly', async () => {
+            // @ts-ignore
+            const params: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com'],
+                complexFilter: [
+                    [
+                        {
+                            field: 'domain_rank',
+                            compareType: 'between',
+                            value: [10, 50]
+                        },
+                        {
+                            field: 'links_count1',
+                            compareType: 'gte',
+                            value: [5]
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockBacklinksIntersectionResponse }) as typeof service.makeRequest;
+
+            const result = await service.getBacklinksIntersection(params);
+
+            expect(result).toEqual(mockBacklinksIntersectionResponse);
+        });
+
+        it('should handle additional filters correctly', async () => {
+            // @ts-ignore
+            const params: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com'],
+                complexFilter: [
+                    [
+                        {
+                            additional_filters: 'no_subdomains'
+                        }
+                    ]
+                ]
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockBacklinksIntersectionResponse }) as typeof service.makeRequest;
+
+            const result = await service.getBacklinksIntersection(params);
+
+            expect(result).toEqual(mockBacklinksIntersectionResponse);
+        });
+
+        it('should handle all sort fields correctly', async () => {
+            const sortFields = ['domain_rank', 'links_count1', 'links_count2', 'links_count3'];
+
+            for (const sort of sortFields) {
+                // @ts-ignore
+                const params: GetBacklinksIntersectionParams = {
+                    query: 'gepur.com',
+                    intersect: ['klubok.com'],
+                    sort: sort as any
+                };
+
+                // @ts-expect-error
+                service.makeRequest = jest.fn().mockResolvedValue({ result: mockBacklinksIntersectionResponse }) as typeof service.makeRequest;
+
+                const result = await service.getBacklinksIntersection(params);
+                expect(result).toEqual(mockBacklinksIntersectionResponse);
+            }
+        });
+
+        it('should handle pagination correctly', async () => {
+            // @ts-ignore
+            const params: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com'],
+                page: 3,
+                size: 25
+            };
+
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({ result: mockBacklinksIntersectionResponse }) as typeof service.makeRequest;
+
+            const result = await service.getBacklinksIntersection(params);
+
+            expect(result).toEqual(mockBacklinksIntersectionResponse);
+        });
+
+        it('should throw error when API returns no result', async () => {
+            // @ts-expect-error
+            service.makeRequest = jest.fn().mockResolvedValue({}) as typeof service.makeRequest;
+            // @ts-ignore
+            const params: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com']
+            };
+
+            await expect(service.getBacklinksIntersection(params)).rejects.toThrow('No result data received from Serpstat API');
+        });
+
+        it('should handle optional parameters correctly', () => {
+            // @ts-ignore
+            const minimalParams: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com']
+            };
+            expect(() => getBacklinksIntersectionSchema.parse(minimalParams)).not.toThrow();
+
+            const paramsWithOptional: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com', 'issaplus.com'],
+                sort: 'domain_rank',
+                order: 'desc',
+                page: 2,
+                size: 50
+            };
+            expect(() => getBacklinksIntersectionSchema.parse(paramsWithOptional)).not.toThrow();
+        });
+
+        it('should validate intersect domain count limits', () => {
+            // Test maximum allowed domains (2)
+            // @ts-ignore
+            const validParams: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com', 'issaplus.com']
+            };
+            expect(() => getBacklinksIntersectionSchema.parse(validParams)).not.toThrow();
+
+            // Test minimum required domains (1)
+            // @ts-ignore
+            const validParams2: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com']
+            };
+            expect(() => getBacklinksIntersectionSchema.parse(validParams2)).not.toThrow();
+        });
+
+        it('should handle all order types correctly', () => {
+            const orders = ['asc', 'desc'];
+
+            orders.forEach(order => {
+                // @ts-ignore
+                const params: GetBacklinksIntersectionParams = {
+                    query: 'gepur.com',
+                    intersect: ['klubok.com'],
+                    order: order as any
+                };
+                expect(() => getBacklinksIntersectionSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should validate complex filter field types correctly', () => {
+            const filterFields = ['domain_rank', 'links_count1', 'links_count2', 'links_count3'];
+
+            filterFields.forEach(field => {
+                // @ts-ignore
+                const params: GetBacklinksIntersectionParams = {
+                    query: 'gepur.com',
+                    intersect: ['klubok.com'],
+                    complexFilter: [
+                        [
+                            {
+                                field: field as any,
+                                compareType: 'gte',
+                                value: [1]
+                            }
+                        ]
+                    ]
+                };
+                expect(() => getBacklinksIntersectionSchema.parse(params)).not.toThrow();
+            });
+        });
+
+        it('should properly use method name in API request', async () => {
+            // @ts-ignore
+            const params: GetBacklinksIntersectionParams = {
+                query: 'gepur.com',
+                intersect: ['klubok.com']
+            };
+
+            // @ts-ignore
+            const mockMakeRequest = jest.fn().mockResolvedValue({ result: mockBacklinksIntersectionResponse });
+            // @ts-expect-error
+            service.makeRequest = mockMakeRequest;
+
+            await service.getBacklinksIntersection(params);
+
+            expect(mockMakeRequest).toHaveBeenCalledWith({
+                id: expect.stringMatching(/^backlinks_intersection_\d+$/),
+                method: 'SerpstatBacklinksProcedure.getIntersect',
+                params: params
+            });
         });
     });
 });

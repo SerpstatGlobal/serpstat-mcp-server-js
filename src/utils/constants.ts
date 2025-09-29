@@ -205,4 +205,16 @@ export const DEFAULT_TOP_SIZE = 100;
 export const MAX_TOP_SIZE = 60000;
 export const ALLOWED_PAGE_SIZES = [10, 20, 30, 50, 100, 200, 500] as const;
 
+// Backlinks intersection fields
+export const BACKLINKS_INTERSECTION_SORT_FIELDS = [
+    "domain_rank",
+    "links_count1",
+    "links_count2",
+    "links_count3"
+] as const;
+
+export const BACKLINKS_INTERSECTION_COMPLEX_FILTER_FIELDS = BACKLINKS_INTERSECTION_SORT_FIELDS;
+
+export const MAX_INTERSECT_DOMAINS = 2;
+
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
