@@ -145,6 +145,10 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 - "List all my projects with pagination"
 - "Delete project with ID **1234567**"
 
+### Credits & Usage Monitoring
+- "Show me my audit credits statistics"
+- "Check my API credits usage and remaining quota"
+
 ## MCP Tools
 
 | Tool Name                  | Description                                                                                                    | Key Parameters                  |
@@ -177,6 +181,8 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 | create_project             | Create a new project in Serpstat for tracking SEO metrics and site audits                                      | domain, name, groups            |
 | delete_project             | Delete an existing project from Serpstat by project ID                                                         | project_id                      |
 | list_projects              | Retrieve a list of projects associated with the account with pagination support                                | page, size                      |
+| get_credits_for_audit_stats| Check available audit credits including one-page audit, JavaScript scanning, and crawl limits (no API cost)    | none                            |
+| get_credits_stats          | Check API credits usage, account info, and browser plugin limits for monitoring API usage (no API cost)        | none                            |
 
 ### Search Engines (se parameter)
 

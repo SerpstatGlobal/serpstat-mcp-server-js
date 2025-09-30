@@ -9,6 +9,7 @@ import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUr
 import { BacklinksSummaryHandler, GetAnchorsHandler, GetActiveBacklinksHandler, GetReferringDomainsHandler, GetLostBacklinksHandler, GetTopAnchorsHandler, GetTopPagesByBacklinksHandler, GetBacklinksIntersectionHandler, GetActiveOutlinksHandler, GetActiveOutlinkDomainsHandler, GetThreatBacklinksHandler } from './handlers/backlinks_tools.js';
 import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler, GetKeywordFullTopHandler, GetKeywordTopUrlsHandler, GetKeywordCompetitorsHandler, GetKeywordTopHandler } from './handlers/keyword_tools.js';
 import { CreateProjectHandler, DeleteProjectHandler, ListProjectsHandler } from './handlers/project_tools.js';
+import { GetAuditStatsHandler, GetCreditsStatsHandler } from './handlers/credits_tools.js';
 import { logger } from './utils/logger.js';
 
 export class SerpstatMCPServer {
@@ -63,6 +64,8 @@ export class SerpstatMCPServer {
             new CreateProjectHandler(),
             new DeleteProjectHandler(),
             new ListProjectsHandler(),
+            new GetAuditStatsHandler(),
+            new GetCreditsStatsHandler(),
         ];
 
         for (const handler of handlers) {

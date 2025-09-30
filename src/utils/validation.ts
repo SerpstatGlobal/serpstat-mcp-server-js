@@ -715,3 +715,12 @@ export const getProjectsSchema = z.object({
 }).strict();
 
 export type GetProjectsParams = z.infer<typeof getProjectsSchema>;
+
+// Credits API validation schemas (no parameters required)
+export const getAuditStatsSchema = z.object({}).strict();
+
+export type GetAuditStatsParams = z.infer<typeof getAuditStatsSchema>;
+
+export const getCreditsStatsSchema = z.object({}).strict();
+
+export type GetCreditsStatsParams = z.infer<typeof getCreditsStatsSchema>;

@@ -6,9 +6,12 @@
     - `create_project` - Create a new project in Serpstat for tracking SEO metrics and site audits
     - `delete_project` - Delete an existing project from Serpstat by project ID
     - `list_projects` - Retrieve a list of projects associated with the account with pagination support
-- Added comprehensive validation schemas and TypeScript types for project management operations
-- Added test coverage for all project management methods
-- Updated documentation with project management usage examples
+- **Credits & Usage Monitoring Tools**: Added two new methods for monitoring API and audit credits
+    - `get_credits_for_audit_stats` - Check available audit credits including one-page audit, JavaScript scanning, and crawl limits (does not consume API credits)
+    - `get_credits_stats` - Check API credits usage, account information, and browser plugin limits for monitoring API usage (does not consume API credits)
+- Added comprehensive validation schemas and TypeScript types for project management and credits operations
+- Added test coverage for all project management and credits methods
+- Updated documentation with project management and credits usage examples
 
 ## [1.0.7] - 2025-09-30
 

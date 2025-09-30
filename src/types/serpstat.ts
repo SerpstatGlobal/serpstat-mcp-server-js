@@ -591,3 +591,47 @@ export interface GetProjectsResponse {
     data: ProjectData[];
     summary_info: ProjectsSummaryInfo;
 }
+
+// Credits API interfaces
+export interface AuditStatsData {
+    hasAuditOnePage: boolean;
+    hasAuditJsScanPage: boolean;
+    hasAuditLimitPage: boolean;
+    maxAuditLimitPage: number;
+    total: number;
+    used: number;
+    left: number;
+}
+
+export interface GetAuditStatsResponse {
+    data: AuditStatsData;
+}
+
+export interface UserInfo {
+    user_id: string;
+    ga_client_Id: string;
+    plan_id: string;
+}
+
+export interface PluginLimits {
+    hasApiPlugin: boolean;
+    delayBetweenRequests: number;
+    total: number;
+    used: number;
+    left: number;
+}
+
+export interface CreditsStatsData {
+    max_lines: number;
+    used_lines: number;
+    left_lines: number;
+    user_info: UserInfo;
+    plugin_limits: PluginLimits;
+}
+
+export interface GetCreditsStatsResponse {
+    data: CreditsStatsData;
+    summary_info: {
+        left_lines: number;
+    };
+}
