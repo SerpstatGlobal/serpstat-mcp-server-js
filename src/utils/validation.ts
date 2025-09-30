@@ -70,6 +70,12 @@ import {
     ACTIVE_OUTLINK_DOMAINS_COMPLEX_FILTER_FIELDS,
     BACKLINKS_THREAT_SORT_FIELDS,
     BACKLINKS_THREAT_COMPLEX_FILTER_FIELDS,
+    PROJECT_ALLOWED_PAGE_SIZES,
+    DEFAULT_PROJECT_PAGE_SIZE,
+    MIN_PROJECT_NAME_LENGTH,
+    MAX_PROJECT_NAME_LENGTH,
+    MIN_PROJECT_ID,
+    MAX_PROJECT_GROUP_NAME_LENGTH,
 } from './constants.js';
 
 // Common schemas
@@ -677,3 +683,35 @@ export const getThreatBacklinksSchema = z.object({
 }).strict();
 
 export type GetThreatBacklinksParams = z.infer<typeof getThreatBacklinksSchema>;
+
+// Project management validation schemas
+export const createProjectSchema = z.object({
+    domain: domainSchema,
+    name: z.string().min(MIN_PROJECT_NAME_LENGTH).max(MAX_PROJECT_NAME_LENGTH),
+    groups: z.array(
+        z.object({
+            name: z.string().min(MIN_PROJECT_NAME_LENGTH).max(MAX_PROJECT_GROUP_NAME_LENGTH)
+        })
+    ).optional()
+}).strict();
+
+export type CreateProjectParams = z.infer<typeof createProjectSchema>;
+
+export const deleteProjectSchema = z.object({
+    project_id: z.number().int().min(MIN_PROJECT_ID)
+}).strict();
+
+export type DeleteProjectParams = z.infer<typeof deleteProjectSchema>;
+
+export const getProjectsSchema = z.object({
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    size: z.union([
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[0]),
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[1]),
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[2]),
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[3]),
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[4])
+    ]).default(DEFAULT_PROJECT_PAGE_SIZE).optional()
+}).strict();
+
+export type GetProjectsParams = z.infer<typeof getProjectsSchema>;

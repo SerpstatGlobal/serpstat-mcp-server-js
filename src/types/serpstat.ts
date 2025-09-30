@@ -561,3 +561,33 @@ export interface ThreatBacklinksResponse {
     data: ThreatBacklinksData[];
     summary_info: PaginatedSortableSummaryInfo;
 }
+
+// Project management interfaces
+export interface CreateProjectResponse {
+    project_id: string;
+}
+
+export interface DeleteProjectResponse {
+    result: boolean;
+}
+
+export interface ProjectData {
+    project_id: string;
+    project_name: string;
+    domain: string;
+    created_at: string;
+    group: string;
+    type: string;
+}
+
+export interface ProjectsSummaryInfo {
+    page: number;
+    page_total: number;
+    count: number;
+    total: number;
+}
+
+export interface GetProjectsResponse {
+    data: ProjectData[];
+    summary_info: ProjectsSummaryInfo;
+}

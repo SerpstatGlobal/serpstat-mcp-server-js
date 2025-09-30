@@ -140,6 +140,11 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 - "Get backlinks intersection for **domain.com** vs **competitor1.com** and **competitor2.com** showing shared referring domains"
 - "Get threat backlinks for **domain.com** showing malicious links from sites flagged for security threats"
 
+### Project Management
+- "Create a new project for **example.com** named **My SEO Project**"
+- "List all my projects with pagination"
+- "Delete project with ID **1234567**"
+
 ## MCP Tools
 
 | Tool Name                  | Description                                                                                                    | Key Parameters                  |
@@ -169,6 +174,9 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 | get_active_outlink_domains | Get external domains that receive outbound links from analyzed domain revealing partnership networks          | query, searchType, sort, filters |
 | get_threat_backlinks       | Get malicious backlinks pointing to analyzed domain from sites flagged for security threats                    | query, searchType, sort, filters |
 | get_related_keywords       | Get semantically related keywords with frequency, CPC, competition, and difficulty data                        | keyword, se, filters, sort      |
+| create_project             | Create a new project in Serpstat for tracking SEO metrics and site audits                                      | domain, name, groups            |
+| delete_project             | Delete an existing project from Serpstat by project ID                                                         | project_id                      |
+| list_projects              | Retrieve a list of projects associated with the account with pagination support                                | page, size                      |
 
 ### Search Engines (se parameter)
 

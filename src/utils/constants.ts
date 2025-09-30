@@ -256,3 +256,11 @@ export const BACKLINKS_THREAT_SORT_FIELDS = [
 export const BACKLINKS_THREAT_COMPLEX_FILTER_FIELDS = BACKLINKS_THREAT_SORT_FIELDS;
 
 export const DEFAULT_REQUEST_TIMEOUT = 60000;
+
+// Project management constants
+export const PROJECT_ALLOWED_PAGE_SIZES = [20, 50, 100, 200, 500] as const;
+export const DEFAULT_PROJECT_PAGE_SIZE = 100;
+export const MIN_PROJECT_NAME_LENGTH = 1;
+export const MAX_PROJECT_NAME_LENGTH = 255;
+export const MIN_PROJECT_ID = 1;
+export const MAX_PROJECT_GROUP_NAME_LENGTH = 255;

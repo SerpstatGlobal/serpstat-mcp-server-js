@@ -1,4 +1,15 @@
 # Changelog
+## [1.0.8] - 2025-09-30
+
+### Added
+- **Project Management Tools**: Added three new methods for managing Serpstat projects
+    - `create_project` - Create a new project in Serpstat for tracking SEO metrics and site audits
+    - `delete_project` - Delete an existing project from Serpstat by project ID
+    - `list_projects` - Retrieve a list of projects associated with the account with pagination support
+- Added comprehensive validation schemas and TypeScript types for project management operations
+- Added test coverage for all project management methods
+- Updated documentation with project management usage examples
+
 ## [1.0.7] - 2025-09-30
 
 ### Fixed
