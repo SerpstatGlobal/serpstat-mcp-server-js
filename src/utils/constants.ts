@@ -259,8 +259,16 @@ export const DEFAULT_REQUEST_TIMEOUT = 60000;
 
 // Project management constants
 export const PROJECT_ALLOWED_PAGE_SIZES = [20, 50, 100, 200, 500] as const;
-export const DEFAULT_PROJECT_PAGE_SIZE = 100;
+export const DEFAULT_PROJECT_PAGE_SIZE = 20;
 export const MIN_PROJECT_NAME_LENGTH = 1;
 export const MAX_PROJECT_NAME_LENGTH = 255;
 export const MIN_PROJECT_ID = 1;
 export const MAX_PROJECT_GROUP_NAME_LENGTH = 255;
+
+// Rank Tracker constants
+export const RT_ALLOWED_PAGE_SIZES = [20, 50, 100, 500] as const;
+export const DEFAULT_RT_PAGE_SIZE = 20;
+export const MIN_RT_PROJECT_ID = 1;
+export const MIN_RT_REGION_ID = 1;
+export const RT_SERP_HISTORY_SORT_TYPES = ["keyword", "date"] as const;
+export const MAX_RT_KEYWORDS_FILTER = 1000;

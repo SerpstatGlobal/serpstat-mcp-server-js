@@ -635,3 +635,99 @@ export interface GetCreditsStatsResponse {
         left_lines: number;
     };
 }
+
+// Rank Tracker interfaces
+export interface RtProjectData {
+    id: string;
+    projectName: string;
+    domain: string;
+    createdAt: string;
+    group: string;
+    type: string;
+    status: number;
+    enableTracking: boolean;
+}
+
+export interface RtProjectsSummaryInfo {
+    page: number;
+    page_total: number;
+    count: number;
+    total: number;
+}
+
+export interface GetRtProjectsListResponse {
+    data: RtProjectData[];
+    summary_info: RtProjectsSummaryInfo;
+}
+
+export interface GetRtProjectStatusResponse {
+    projectId: number;
+    regionId: number;
+    parsing: boolean;
+}
+
+export interface RtProjectRegion {
+    id: number;
+    active: boolean;
+    serpType: string;
+    deviceType: string;
+    searchEngine: string;
+    region: string;
+    country: string;
+    city: string;
+    langCode: string;
+}
+
+export interface GetRtProjectRegionsListResponse {
+    projectId: number;
+    regions: RtProjectRegion[];
+    spent_limits: number;
+}
+
+export interface RtKeywordTag {
+    id: string;
+    value: string;
+}
+
+export interface RtSerpPosition {
+    position: number;
+    url: string;
+}
+
+export interface RtKeywordHistoryEntry {
+    date: string;
+    positions: RtSerpPosition[];
+}
+
+export interface RtKeywordData {
+    keyword: string;
+    frequency: number;
+    expectedUrl: string;
+    history: RtKeywordHistoryEntry[];
+    tags: RtKeywordTag[];
+}
+
+export interface RtKeywordSerpHistoryData {
+    projectId: number;
+    projectRegionId: number;
+    keywords: RtKeywordData[];
+}
+
+export interface GetRtProjectKeywordSerpHistoryResponse {
+    data: RtKeywordSerpHistoryData;
+    summary_info: RtProjectsSummaryInfo;
+    spent_limits: number;
+}
+
+export interface RtUrlSerpHistoryData {
+    projectId: number;
+    projectRegionId: number;
+    domain: string;
+    keywords: RtKeywordData[];
+}
+
+export interface GetRtProjectUrlSerpHistoryResponse {
+    data: RtUrlSerpHistoryData;
+    summary_info: RtProjectsSummaryInfo;
+    spent_limits: number;
+}

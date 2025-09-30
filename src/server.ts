@@ -10,6 +10,7 @@ import { BacklinksSummaryHandler, GetAnchorsHandler, GetActiveBacklinksHandler, 
 import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler, GetKeywordFullTopHandler, GetKeywordTopUrlsHandler, GetKeywordCompetitorsHandler, GetKeywordTopHandler } from './handlers/keyword_tools.js';
 import { CreateProjectHandler, DeleteProjectHandler, ListProjectsHandler } from './handlers/project_tools.js';
 import { GetAuditStatsHandler, GetCreditsStatsHandler } from './handlers/credits_tools.js';
+import { GetRtProjectsListHandler, GetRtProjectStatusHandler, GetRtProjectRegionsListHandler, GetRtProjectKeywordSerpHistoryHandler, GetRtProjectUrlSerpHistoryHandler } from './handlers/rank_tracking_tools.js';
 import { logger } from './utils/logger.js';
 
 export class SerpstatMCPServer {
@@ -20,7 +21,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.0.7',
+                version: '1.0.8',
             },
             {
                 capabilities: {
@@ -66,6 +67,11 @@ export class SerpstatMCPServer {
             new ListProjectsHandler(),
             new GetAuditStatsHandler(),
             new GetCreditsStatsHandler(),
+            new GetRtProjectsListHandler(),
+            new GetRtProjectStatusHandler(),
+            new GetRtProjectRegionsListHandler(),
+            new GetRtProjectKeywordSerpHistoryHandler(),
+            new GetRtProjectUrlSerpHistoryHandler(),
         ];
 
         for (const handler of handlers) {

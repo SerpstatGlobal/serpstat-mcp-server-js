@@ -1,7 +1,15 @@
 # Changelog
+
 ## [1.0.8] - 2025-09-30
 
 ### Added
+
+- **Rank Tracking Tools**: Added five new methods for rank tracker project management and SERP analysis
+    - `get_rt_projects_list` - Get list of rank tracker projects with ID, name, domain, creation date, and tracking status (does not consume API credits)
+    - `get_rt_project_status` - Check if rank tracker project is currently parsing positions; returns true if processing, false if ready for data retrieval (does not consume API credits)
+    - `get_rt_project_regions_list` - Get list of regions configured for a rank tracker project, including region ID, status (active/inactive), SERP type (organic/paid), device type (desktop/mobile), search engine, and location details (does not consume API credits)
+    - `get_rt_project_keyword_serp_history` - Get Google's top-100 search results history for rank tracker project keywords in a specific region, returning historical position data, URLs, search frequency, and optional keyword tags (does not consume API credits)
+    - `get_rt_project_url_serp_history` - Get ranking history of URLs for rank tracker project keywords in a specific region, returning historical position data for URLs ranking in search results, including search frequency and optional keyword tags (does not consume API credits)
 - **Project Management Tools**: Added three new methods for managing Serpstat projects
     - `create_project` - Create a new project in Serpstat for tracking SEO metrics and site audits
     - `delete_project` - Delete an existing project from Serpstat by project ID
@@ -9,9 +17,9 @@
 - **Credits & Usage Monitoring Tools**: Added two new methods for monitoring API and audit credits
     - `get_credits_for_audit_stats` - Check available audit credits including one-page audit, JavaScript scanning, and crawl limits (does not consume API credits)
     - `get_credits_stats` - Check API credits usage, account information, and browser plugin limits for monitoring API usage (does not consume API credits)
-- Added comprehensive validation schemas and TypeScript types for project management and credits operations
-- Added test coverage for all project management and credits methods
-- Updated documentation with project management and credits usage examples
+- Added comprehensive validation schemas and TypeScript types for project management, credits, and rank tracking operations
+- Added test coverage for all project management, credits, and rank tracking methods
+- Updated documentation with project management, credits, and rank tracking usage examples
 
 ## [1.0.7] - 2025-09-30
 

@@ -76,6 +76,12 @@ import {
     MAX_PROJECT_NAME_LENGTH,
     MIN_PROJECT_ID,
     MAX_PROJECT_GROUP_NAME_LENGTH,
+    RT_ALLOWED_PAGE_SIZES,
+    DEFAULT_RT_PAGE_SIZE,
+    MIN_RT_PROJECT_ID,
+    MIN_RT_REGION_ID,
+    RT_SERP_HISTORY_SORT_TYPES,
+    MAX_RT_KEYWORDS_FILTER,
 } from './constants.js';
 
 // Common schemas
@@ -724,3 +730,82 @@ export type GetAuditStatsParams = z.infer<typeof getAuditStatsSchema>;
 export const getCreditsStatsSchema = z.object({}).strict();
 
 export type GetCreditsStatsParams = z.infer<typeof getCreditsStatsSchema>;
+
+// Rank Tracker validation schemas
+export const getRtProjectsListSchema = z.object({
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    pageSize: z.union([
+        z.literal(RT_ALLOWED_PAGE_SIZES[0]),
+        z.literal(RT_ALLOWED_PAGE_SIZES[1]),
+        z.literal(RT_ALLOWED_PAGE_SIZES[2]),
+        z.literal(RT_ALLOWED_PAGE_SIZES[3])
+    ]).default(DEFAULT_RT_PAGE_SIZE).optional()
+}).strict();
+
+export type GetRtProjectsListParams = z.infer<typeof getRtProjectsListSchema>;
+
+export const getRtProjectStatusSchema = z.object({
+    projectId: z.number().int().min(MIN_RT_PROJECT_ID),
+    regionId: z.number().int().min(MIN_RT_REGION_ID)
+}).strict();
+
+export type GetRtProjectStatusParams = z.infer<typeof getRtProjectStatusSchema>;
+
+export const getRtProjectRegionsListSchema = z.object({
+    projectId: z.number().int().min(MIN_RT_PROJECT_ID)
+}).strict();
+
+export type GetRtProjectRegionsListParams = z.infer<typeof getRtProjectRegionsListSchema>;
+
+export const getRtProjectKeywordSerpHistorySchema = z.object({
+    projectId: z.number().int().min(MIN_RT_PROJECT_ID),
+    projectRegionId: z.number().int().min(MIN_RT_REGION_ID),
+    page: z.number().int().min(MIN_PAGE).default(1),
+    pageSize: z.union([
+        z.literal(RT_ALLOWED_PAGE_SIZES[0]),
+        z.literal(RT_ALLOWED_PAGE_SIZES[1]),
+        z.literal(RT_ALLOWED_PAGE_SIZES[2]),
+        z.literal(RT_ALLOWED_PAGE_SIZES[3])
+    ]).default(DEFAULT_RT_PAGE_SIZE).optional(),
+    dateFrom: z.string().regex(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/).optional(),
+    dateTo: z.string().regex(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/).optional(),
+    sort: z.union([
+        z.literal(RT_SERP_HISTORY_SORT_TYPES[0]),
+        z.literal(RT_SERP_HISTORY_SORT_TYPES[1])
+    ]).optional(),
+    order: z.union([
+        z.literal(SORT_ORDER[0]),
+        z.literal(SORT_ORDER[1])
+    ]).optional(),
+    keywords: z.array(z.string()).max(MAX_RT_KEYWORDS_FILTER).optional(),
+    withTags: z.boolean().default(false).optional()
+}).strict();
+
+export type GetRtProjectKeywordSerpHistoryParams = z.infer<typeof getRtProjectKeywordSerpHistorySchema>;
+
+export const getRtProjectUrlSerpHistorySchema = z.object({
+    projectId: z.number().int().min(MIN_RT_PROJECT_ID),
+    projectRegionId: z.number().int().min(MIN_RT_REGION_ID),
+    page: z.number().int().min(MIN_PAGE).default(1),
+    pageSize: z.union([
+        z.literal(RT_ALLOWED_PAGE_SIZES[0]),
+        z.literal(RT_ALLOWED_PAGE_SIZES[1]),
+        z.literal(RT_ALLOWED_PAGE_SIZES[2]),
+        z.literal(RT_ALLOWED_PAGE_SIZES[3])
+    ]).default(DEFAULT_RT_PAGE_SIZE).optional(),
+    dateFrom: z.string().regex(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/).optional(),
+    dateTo: z.string().regex(/^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/).optional(),
+    sort: z.union([
+        z.literal(RT_SERP_HISTORY_SORT_TYPES[0]),
+        z.literal(RT_SERP_HISTORY_SORT_TYPES[1])
+    ]).optional(),
+    order: z.union([
+        z.literal(SORT_ORDER[0]),
+        z.literal(SORT_ORDER[1])
+    ]).optional(),
+    keywords: z.array(z.string()).max(MAX_RT_KEYWORDS_FILTER).optional(),
+    withTags: z.boolean().default(false).optional(),
+    domain: z.string().optional()
+}).strict();
+
+export type GetRtProjectUrlSerpHistoryParams = z.infer<typeof getRtProjectUrlSerpHistorySchema>;

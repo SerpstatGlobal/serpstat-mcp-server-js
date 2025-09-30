@@ -149,40 +149,76 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 - "Show me my audit credits statistics"
 - "Check my API credits usage and remaining quota"
 
+### Rank Tracking
+- "List all my rank tracker projects"
+- "Check parsing status for project **12345** in region **2840**"
+
 ## MCP Tools
 
-| Tool Name                  | Description                                                                                                    | Key Parameters                  |
-|----------------------------|----------------------------------------------------------------------------------------------------------------|---------------------------------|
-| get_domains_info           | Get SEO information for multiple domains                                                                       | domains, se, filters            |
-| get_domain_competitors     | Get list of competitor domains                                                                                 | domain, se, size, filters       |
-| get_domain_keywords        | Get keywords that domain ranks for                                                                             | domain, se, page, size          |
-| get_domain_urls            | Get URLs within a domain and their keyword counts                                                              | domain, se, page, size          |
-| get_domain_regions_count   | Get keyword count by region for a domain                                                                       | domain, sort, order             |
-| get_domain_uniq_keywords   | Get unique keywords for two domains not ranked by a third domain                                               | se, domains, minusDomain        |
-| get_keywords               | Get related organic keywords for a given keyword                                                               | keyword, se, filters            |
-| get_keyword_suggestions    | Get search suggestions for a keyword using full-text search with geographic names info                         | keyword, se, filters            |
-| get_keywords_info          | Get keyword overview with volume, CPC, competition, difficulty, and SERP features                              | keywords, se, withIntents       |
-| get_keyword_full_top       | Get Google's top-100 search results for analyzed keywords                                                      | keyword, se, size               |
-| get_keyword_top_urls       | Get website pages that rank for the largest amount of analyzed keyword variations with highest traffic         | keyword, se, page, page_size    |
-| get_keyword_competitors    | Get domains that rank for the given keyword in Google top-20 results with competitor analysis                  | keyword, se, filters, sort      |
-| get_keyword_top            | Get Google's top-100 search results for the analyzed keyword with position, URL, domain and SERP features      | keyword, se, filters, size      |
-| get_backlinks_summary      | Get comprehensive backlinks summary with referring domains, quality metrics, and changes                       | domain, subdomain               |
-| get_anchors                | Get anchor text analysis for backlinks with metrics on referring domains, total backlinks, and nofollow counts | query, searchType, anchor, sort |
-| get_active_backlinks       | Get a list of active backlinks showing linking pages, target pages, link attributes, and discovery dates       | query, searchType, sort, page   |
-| get_referring_domains      | Get a list of referring domains with domain rank metrics, referring pages count, and filtering options         | query, searchType, sort, page   |
-| get_lost_backlinks         | Get a list of lost backlinks showing linking pages, target pages, link attributes, and deletion dates          | query, searchType, sort, page   |
-| get_top_pages_by_backlinks | Get a list of top pages by backlinks with various filtering and sorting parameters                             | query, searchType, sort, size   |
-| get_top10_anchors          | Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis                      | query, searchType               |
-| get_backlinks_intersection | Get backlinks from domains that link to multiple analyzed sites simultaneously for competitive analysis        | query, intersect, sort, page    |
-| get_active_outlinks       | Get active outbound links from a domain or URL with target URLs, anchor text, and link attributes             | query, searchType, sort, filters |
-| get_active_outlink_domains | Get external domains that receive outbound links from analyzed domain revealing partnership networks          | query, searchType, sort, filters |
-| get_threat_backlinks       | Get malicious backlinks pointing to analyzed domain from sites flagged for security threats                    | query, searchType, sort, filters |
-| get_related_keywords       | Get semantically related keywords with frequency, CPC, competition, and difficulty data                        | keyword, se, filters, sort      |
-| create_project             | Create a new project in Serpstat for tracking SEO metrics and site audits                                      | domain, name, groups            |
-| delete_project             | Delete an existing project from Serpstat by project ID                                                         | project_id                      |
-| list_projects              | Retrieve a list of projects associated with the account with pagination support                                | page, size                      |
-| get_credits_for_audit_stats| Check available audit credits including one-page audit, JavaScript scanning, and crawl limits (no API cost)    | none                            |
-| get_credits_stats          | Check API credits usage, account info, and browser plugin limits for monitoring API usage (no API cost)        | none                            |
+### Domain Analysis Tools
+
+| Tool Name                | Description                                                              | Key Parameters           |
+|--------------------------|--------------------------------------------------------------------------|--------------------------|
+| get_domains_info         | Get SEO information for multiple domains                                 | domains, se, filters     |
+| get_domain_competitors   | Get list of competitor domains                                           | domain, se, size, filters|
+| get_domain_keywords      | Get keywords that domain ranks for                                       | domain, se, page, size   |
+| get_domain_urls          | Get URLs within a domain and their keyword counts                        | domain, se, page, size   |
+| get_domain_regions_count | Get keyword count by region for a domain                                 | domain, sort, order      |
+| get_domain_uniq_keywords | Get unique keywords for two domains not ranked by a third domain         | se, domains, minusDomain |
+
+### Keyword Research Tools
+
+| Tool Name               | Description                                                                                      | Key Parameters             |
+|-------------------------|--------------------------------------------------------------------------------------------------|----------------------------|
+| get_keywords            | Get related organic keywords for a given keyword                                                 | keyword, se, filters       |
+| get_related_keywords    | Get semantically related keywords with frequency, CPC, competition, and difficulty data          | keyword, se, filters, sort |
+| get_keyword_suggestions | Get search suggestions for a keyword using full-text search with geographic names info           | keyword, se, filters       |
+| get_keywords_info       | Get keyword overview with volume, CPC, competition, difficulty, and SERP features                | keywords, se, withIntents  |
+| get_keyword_full_top    | Get Google's top-100 search results for analyzed keywords                                        | keyword, se, size          |
+| get_keyword_top_urls    | Get website pages that rank for the largest amount of analyzed keyword variations                | keyword, se, page, page_size|
+| get_keyword_competitors | Get domains that rank for the given keyword in Google top-20 results with competitor analysis    | keyword, se, filters, sort |
+| get_keyword_top         | Get Google's top-100 search results for the analyzed keyword with position, URL, and SERP features| keyword, se, filters, size |
+
+### Backlinks Analysis Tools
+
+| Tool Name                  | Description                                                                                   | Key Parameters               |
+|----------------------------|-----------------------------------------------------------------------------------------------|------------------------------|
+| get_backlinks_summary      | Get comprehensive backlinks summary with referring domains, quality metrics, and changes      | domain, subdomain            |
+| get_anchors                | Get anchor text analysis for backlinks with metrics on referring domains and backlinks        | query, searchType, anchor, sort|
+| get_active_backlinks       | Get a list of active backlinks showing linking pages, target pages, and link attributes       | query, searchType, sort, page|
+| get_referring_domains      | Get a list of referring domains with domain rank metrics and referring pages count            | query, searchType, sort, page|
+| get_lost_backlinks         | Get a list of lost backlinks showing linking pages, target pages, and deletion dates          | query, searchType, sort, page|
+| get_top_pages_by_backlinks | Get a list of top pages by backlinks with various filtering and sorting parameters            | query, searchType, sort, size|
+| get_top10_anchors          | Get TOP-10 anchors with the number of backlinks and referring domains                         | query, searchType            |
+| get_backlinks_intersection | Get backlinks from domains that link to multiple analyzed sites for competitive analysis      | query, intersect, sort, page |
+| get_active_outlinks        | Get active outbound links from a domain or URL with target URLs and anchor text               | query, searchType, sort, filters|
+| get_active_outlink_domains | Get external domains that receive outbound links from analyzed domain                         | query, searchType, sort, filters|
+| get_threat_backlinks       | Get malicious backlinks pointing to analyzed domain from sites flagged for security threats   | query, searchType, sort, filters|
+
+### Project Management Tools
+
+| Tool Name      | Description                                                                    | Key Parameters       |
+|----------------|--------------------------------------------------------------------------------|----------------------|
+| create_project | Create a new project in Serpstat for tracking SEO metrics and site audits     | domain, name, groups |
+| delete_project | Delete an existing project from Serpstat by project ID                        | project_id           |
+| list_projects  | Retrieve a list of projects associated with the account with pagination       | page, size           |
+
+### Credits & Usage Monitoring Tools
+
+| Tool Name                   | Description                                                                                  | Key Parameters |
+|-----------------------------|----------------------------------------------------------------------------------------------|----------------|
+| get_credits_for_audit_stats | Check available audit credits (one-page audit, JavaScript scanning, crawl limits) *No cost* | none           |
+| get_credits_stats           | Check API credits usage, account info, and browser plugin limits *No cost*                  | none           |
+
+### Rank Tracking Tools
+
+| Tool Name                           | Description                                                                                      | Key Parameters                |
+|-------------------------------------|--------------------------------------------------------------------------------------------------|-------------------------------|
+| get_rt_projects_list                | Get rank tracker projects with ID, name, domain, creation date, and tracking status *No cost*   | page, pageSize                |
+| get_rt_project_status               | Check if rank tracker project is parsing (true=processing, false=ready) *No cost*               | projectId, regionId           |
+| get_rt_project_regions_list         | Get list of regions for a rank tracker project with status, SERP type, device, and location *No cost* | projectId                    |
+| get_rt_project_keyword_serp_history | Get Google's top-100 SERP history for rank tracker keywords with positions and URLs *No cost*   | projectId, projectRegionId, page|
+| get_rt_project_url_serp_history     | Get ranking history of URLs for rank tracker keywords with historical position data *No cost*   | projectId, projectRegionId, page|
 
 ### Search Engines (se parameter)
 
