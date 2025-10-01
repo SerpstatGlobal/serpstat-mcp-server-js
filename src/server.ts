@@ -8,6 +8,7 @@ import { BaseHandler } from './handlers/base.js';
 import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from './handlers/domain_tools.js';
 import { BacklinksSummaryHandler, GetAnchorsHandler, GetActiveBacklinksHandler, GetReferringDomainsHandler, GetLostBacklinksHandler, GetTopAnchorsHandler, GetTopPagesByBacklinksHandler, GetBacklinksIntersectionHandler, GetActiveOutlinksHandler, GetActiveOutlinkDomainsHandler, GetThreatBacklinksHandler } from './handlers/backlinks_tools.js';
 import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler, GetKeywordFullTopHandler, GetKeywordTopUrlsHandler, GetKeywordCompetitorsHandler, GetKeywordTopHandler } from './handlers/keyword_tools.js';
+import { GetUrlSummaryTrafficHandler, GetUrlCompetitorsHandler, GetUrlKeywordsHandler, GetUrlMissingKeywordsHandler } from './handlers/url_tools.js';
 import { CreateProjectHandler, DeleteProjectHandler, ListProjectsHandler } from './handlers/project_tools.js';
 import { GetAuditStatsHandler, GetCreditsStatsHandler } from './handlers/credits_tools.js';
 import { GetRtProjectsListHandler, GetRtProjectStatusHandler, GetRtProjectRegionsListHandler, GetRtProjectKeywordSerpHistoryHandler, GetRtProjectUrlSerpHistoryHandler } from './handlers/rank_tracking_tools.js';
@@ -21,7 +22,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.0.8',
+                version: '1.0.9',
             },
             {
                 capabilities: {
@@ -62,6 +63,10 @@ export class SerpstatMCPServer {
             new GetKeywordTopUrlsHandler(),
             new GetKeywordCompetitorsHandler(),
             new GetKeywordTopHandler(),
+            new GetUrlSummaryTrafficHandler(),
+            new GetUrlCompetitorsHandler(),
+            new GetUrlKeywordsHandler(),
+            new GetUrlMissingKeywordsHandler(),
             new CreateProjectHandler(),
             new DeleteProjectHandler(),
             new ListProjectsHandler(),

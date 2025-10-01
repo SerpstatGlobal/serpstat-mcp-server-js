@@ -179,6 +179,15 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 | get_keyword_competitors | Get domains that rank for the given keyword in Google top-20 results with competitor analysis    | keyword, se, filters, sort |
 | get_keyword_top         | Get Google's top-100 search results for the analyzed keyword with position, URL, and SERP features| keyword, se, filters, size |
 
+### URL Analysis Tools
+
+| Tool Name                 | Description                                                                                        | Key Parameters           |
+|---------------------------|---------------------------------------------------------------------------------------------------|--------------------------|
+| get_url_summary_traff     | Get traffic and keyword statistics for website pages matching a specific URL mask                | se, domain, urlContains  |
+| get_url_competitors       | Get list of URL competitors showing domains competing for same keywords in top-10 results        | se, url, sort, page      |
+| get_url_keywords          | Get keywords for which specified URL ranks in top-100 Google and top-50 Bing search results     | se, url, filters, sort   |
+| get_url_missing_keywords  | Get keywords that competitors rank for but the given URL does not, identifying keyword gaps      | url, se, filters, sort   |
+
 ### Backlinks Analysis Tools
 
 | Tool Name                  | Description                                                                                   | Key Parameters               |

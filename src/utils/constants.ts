@@ -182,6 +182,7 @@ export const MAX_FILTER_DIFFICULTY = 100;
 export const MIN_FILTER_CONCURRENCY = 1;
 export const MAX_FILTER_CONCURRENCY = 100;
 export const MAX_URL_PREFIX_LENGTH = 500;
+export const MIN_URL_CONTAIN_LENGTH = 3;
 export const MAX_URL_CONTAIN_LENGTH = 200;
 export const MIN_UNIQ_DOMAINS = 1;
 export const MAX_UNIQ_DOMAINS = 2;
@@ -272,3 +273,9 @@ export const MIN_RT_PROJECT_ID = 1;
 export const MIN_RT_REGION_ID = 1;
 export const RT_SERP_HISTORY_SORT_TYPES = ["keyword", "date"] as const;
 export const MAX_RT_KEYWORDS_FILTER = 1000;
+
+// URL Analysis constants
+export const URL_OUTPUT_DATA_TYPES = ["traffic", "keywords"] as const;
+export const URL_COMPETITORS_SORT_FIELDS = ["cnt"] as const;
+export const URL_KEYWORDS_SORT_FIELDS = ["position", "difficulty", "cost", "traff"] as const;
+export const URL_MISSING_KEYWORDS_SORT_FIELDS = ["weight"] as const;

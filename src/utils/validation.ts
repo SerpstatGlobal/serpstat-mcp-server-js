@@ -82,6 +82,7 @@ import {
     MIN_RT_REGION_ID,
     RT_SERP_HISTORY_SORT_TYPES,
     MAX_RT_KEYWORDS_FILTER,
+    URL_OUTPUT_DATA_TYPES,
 } from './constants.js';
 
 // Common schemas
@@ -809,3 +810,92 @@ export const getRtProjectUrlSerpHistorySchema = z.object({
 }).strict();
 
 export type GetRtProjectUrlSerpHistoryParams = z.infer<typeof getRtProjectUrlSerpHistorySchema>;
+
+// URL Analysis schemas
+
+export const urlSummaryTrafficSchema = z.object({
+    se: searchEngineSchema,
+    domain: domainSchema,
+    urlContains: z.string().min(1).max(MAX_URL_CONTAIN_LENGTH),
+    output_data: z.enum(URL_OUTPUT_DATA_TYPES).optional(),
+}).strict();
+
+export type UrlSummaryTrafficParams = z.infer<typeof urlSummaryTrafficSchema>;
+
+export const urlCompetitorsSchema = z.object({
+    se: searchEngineSchema,
+    url: z.string().url(),
+    sort: z.object({
+        cnt: sortOrderSchema.optional()
+    }).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).optional(),
+}).strict();
+
+export type UrlCompetitorsParams = z.infer<typeof urlCompetitorsSchema>;
+
+export const urlKeywordsSchema = z.object({
+    se: searchEngineSchema,
+    url: z.string().url(),
+    withIntents: z.boolean().optional(),
+    sort: z.object({
+        position: sortOrderSchema.optional(),
+        difficulty: sortOrderSchema.optional(),
+        cost: sortOrderSchema.optional(),
+        traff: sortOrderSchema.optional(),
+    }).optional(),
+    filters: z.object({
+        ...costFilterWithMaxSchema.shape,
+        ...positionFilterSchema.shape,
+        ...concurrencyFilterSchema.shape,
+        keyword_length: z.number().int().min(MIN_KEYWORD_LENGTH).optional(),
+        ...difficultyFilterSchema.shape,
+        traff: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        ...regionQueriesFilterSchema.shape,
+        region_queries_count_wide: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        region_queries_count_wide_from: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        region_queries_count_wide_to: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        url_contains: z.string().optional(),
+        right_spelling: z.boolean().optional(),
+        keyword_contain: z.string().optional(),
+        keyword_not_contain: z.string().optional(),
+        keyword_contain_one_of: z.string().optional(),
+        keyword_not_contain_one_of: z.string().optional(),
+        intents_contain: z.array(keywordIntentsSchema).optional(),
+        intents_not_contain: z.array(keywordIntentsSchema).optional(),
+    }).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).optional(),
+}).strict();
+
+export type UrlKeywordsParams = z.infer<typeof urlKeywordsSchema>;
+
+export const urlMissingKeywordsSchema = z.object({
+    url: z.string().url(),
+    se: searchEngineSchema,
+    sort: z.object({
+        weight: sortOrderSchema.optional()
+    }).optional(),
+    filters: z.object({
+        region_queries_count: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        region_queries_count_to: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        region_queries_count_from: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        region_queries_count_wide: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        region_queries_count_wide_to: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        region_queries_count_wide_from: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        ...costFilterSchema.shape,
+        keyword: z.string().optional(),
+        minus_keywords: keywordArraySchema.optional(),
+        concurrency: z.number().min(MIN_FILTER_VALUE).optional(),
+        concurrency_to: z.number().min(MIN_FILTER_VALUE).optional(),
+        concurrency_from: z.number().min(MIN_FILTER_VALUE).optional(),
+        weight: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        weight_to: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        weight_from: z.number().int().min(MIN_FILTER_VALUE).optional(),
+        right_spelling: z.boolean().optional(),
+    }).optional(),
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).optional(),
+}).strict();
+
+export type UrlMissingKeywordsParams = z.infer<typeof urlMissingKeywordsSchema>;

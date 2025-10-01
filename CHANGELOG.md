@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.9] - 2025-10-01
+
+### Added
+
+- **URL Analysis Tools**: Added four new methods for analyzing website URLs and their search performance
+    - `get_url_summary_traff` - Get traffic and keyword statistics for website pages matching a specific URL mask, showing organic traffic and keyword counts for URLs matching the given pattern
+    - `get_url_competitors` - Get list of URL competitors showing domains and pages that compete for the same keywords in top-10 search results
+    - `get_url_keywords` - Get keywords for which specified URL ranks in top-100 Google and top-50 Bing search results, with comprehensive metrics including positions, traffic, difficulty, and keyword intents
+    - `get_url_missing_keywords` - Get keywords that competitors rank for but the given URL does not, helping identify keyword gaps and content optimization opportunities
+- Added comprehensive validation schemas and TypeScript types for URL analysis operations
+- Added test coverage for all URL analysis methods (24 tests)
+- Updated documentation with URL analysis tools section and usage examples
+
 ## [1.0.8] - 2025-09-30
 
 ### Added

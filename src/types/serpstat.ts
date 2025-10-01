@@ -731,3 +731,79 @@ export interface GetRtProjectUrlSerpHistoryResponse {
     summary_info: RtProjectsSummaryInfo;
     spent_limits: number;
 }
+
+// URL Analysis types
+
+export interface UrlSummaryTrafficResponse {
+    urls: number;
+    traffic?: number;
+    keywords?: number;
+    summary_info: {
+        left_lines: number;
+    };
+}
+
+export interface UrlCompetitorData {
+    domain: string;
+    url: string;
+    cnt: number;
+}
+
+export interface UrlCompetitorsResponse {
+    data: UrlCompetitorData[];
+    summary_info: {
+        page: number;
+        total: number;
+        left_lines: number;
+    };
+}
+
+export interface UrlKeywordData {
+    domain: string;
+    subdomain: string;
+    keyword: string;
+    keyword_length: number;
+    url: string;
+    position: number;
+    types: string[];
+    found_results: number;
+    cost: number;
+    concurrency: number;
+    region_queries_count: number;
+    region_queries_count_wide: number | null;
+    geo_names: string[];
+    traff: number;
+    difficulty: number;
+    dynamic: number;
+    intents: string[];
+    first_position?: string;
+    first_url?: string;
+}
+
+export interface UrlKeywordsResponse {
+    data: UrlKeywordData[];
+    summary_info: {
+        page: number;
+        total: number;
+        left_lines: number;
+    };
+}
+
+export interface UrlMissingKeywordData {
+    geo_names: string[];
+    region_queries_count: number;
+    types: string[];
+    cost: number;
+    region_queries_count_wide: number;
+    keyword: string;
+    concurrency: number;
+    weight: number;
+}
+
+export interface UrlMissingKeywordsResponse {
+    data: UrlMissingKeywordData[];
+    summary_info: {
+        page: number;
+        left_lines: number;
+    };
+}
