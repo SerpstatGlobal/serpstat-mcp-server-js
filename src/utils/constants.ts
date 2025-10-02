@@ -279,3 +279,56 @@ export const URL_OUTPUT_DATA_TYPES = ["traffic", "keywords"] as const;
 export const URL_COMPETITORS_SORT_FIELDS = ["cnt"] as const;
 export const URL_KEYWORDS_SORT_FIELDS = ["position", "difficulty", "cost", "traff"] as const;
 export const URL_MISSING_KEYWORDS_SORT_FIELDS = ["weight"] as const;
+
+// Site Audit constants
+export const SITE_AUDIT_USER_AGENT_IDS = [0, 1, 2, 3, 4, 5] as const;
+export const SITE_AUDIT_SCHEDULE_REPEAT_IDS = [0, 1, 2, 3, 4, 5] as const;
+export const SITE_AUDIT_INTERVAL_IDS = [0, 1, 2, 3, 4, 5] as const;
+export const SITE_AUDIT_SCAN_TYPES = [1, 2, 3] as const;
+export const SITE_AUDIT_URL_SCAN_TYPES = [2, 3] as const;
+
+export const MIN_SCAN_SPEED = 1;
+export const MAX_SCAN_SPEED = 30;
+export const MIN_SCAN_DURATION = 0;
+export const MIN_FOLDER_DEPTH = 0;
+export const MIN_URL_DEPTH = 0;
+export const MIN_PAGES_LIMIT = 1;
+export const MIN_TITLE_LENGTH = 1;
+export const MIN_DESC_LENGTH = 1;
+export const MIN_URL_LENGTH = 1;
+export const MIN_IMAGE_SIZE = 1;
+export const MIN_PAGE_SIZE = 1;
+export const MIN_EXTERNAL_LINKS = 1;
+export const DEFAULT_AUDIT_LIMIT = 30;
+export const MIN_AUDIT_OFFSET = 0;
+export const MIN_REPORT_ID = 1;
+
+export const SITE_AUDIT_CATEGORY_NAMES = [
+    "pages_status", "meta_tags", "headings", "content", "multimedia",
+    "indexation", "redirects", "links", "https", "hreflang", "amp",
+    "markup", "pagespeed_desktop", "pagespeed_mobile", "server_params"
+] as const;
+
+export const SITE_AUDIT_ERROR_NAMES = [
+    "errors_400", "errors_500", "no_desc", "no_title", "tiny_desc", "long_title",
+    "tiny_title", "many_title", "meta_refresh", "title_dup_h1", "charset_missing",
+    "long_desc", "h1_missing", "many_h1", "broken_image_url", "large_image_size",
+    "image_no_alt", "many_canonical", "use_flash", "use_iframe", "less_words",
+    "wrong_canonical", "hidden_no_index", "hidden_robots_txt", "offsite_canonical",
+    "relative_canonical", "redirects", "many_get_params", "long_url",
+    "many_external_links", "miss_favicon", "external_link_without_no_follow_exist",
+    "internal_links_no_follow_exist", "https_check_domain_in_cert", "https_hsts",
+    "https_cert_chain", "https_expired", "https_tls", "https_sslv3",
+    "https_self_signed", "https_sitemap_with_http", "https_mixed_content",
+    "https_link_to_http", "https_non_secure_page", "hreflang_usage", "amp_usage",
+    "markup_schema_missing", "markup_open_graph_missing", "markup_twitter_card_missing",
+    "markup_json_ld_missing", "OptimizeImages", "LeverageBrowserCaching",
+    "MinimizeRenderBlockingResources", "large_page_size", "body_text_missing",
+    "dummy_text", "hreflang_wrong_value", "hreflang_no_link", "hreflang_wrong_url",
+    "hreflang_broken_links", "pages_title_dup", "pages_desc_dup", "pages_h1_dup",
+    "https_status:no_redirect", "www_status:www_status"
+] as const;
+
+export const SITE_AUDIT_ERROR_DISPLAY_MODES = ["all", "new", "solved"] as const;
+export const SITE_AUDIT_ERROR_PRIORITIES = ["high", "medium", "low", "information", "solved"] as const;
+export const DEFAULT_ERROR_ELEMENTS_LIMIT = 10;

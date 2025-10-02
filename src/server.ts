@@ -12,6 +12,7 @@ import { GetUrlSummaryTrafficHandler, GetUrlCompetitorsHandler, GetUrlKeywordsHa
 import { CreateProjectHandler, DeleteProjectHandler, ListProjectsHandler } from './handlers/project_tools.js';
 import { GetAuditStatsHandler, GetCreditsStatsHandler } from './handlers/credits_tools.js';
 import { GetRtProjectsListHandler, GetRtProjectStatusHandler, GetRtProjectRegionsListHandler, GetRtProjectKeywordSerpHistoryHandler, GetRtProjectUrlSerpHistoryHandler } from './handlers/rank_tracking_tools.js';
+import { GetSiteAuditSettingsHandler, SetSiteAuditSettingsHandler, StartSiteAuditHandler, StopSiteAuditHandler, GetCategoriesStatisticHandler, GetHistoryByCountErrorHandler, GetSiteAuditsListHandler, GetScanUserUrlListHandler, GetDefaultSettingsHandler, GetBasicInfoHandler, GetReportWithoutDetailsHandler, GetErrorElementsHandler, GetSubElementsByCrcHandler } from './handlers/site_audit_tools.js';
 import { logger } from './utils/logger.js';
 
 export class SerpstatMCPServer {
@@ -77,6 +78,19 @@ export class SerpstatMCPServer {
             new GetRtProjectRegionsListHandler(),
             new GetRtProjectKeywordSerpHistoryHandler(),
             new GetRtProjectUrlSerpHistoryHandler(),
+            new GetSiteAuditSettingsHandler(),
+            new SetSiteAuditSettingsHandler(),
+            new StartSiteAuditHandler(),
+            new StopSiteAuditHandler(),
+            new GetCategoriesStatisticHandler(),
+            new GetHistoryByCountErrorHandler(),
+            new GetSiteAuditsListHandler(),
+            new GetScanUserUrlListHandler(),
+            new GetDefaultSettingsHandler(),
+            new GetBasicInfoHandler(),
+            new GetReportWithoutDetailsHandler(),
+            new GetErrorElementsHandler(),
+            new GetSubElementsByCrcHandler(),
         ];
 
         for (const handler of handlers) {

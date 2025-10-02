@@ -807,3 +807,183 @@ export interface UrlMissingKeywordsResponse {
         left_lines: number;
     };
 }
+
+// Site Audit types
+export interface SiteAuditMainSettings {
+    domain: string;
+    name: string;
+    subdomainsCheck: boolean;
+    pagesLimit: number;
+    scanSpeed: number;
+    autoSpeed: boolean;
+    scanNoIndex: boolean;
+    autoUserAgent: boolean;
+    scanWrongCanonical: boolean;
+    scanDuration: number;
+    folderDepth: number;
+    urlDepth: number;
+    userAgent: number;
+    robotsTxt: boolean;
+    withImages: boolean;
+}
+
+export interface SiteAuditKeywordsBlock {
+    checked: boolean;
+    keywords: string;
+}
+
+export interface SiteAuditBaseAuthBlock {
+    login: string;
+    password: string;
+}
+
+export interface SiteAuditMailTriggerSettings {
+    emails: string[];
+    interval: number;
+    enabled: boolean;
+    enableExportAfterFinish?: boolean;
+}
+
+export interface SiteAuditScheduleSettings {
+    scheduleRepeatOption: number;
+}
+
+export interface SiteAuditScanSetting {
+    type: number;
+    list: string[];
+}
+
+export interface SiteAuditErrorsSettings {
+    tiny_title: number;
+    long_title: number;
+    tiny_desc: number;
+    long_desc: number;
+    long_url: number;
+    large_image_size: number;
+    large_page_size: number;
+    many_external_links: number;
+}
+
+export interface SiteAuditSettings {
+    mainSettings: SiteAuditMainSettings;
+    dontScanKeywordsBlock: SiteAuditKeywordsBlock;
+    onlyScanKeywordsBlock: SiteAuditKeywordsBlock;
+    baseAuthBlock: SiteAuditBaseAuthBlock;
+    mailTriggerSettings: SiteAuditMailTriggerSettings;
+    scheduleSettings: SiteAuditScheduleSettings;
+    scanSetting: SiteAuditScanSetting;
+    errorsSettings: SiteAuditErrorsSettings;
+}
+
+export interface GetSiteAuditSettingsResponse extends SiteAuditSettings {}
+
+export interface SetSiteAuditSettingsResponse {
+    result: null;
+}
+
+export interface StartSiteAuditResponse {
+    reportId: number;
+}
+
+export interface StopSiteAuditResponse {
+    result: boolean;
+}
+
+export interface CategoryStatistic {
+    category: string;
+    highCount: number;
+    mediumCount: number;
+    lowCount: number;
+    informationCount: number;
+}
+
+export type GetCategoriesStatisticResponse = CategoryStatistic[];
+
+export interface ErrorCountHistory {
+    reportId: number;
+    date: string;
+    count: string;
+}
+
+export interface GetHistoryByCountErrorResponse {
+    errorCounts: ErrorCountHistory[];
+}
+
+export interface AuditReportSummary {
+    reportId: number;
+    date: string;
+    sdo: number;
+    pagesLimit: number;
+    pagesScanned: number;
+    criticalCount: number;
+    nonCriticalCount: number;
+    virusesCount: number;
+    progress: number;
+    stoped: boolean;
+    hasDetailData: boolean;
+}
+
+export type GetSiteAuditsListResponse = AuditReportSummary[];
+
+export interface GetScanUserUrlListResponse {
+    urls: string[];
+    scanType: number;
+    isImported: boolean;
+}
+
+export interface GetDefaultSettingsResponse extends SiteAuditSettings {}
+
+export interface GetBasicInfoResponse {
+    reportId: number;
+    date: string;
+    sdo: number;
+    highCount: number;
+    mediumCount: number;
+    lowCount: number;
+    informationCount: number;
+    virusesCount: number;
+    progress: number;
+    stoped: number;
+    specialStopReason: number;
+    checkedPageCount: number;
+    totalCheckedPageCount: number;
+    redirectCount: number;
+    captchaDetected: boolean;
+    hasDetailData: boolean;
+}
+
+export interface AuditError {
+    key: string;
+    priority: string;
+    countAll: number;
+    countNew: number;
+    countFixed: number;
+}
+
+export interface AuditCategory {
+    key: string;
+    errors: AuditError[];
+}
+
+export interface GetReportWithoutDetailsResponse {
+    categories: AuditCategory[];
+}
+
+export interface ErrorElement {
+    startUrl: string;
+    code: number;
+    finishUrl: string;
+    count: number;
+    startUrlCrc: number;
+}
+
+export interface GetErrorElementsResponse {
+    data: ErrorElement[];
+    totalCount: number;
+    mode: string;
+}
+
+export interface GetSubElementsByCrcResponse {
+    data: string[];
+    totalCount: number;
+}

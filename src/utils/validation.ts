@@ -83,6 +83,23 @@ import {
     RT_SERP_HISTORY_SORT_TYPES,
     MAX_RT_KEYWORDS_FILTER,
     URL_OUTPUT_DATA_TYPES,
+    DEFAULT_AUDIT_LIMIT,
+    MIN_AUDIT_OFFSET,
+    MIN_REPORT_ID,
+    SITE_AUDIT_ERROR_DISPLAY_MODES,
+    DEFAULT_ERROR_ELEMENTS_LIMIT,
+    MIN_SCAN_SPEED,
+    MAX_SCAN_SPEED,
+    MIN_SCAN_DURATION,
+    MIN_FOLDER_DEPTH,
+    MIN_URL_DEPTH,
+    MIN_PAGES_LIMIT,
+    MIN_TITLE_LENGTH,
+    MIN_DESC_LENGTH,
+    MIN_URL_LENGTH,
+    MIN_IMAGE_SIZE,
+    MIN_PAGE_SIZE,
+    MIN_EXTERNAL_LINKS,
 } from './constants.js';
 
 // Common schemas
@@ -899,3 +916,170 @@ export const urlMissingKeywordsSchema = z.object({
 }).strict();
 
 export type UrlMissingKeywordsParams = z.infer<typeof urlMissingKeywordsSchema>;
+
+
+
+const userAgentIdSchema = z.number().int().min(0).max(5);
+const scheduleRepeatIdSchema = z.number().int().min(0).max(5);
+const intervalIdSchema = z.number().int().min(0).max(5);
+const scanTypeSchema = z.number().int().min(1).max(3);
+
+const mainSettingsSchema = z.object({
+    domain: z.string().min(MIN_DOMAIN_LENGTH).max(MAX_DOMAIN_LENGTH),
+    name: z.string().min(MIN_DOMAIN_LENGTH),
+    subdomainsCheck: z.boolean(),
+    pagesLimit: z.number().int().min(MIN_PAGES_LIMIT),
+    scanSpeed: z.number().int().min(MIN_SCAN_SPEED).max(MAX_SCAN_SPEED),
+    autoSpeed: z.boolean(),
+    scanNoIndex: z.boolean(),
+    autoUserAgent: z.boolean(),
+    scanWrongCanonical: z.boolean(),
+    scanDuration: z.number().int().min(MIN_SCAN_DURATION),
+    folderDepth: z.number().int().min(MIN_FOLDER_DEPTH),
+    urlDepth: z.number().int().min(MIN_URL_DEPTH),
+    userAgent: userAgentIdSchema,
+    robotsTxt: z.boolean(),
+    withImages: z.boolean(),
+});
+
+const keywordsBlockSchema = z.object({
+    checked: z.boolean(),
+    keywords: z.string(),
+});
+
+const baseAuthBlockSchema = z.object({
+    login: z.string(),
+    password: z.string(),
+});
+
+const mailTriggerSettingsSchema = z.object({
+    emails: z.array(z.string()),
+    interval: intervalIdSchema,
+    enabled: z.boolean(),
+});
+
+const scheduleSettingsSchema = z.object({
+    scheduleRepeatOption: scheduleRepeatIdSchema,
+});
+
+const scanSettingSchema = z.object({
+    type: scanTypeSchema,
+    list: z.array(z.string()),
+    importedFilename: z.string().optional(),
+});
+
+const errorsSettingsSchema = z.object({
+    tiny_title: z.number().int().min(MIN_TITLE_LENGTH),
+    long_title: z.number().int().min(MIN_TITLE_LENGTH),
+    tiny_desc: z.number().int().min(MIN_DESC_LENGTH),
+    long_desc: z.number().int().min(MIN_DESC_LENGTH),
+    long_url: z.number().int().min(MIN_URL_LENGTH),
+    large_image_size: z.number().int().min(MIN_IMAGE_SIZE),
+    large_page_size: z.number().int().min(MIN_PAGE_SIZE),
+    many_external_links: z.number().int().min(MIN_EXTERNAL_LINKS),
+});
+
+export const getSiteAuditSettingsSchema = z.object({
+    projectId: z.number().int().min(MIN_PROJECT_ID),
+}).strict();
+
+export type GetSiteAuditSettingsParams = z.infer<typeof getSiteAuditSettingsSchema>;
+
+export const setSiteAuditSettingsSchema = z.object({
+    projectId: z.number().int().min(MIN_PROJECT_ID),
+    mainSettings: mainSettingsSchema,
+    dontScanKeywordsBlock: keywordsBlockSchema,
+    onlyScanKeywordsBlock: keywordsBlockSchema,
+    baseAuthBlock: baseAuthBlockSchema,
+    mailTriggerSettings: mailTriggerSettingsSchema,
+    scheduleSettings: scheduleSettingsSchema,
+    scanSetting: scanSettingSchema,
+    errorsSettings: errorsSettingsSchema.optional(),
+}).strict();
+
+export type SetSiteAuditSettingsParams = z.infer<typeof setSiteAuditSettingsSchema>;
+
+export const startSiteAuditSchema = z.object({
+    projectId: z.number().int().min(MIN_PROJECT_ID),
+}).strict();
+
+export type StartSiteAuditParams = z.infer<typeof startSiteAuditSchema>;
+
+export const stopSiteAuditSchema = z.object({
+    projectId: z.number().int().min(MIN_PROJECT_ID),
+}).strict();
+
+export type StopSiteAuditParams = z.infer<typeof stopSiteAuditSchema>;
+
+export const getCategoriesStatisticSchema = z.object({
+    reportId: z.number().int().min(MIN_REPORT_ID),
+}).strict();
+
+export type GetCategoriesStatisticParams = z.infer<typeof getCategoriesStatisticSchema>;
+
+export const getHistoryByCountErrorSchema = z.object({
+    projectId: z.number().int().min(MIN_PROJECT_ID),
+    errorName: z.string(),
+    limit: z.number().int().min(1).default(DEFAULT_AUDIT_LIMIT),
+    offset: z.number().int().min(MIN_AUDIT_OFFSET).default(MIN_AUDIT_OFFSET),
+}).strict();
+
+export type GetHistoryByCountErrorParams = z.infer<typeof getHistoryByCountErrorSchema>;
+
+export const getSiteAuditsListSchema = z.object({
+    projectId: z.number().int().min(MIN_PROJECT_ID),
+    limit: z.number().int().min(1).default(DEFAULT_AUDIT_LIMIT),
+    offset: z.number().int().min(MIN_AUDIT_OFFSET).default(MIN_AUDIT_OFFSET),
+}).strict();
+
+export type GetSiteAuditsListParams = z.infer<typeof getSiteAuditsListSchema>;
+
+export const getScanUserUrlListSchema = z.object({
+    projectId: z.number().int().min(MIN_PROJECT_ID),
+}).strict();
+
+export type GetScanUserUrlListParams = z.infer<typeof getScanUserUrlListSchema>;
+
+export const getDefaultSettingsSchema = z.object({}).strict();
+
+export type GetDefaultSettingsParams = z.infer<typeof getDefaultSettingsSchema>;
+
+export const getBasicInfoSchema = z.object({
+    reportId: z.number().int().min(MIN_REPORT_ID),
+}).strict();
+
+export type GetBasicInfoParams = z.infer<typeof getBasicInfoSchema>;
+
+export const getReportWithoutDetailsSchema = z.object({
+    reportId: z.number().int().min(MIN_REPORT_ID),
+    compareReportId: z.number().int().min(MIN_REPORT_ID).optional(),
+}).strict();
+
+export type GetReportWithoutDetailsParams = z.infer<typeof getReportWithoutDetailsSchema>;
+
+const errorDisplayModeSchema = z.enum(SITE_AUDIT_ERROR_DISPLAY_MODES);
+
+export const getErrorElementsSchema = z.object({
+    reportId: z.number().int().min(MIN_REPORT_ID),
+    compareReportId: z.number().int().min(MIN_REPORT_ID),
+    projectId: z.number().int().min(MIN_PROJECT_ID),
+    errorName: z.string(),
+    mode: errorDisplayModeSchema.default("all"),
+    limit: z.number().int().min(1).default(DEFAULT_ERROR_ELEMENTS_LIMIT),
+    offset: z.number().int().min(MIN_AUDIT_OFFSET).default(MIN_AUDIT_OFFSET),
+}).strict();
+
+export type GetErrorElementsParams = z.infer<typeof getErrorElementsSchema>;
+
+export const getSubElementsByCrcSchema = z.object({
+    reportId: z.number().int().min(MIN_REPORT_ID),
+    compareReportId: z.number().int().min(MIN_REPORT_ID).optional(),
+    projectId: z.number().int().min(MIN_PROJECT_ID),
+    errorName: z.string(),
+    mode: errorDisplayModeSchema.default("all"),
+    limit: z.number().int().min(1).default(DEFAULT_AUDIT_LIMIT),
+    offset: z.number().int().min(MIN_AUDIT_OFFSET).default(MIN_AUDIT_OFFSET),
+    crc: z.number().int(),
+}).strict();
+
+export type GetSubElementsByCrcParams = z.infer<typeof getSubElementsByCrcSchema>;

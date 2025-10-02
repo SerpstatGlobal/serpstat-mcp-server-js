@@ -153,6 +153,11 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 - "List all my rank tracker projects"
 - "Check parsing status for project **12345** in region **2840**"
 
+### Site Audit
+- "Get audit settings for project **1113915**"
+- "Start site audit for project **1113915**"
+- "Stop site audit for project **1113915**"
+
 ## MCP Tools
 
 ### Domain Analysis Tools
@@ -228,6 +233,24 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 | get_rt_project_regions_list         | Get list of regions for a rank tracker project with status, SERP type, device, and location *No cost* | projectId                    |
 | get_rt_project_keyword_serp_history | Get Google's top-100 SERP history for rank tracker keywords with positions and URLs *No cost*   | projectId, projectRegionId, page|
 | get_rt_project_url_serp_history     | Get ranking history of URLs for rank tracker keywords with historical position data *No cost*   | projectId, projectRegionId, page|
+
+### Site Audit Tools
+
+| Tool Name                   | Description                                                                                                                      | Key Parameters              |
+|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
+| get_site_audit_settings                 | Get audit settings for a project including scan parameters, scheduling, and error thresholds *No cost*                          | projectId                        |
+| set_site_audit_settings                 | Update audit settings for a project with scan configuration, scheduling, and notifications *No cost*                            | projectId, mainSettings, ...     |
+| start_site_audit                        | Start audit session for a project and receive reportId for tracking progress (1 credit/page, 10 credits/page with JS rendering) | projectId                        |
+| stop_site_audit                         | Stop active audit session for a project *No cost*                                                                               | projectId                        |
+| get_site_audit_results_by_categories    | Get audit results statistics grouped by issue categories (pages status, meta tags, links, etc.) *No cost*                       | reportId                         |
+| get_site_audit_history                  | Get historical error count data for a specific error type across multiple audit reports *No cost*                               | projectId, errorName, limit, offset |
+| get_site_audits_list                    | Get list of all audit reports for a project with summary statistics and progress information *No cost*                          | projectId, limit, offset         |
+| get_site_audit_scanned_urls_list        | Get list of URLs that will be scanned based on project scan settings *No cost*                                                  | projectId                        |
+| get_site_audit_project_default_settings | Get default audit settings template to use when creating new projects *No cost*                                                 | -                                |
+| get_site_audit_bref_info                | Get essential summary information from latest audit including SDO score, issue counts by priority, scan progress, and completion status *No cost* | reportId                         |
+| get_site_audit_deteailed_report         | Get number of errors categorized by type with comparison to previous report showing countAll, countNew, and countFixed *No cost* | reportId, compareReportId (optional) |
+| get_site_audit_pages_spec_errors        | Get list of all pages where a specific error was detected with filtering by mode (all/new/solved) and pagination support *No cost* | reportId, compareReportId, projectId, errorName, mode, limit, offset |
+| get_site_audit_elements_with_issues     | Get list of sub-elements (URLs) containing specific errors using CRC from get_site_audit_pages_spec_errors response *No cost*  | reportId, projectId, errorName, crc, compareReportId (optional), mode, limit, offset |
 
 ### Search Engines (se parameter)
 

@@ -1,5 +1,27 @@
 # Changelog
 
+## [Unreleased] - 2025-10-01
+
+### Added
+
+- **Site Audit Tools**: Added thirteen methods for comprehensive site audit project management and analysis
+    - `get_site_audit_settings` - Retrieve audit settings for a specific project including scan parameters, scheduling options, email notifications, and error detection thresholds (does not consume API credits)
+    - `set_site_audit_settings` - Update audit settings for a project with comprehensive configuration options for scan speed, user agent, URL depth, folder depth, keywords filtering, HTTP authentication, scheduling, and custom error thresholds (does not consume API credits)
+    - `start_site_audit` - Start an audit session for a specified project and receive a reportId to track audit progress (consumes 1 API credit per successfully scanned page without JS rendering, 10 credits per page with JS rendering)
+    - `stop_site_audit` - Stop an active audit session for a project and receive operation result status (does not consume API credits)
+    - `get_site_audit_results_by_categories` - Get audit results statistics grouped by issue categories (pages status, meta tags, headings, content, multimedia, indexation, redirects, links, HTTPS, hreflang, AMP, markup, pagespeed) showing critical, medium, low, and informational issue counts per category (does not consume API credits)
+    - `get_site_audit_history` - Get historical error count data for a specific error type across multiple audit reports, useful for tracking improvements or regressions in specific SEO issues over time (does not consume API credits)
+    - `get_site_audits_list` - Get list of all audit reports for a project with summary statistics including SDO score, pages scanned, error counts, progress percentage, and completion status (does not consume API credits)
+    - `get_site_audit_scanned_urls_list` - Get list of URLs that will be scanned based on project scan settings (entire domain, specific URLs only, or imported list) useful for verifying audit scope before starting scans (does not consume API credits)
+    - `get_site_audit_project_default_settings` - Get default audit settings template with recommended values for creating new projects, including standard error thresholds, scan parameters, and scheduling options (does not consume API credits)
+    - `get_site_audit_bref_info` - Get essential summary information from the latest site audit including Serpstat Domain Optimization Score (SDO), total error counts by priority level (high/medium/low/information), virus count, scan progress percentage, stop status, scanned pages count, redirect count, and captcha detection status (does not consume API credits)
+    - `get_site_audit_deteailed_report` - Get the number of errors and issues categorized by issue type found in a specific audit report, with optional comparison to another report showing countAll (total errors), countNew (new errors since comparison), and countFixed (fixed errors since comparison) for tracking audit improvements over time (does not consume API credits)
+    - `get_site_audit_pages_spec_errors` - Get a comprehensive list of all pages where a specific audit error was detected, with support for filtering by error display mode (all errors, new errors, or solved errors) and pagination, returning detailed information including startUrl, HTTP status code, finishUrl, occurrence count, and startUrlCrc for each affected page (does not consume API credits)
+    - `get_site_audit_elements_with_issues` - Get a list of sub-elements (URLs) which contain specific errors or issues identified by CRC parameter from get_site_audit_pages_spec_errors response, with support for filtering by mode and pagination, useful for drilling down into specific error instances (does not consume API credits)
+- Added comprehensive validation schemas and TypeScript types for all site audit operations
+- Added test coverage for all site audit methods (51 tests covering validation schemas and service methods)
+- Updated documentation with complete site audit tools section and usage examples
+
 ## [1.0.9] - 2025-10-01
 
 ### Added
@@ -60,7 +82,7 @@
 - Added `get_keyword_full_top` method to show Google's top-100 search results for analyzed keywords
 - Added `get_keywords_info` method to get keyword overview with volume, CPC, competition level, difficulty, and additional metrics for multiple keywords
 - Added `get_keyword_suggestions` method to show search suggestions for keywords found by full-text search with geographic names information
-- Added `get_keyword_top_urls` method to return website pages that rank for the largest amount of analyzed keyword variations with highest traffic
+- Added `get_keyword_top_urls` method to return website pages that rank for the largest amount of analyzed keyword variations with the highest traffic
 - Added `get_keyword_competitors` method to list domains that rank for the given keyword in Google top-20 results with detailed competitor analysis
 - Added `get_keyword_top` method to show Google's top-100 search results for analyzed keyword with position, URL, domain and SERP features (deprecated method)
 - Added `get_anchors` method to analyze anchor text distribution in backlinks with metrics on referring domains, total backlinks, and nofollow counts
