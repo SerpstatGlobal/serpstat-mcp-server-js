@@ -302,6 +302,7 @@ export const MIN_EXTERNAL_LINKS = 1;
 export const DEFAULT_AUDIT_LIMIT = 30;
 export const MIN_AUDIT_OFFSET = 0;
 export const MIN_REPORT_ID = 1;
+export const MIN_PAGE_ID = 1;
 
 export const SITE_AUDIT_CATEGORY_NAMES = [
     "pages_status", "meta_tags", "headings", "content", "multimedia",

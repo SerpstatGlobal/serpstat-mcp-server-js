@@ -13,6 +13,7 @@ import { CreateProjectHandler, DeleteProjectHandler, ListProjectsHandler } from 
 import { GetAuditStatsHandler, GetCreditsStatsHandler } from './handlers/credits_tools.js';
 import { GetRtProjectsListHandler, GetRtProjectStatusHandler, GetRtProjectRegionsListHandler, GetRtProjectKeywordSerpHistoryHandler, GetRtProjectUrlSerpHistoryHandler } from './handlers/rank_tracking_tools.js';
 import { GetSiteAuditSettingsHandler, SetSiteAuditSettingsHandler, StartSiteAuditHandler, StopSiteAuditHandler, GetCategoriesStatisticHandler, GetHistoryByCountErrorHandler, GetSiteAuditsListHandler, GetScanUserUrlListHandler, GetDefaultSettingsHandler, GetBasicInfoHandler, GetReportWithoutDetailsHandler, GetErrorElementsHandler, GetSubElementsByCrcHandler } from './handlers/site_audit_tools.js';
+import { StartOnePageAuditScanHandler, GetOnePageAuditsListHandler, GetOnePageReportsListHandler, GetOnePageAuditResultsHandler } from './handlers/one_page_audit_tools.js';
 import { logger } from './utils/logger.js';
 
 export class SerpstatMCPServer {
@@ -91,6 +92,10 @@ export class SerpstatMCPServer {
             new GetReportWithoutDetailsHandler(),
             new GetErrorElementsHandler(),
             new GetSubElementsByCrcHandler(),
+            new StartOnePageAuditScanHandler(),
+            new GetOnePageAuditsListHandler(),
+            new GetOnePageReportsListHandler(),
+            new GetOnePageAuditResultsHandler(),
         ];
 
         for (const handler of handlers) {

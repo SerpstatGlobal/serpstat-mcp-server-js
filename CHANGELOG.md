@@ -1,5 +1,18 @@
 # Changelog
 
+## [unreleased] - 2025-10-03
+
+### Added
+
+- **One-Page Audit Tools**: Added four methods for single-page audit analysis with JavaScript rendering support
+    - `page_audit_start_scan` - Scan a single webpage with JavaScript rendering and receive pageId and reportId for tracking progress (consumes 10 API credits per scan)
+    - `page_audit_get_last_scans` - Get list of all one-page audit projects with latest scan results, SDO scores, and settings information (does not consume API credits)
+    - `page_audit_get_reports_for_page` - Get history of all audit reports for a specific page with status, SDO scores, error counts by priority, and progress tracking (does not consume API credits)
+    - `page_audit_get_results_report` - Get detailed audit results for a page with error categories grouped by type (meta tags, headings, content, multimedia, etc.) and complete issue breakdown showing priority levels and error counts (does not consume API credits)
+- Added comprehensive validation schemas and TypeScript types for all one-page audit operations
+- Added test coverage for all one-page audit methods (12 tests covering validation schemas)
+- Updated documentation with one-page audit tools section and usage examples
+
 ## [1.1.0] - 2025-10-01
 
 ### Added

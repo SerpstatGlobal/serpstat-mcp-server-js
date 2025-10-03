@@ -567,9 +567,6 @@ export interface CreateProjectResponse {
     project_id: string;
 }
 
-export interface DeleteProjectResponse {
-    result: boolean;
-}
 
 export interface ProjectData {
     project_id: string;
@@ -877,9 +874,6 @@ export interface SiteAuditSettings {
 
 export interface GetSiteAuditSettingsResponse extends SiteAuditSettings {}
 
-export interface SetSiteAuditSettingsResponse {
-    result: null;
-}
 
 export interface StartSiteAuditResponse {
     reportId: number;
@@ -986,4 +980,60 @@ export interface GetErrorElementsResponse {
 export interface GetSubElementsByCrcResponse {
     data: string[];
     totalCount: number;
+}
+
+// One Page Audit response types
+export interface StartOnePageAuditScanResponse {
+    pageId: number;
+    reportId: number;
+}
+
+export interface OnePageAuditSettings {
+    userAgent: string;
+    httpAuthLogin: string | null;
+    httpAuthPassword: string | null;
+}
+
+export interface OnePageReportInfo {
+    id: number;
+    auditDate: string;
+    status: number;
+    sdo: number;
+    high: number;
+    medium: number;
+    low: number;
+    information: number;
+    viruses: number;
+    progress: number;
+}
+
+export interface OnePageAuditInfo {
+    pageId: number;
+    url: string;
+    name: string;
+    status: number;
+    lastActiveReport?: OnePageReportInfo;
+    finishedReportCount: number;
+    settings: OnePageAuditSettings;
+}
+
+export interface GetOnePageAuditsListResponse {
+    data: OnePageAuditInfo[];
+    totalCount: number;
+}
+
+export type GetOnePageReportsListResponse = OnePageReportInfo[];
+
+export interface OnePageInfo {
+    pageId: number;
+    url: string;
+    name: string;
+    status: string;
+    settings: OnePageAuditSettings;
+}
+
+export interface GetOnePageAuditResultsResponse {
+    categories: AuditCategory[];
+    data: OnePageInfo[];
+    report: OnePageReportInfo;
 }

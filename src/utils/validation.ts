@@ -86,7 +86,9 @@ import {
     DEFAULT_AUDIT_LIMIT,
     MIN_AUDIT_OFFSET,
     MIN_REPORT_ID,
+    MIN_PAGE_ID,
     SITE_AUDIT_ERROR_DISPLAY_MODES,
+    SITE_AUDIT_USER_AGENT_IDS,
     DEFAULT_ERROR_ELEMENTS_LIMIT,
     MIN_SCAN_SPEED,
     MAX_SCAN_SPEED,
@@ -1083,3 +1085,38 @@ export const getSubElementsByCrcSchema = z.object({
 }).strict();
 
 export type GetSubElementsByCrcParams = z.infer<typeof getSubElementsByCrcSchema>;
+
+// One Page Audit validation schemas
+export const startOnePageAuditScanSchema = z.object({
+    name: z.string().min(1),
+    url: z.string().url(),
+    userAgent: z.number().int().refine((val) => SITE_AUDIT_USER_AGENT_IDS.includes(val as any), {
+        message: `userAgent must be one of: ${SITE_AUDIT_USER_AGENT_IDS.join(', ')}`
+    }),
+    httpAuthLogin: z.string().optional(),
+    httpAuthPass: z.string().optional(),
+}).strict();
+
+export type StartOnePageAuditScanParams = z.infer<typeof startOnePageAuditScanSchema>;
+
+export const getOnePageAuditsListSchema = z.object({
+    limit: z.number().int().min(1).default(DEFAULT_AUDIT_LIMIT),
+    offset: z.number().int().min(MIN_AUDIT_OFFSET).default(MIN_AUDIT_OFFSET),
+    teamMemberId: z.number().int().optional(),
+}).strict();
+
+export type GetOnePageAuditsListParams = z.infer<typeof getOnePageAuditsListSchema>;
+
+export const getOnePageReportsListSchema = z.object({
+    pageId: z.number().int().min(MIN_PAGE_ID),
+    limit: z.number().int().min(1).optional(),
+    offset: z.number().int().min(MIN_AUDIT_OFFSET).optional(),
+}).strict();
+
+export type GetOnePageReportsListParams = z.infer<typeof getOnePageReportsListSchema>;
+
+export const getOnePageAuditResultsSchema = z.object({
+    pageId: z.number().int().min(MIN_PAGE_ID),
+}).strict();
+
+export type GetOnePageAuditResultsParams = z.infer<typeof getOnePageAuditResultsSchema>;

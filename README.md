@@ -252,6 +252,15 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 | get_site_audit_pages_spec_errors        | Get list of all pages where a specific error was detected with filtering by mode (all/new/solved) and pagination support *No cost* | reportId, compareReportId, projectId, errorName, mode, limit, offset |
 | get_site_audit_elements_with_issues     | Get list of sub-elements (URLs) containing specific errors using CRC from get_site_audit_pages_spec_errors response *No cost*  | reportId, projectId, errorName, crc, compareReportId (optional), mode, limit, offset |
 
+### One Page Audit Tools
+
+| Tool Name                      | Description                                                                                                                      | Key Parameters              |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
+| page_audit_start_scan          | Scan a single webpage with JavaScript rendering and receive pageId and reportId for tracking (10 credits per scan)              | name, url, userAgent, httpAuthLogin (optional), httpAuthPass (optional) |
+| page_audit_get_last_scans      | Get list of all one-page audit projects with latest scan results and SDO scores *No cost*                                       | limit, offset, teamMemberId (optional) |
+| page_audit_get_reports_for_page | Get history of all audit reports for a specific page with status, SDO scores, and issue counts *No cost*                       | pageId, limit (optional), offset (optional) |
+| page_audit_get_results_report  | Get detailed audit results for a page with error categories and complete issue breakdown *No cost*                              | pageId                      |
+
 ### Search Engines (se parameter)
 
 Common search engine codes:
