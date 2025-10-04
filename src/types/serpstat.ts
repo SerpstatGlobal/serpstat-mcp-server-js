@@ -1037,3 +1037,47 @@ export interface GetOnePageAuditResultsResponse {
     data: OnePageInfo[];
     report: OnePageReportInfo;
 }
+
+export interface RescanOnePageAuditResponse {
+    reportId: number;
+}
+
+export type StopOnePageAuditResponse = boolean;
+
+export type RemoveOnePageAuditResponse = boolean;
+
+export interface GetOnePageAuditByCategoriesResponse {
+    data: OnePageInfo[];
+    categories: AuditCategory[];
+    report: OnePageReportInfo;
+}
+
+export interface OnePageAuditErrorRow {
+    url: string;
+}
+
+export type GetOnePageAuditErrorRowsResponse = OnePageAuditErrorRow[];
+
+export interface PageNameInfo {
+    pageId: number;
+    name: string;
+    url: string;
+    finishedReportCount: number;
+}
+
+export interface GetOnePageAuditPageNamesResponse {
+    data: PageNameInfo[];
+    totalCount: number;
+}
+
+export interface UserLogItem {
+    message: string;
+    type: 'info' | 'warning' | 'error';
+    params?: Record<string, any>;
+    created_at: string;
+}
+
+export interface GetOnePageAuditUserLogResponse {
+    items: UserLogItem[];
+    totalCount: number;
+}

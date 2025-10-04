@@ -88,6 +88,7 @@ import {
     MIN_REPORT_ID,
     MIN_PAGE_ID,
     SITE_AUDIT_ERROR_DISPLAY_MODES,
+    SITE_AUDIT_ERROR_NAMES,
     SITE_AUDIT_USER_AGENT_IDS,
     DEFAULT_ERROR_ELEMENTS_LIMIT,
     MIN_SCAN_SPEED,
@@ -1120,3 +1121,61 @@ export const getOnePageAuditResultsSchema = z.object({
 }).strict();
 
 export type GetOnePageAuditResultsParams = z.infer<typeof getOnePageAuditResultsSchema>;
+
+export const rescanOnePageAuditSchema = z.object({
+    pageId: z.number().int().min(MIN_PAGE_ID),
+    name: z.string().min(1),
+    userAgent: z.number().int().refine((val) => SITE_AUDIT_USER_AGENT_IDS.includes(val as any), {
+        message: `userAgent must be one of: ${SITE_AUDIT_USER_AGENT_IDS.join(', ')}`
+    }),
+    httpAuthLogin: z.string().optional(),
+    httpAuthPass: z.string().optional(),
+}).strict();
+
+export type RescanOnePageAuditParams = z.infer<typeof rescanOnePageAuditSchema>;
+
+export const stopOnePageAuditSchema = z.object({
+    pageId: z.number().int().min(MIN_PAGE_ID),
+}).strict();
+
+export type StopOnePageAuditParams = z.infer<typeof stopOnePageAuditSchema>;
+
+export const removeOnePageAuditSchema = z.object({
+    pageId: z.number().int().min(MIN_PAGE_ID),
+}).strict();
+
+export type RemoveOnePageAuditParams = z.infer<typeof removeOnePageAuditSchema>;
+
+export const getOnePageAuditByCategoriesSchema = z.object({
+    reportId: z.number().int().min(MIN_REPORT_ID),
+    compareReportId: z.number().int().min(MIN_REPORT_ID).optional(),
+}).strict();
+
+export type GetOnePageAuditByCategoriesParams = z.infer<typeof getOnePageAuditByCategoriesSchema>;
+
+export const getOnePageAuditErrorRowsSchema = z.object({
+    reportId: z.number().int().min(MIN_REPORT_ID),
+    error: z.string().refine((val) => SITE_AUDIT_ERROR_NAMES.includes(val as any), {
+        message: `error must be one of: ${SITE_AUDIT_ERROR_NAMES.join(', ')}`
+    }),
+    compareReportId: z.number().int().min(MIN_REPORT_ID).optional(),
+    mode: z.enum(SITE_AUDIT_ERROR_DISPLAY_MODES).optional(),
+    page: z.number().int().min(MIN_PAGE).optional(),
+    size: z.number().int().min(1).max(MAX_PAGE_SIZE).optional(),
+}).strict();
+
+export type GetOnePageAuditErrorRowsParams = z.infer<typeof getOnePageAuditErrorRowsSchema>;
+
+export const getOnePageAuditPageNamesSchema = z.object({
+    teamMemberId: z.number().int().optional(),
+}).strict();
+
+export type GetOnePageAuditPageNamesParams = z.infer<typeof getOnePageAuditPageNamesSchema>;
+
+export const getOnePageAuditUserLogSchema = z.object({
+    reportId: z.number().int().min(MIN_REPORT_ID).optional(),
+    pageSize: z.number().int().min(1).optional(),
+    page: z.number().int().min(0).optional(),
+}).strict();
+
+export type GetOnePageAuditUserLogParams = z.infer<typeof getOnePageAuditUserLogSchema>;

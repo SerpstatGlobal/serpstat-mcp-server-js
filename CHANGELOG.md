@@ -1,6 +1,22 @@
 # Changelog
 
-## [unreleased] - 2025-10-03
+## [1.1.1] - 2025-10-04
+
+### Added
+
+- **One-Page Audit Tools Enhancement**: Added seven additional methods for comprehensive one-page audit management and analysis
+    - `page_audit_rescan` - Rescan existing one-page audit project and create new audit report with updated settings (consumes 10 API credits per rescan)
+    - `page_audit_stop` - Stop active one-page audit scan and receive operation result status (does not consume API credits)
+    - `page_audit_delete` - Remove one-page audit project from customer project list permanently (does not consume API credits)
+    - `page_audit_get_report_by_categories` - Get audit results by categories for a specific report with error grouping by type and support for comparing with previous reports to track changes (does not consume API credits)
+    - `page_audit_report_drill_down` - Get detailed error rows for specific audit error type with filtering by mode (all/new/solved), pagination support, and affected URL list (does not consume API credits)
+    - `page_audit_get_scan_names` - Get list of all one-page audit project names with URLs and finished report counts for project discovery (does not consume API credits)
+    - `page_audit_scan_logs` - Get user log for audit report with chronological scan events, message types (info/warning/error), parameters, and timestamps for debugging and progress tracking (does not consume API credits)
+- Added comprehensive validation schemas and TypeScript types for all new one-page audit operations
+- Added test coverage for all new one-page audit methods (21 tests covering validation schemas and edge cases)
+- Updated documentation with enhanced one-page audit tools section and complete API reference
+
+## [1.1.1] - 2025-10-03
 
 ### Added
 

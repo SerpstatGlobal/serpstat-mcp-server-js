@@ -13,7 +13,19 @@ import { CreateProjectHandler, DeleteProjectHandler, ListProjectsHandler } from 
 import { GetAuditStatsHandler, GetCreditsStatsHandler } from './handlers/credits_tools.js';
 import { GetRtProjectsListHandler, GetRtProjectStatusHandler, GetRtProjectRegionsListHandler, GetRtProjectKeywordSerpHistoryHandler, GetRtProjectUrlSerpHistoryHandler } from './handlers/rank_tracking_tools.js';
 import { GetSiteAuditSettingsHandler, SetSiteAuditSettingsHandler, StartSiteAuditHandler, StopSiteAuditHandler, GetCategoriesStatisticHandler, GetHistoryByCountErrorHandler, GetSiteAuditsListHandler, GetScanUserUrlListHandler, GetDefaultSettingsHandler, GetBasicInfoHandler, GetReportWithoutDetailsHandler, GetErrorElementsHandler, GetSubElementsByCrcHandler } from './handlers/site_audit_tools.js';
-import { StartOnePageAuditScanHandler, GetOnePageAuditsListHandler, GetOnePageReportsListHandler, GetOnePageAuditResultsHandler } from './handlers/one_page_audit_tools.js';
+import {
+    StartOnePageAuditScanHandler,
+    GetOnePageAuditsListHandler,
+    GetOnePageReportsListHandler,
+    GetOnePageAuditResultsHandler,
+    RescanOnePageAuditHandler,
+    StopOnePageAuditHandler,
+    RemoveOnePageAuditHandler,
+    GetOnePageAuditByCategoriesHandler,
+    GetOnePageAuditErrorRowsHandler,
+    GetOnePageAuditPageNamesHandler,
+    GetOnePageAuditUserLogHandler
+} from './handlers/one_page_audit_tools.js';
 import { logger } from './utils/logger.js';
 
 export class SerpstatMCPServer {
@@ -24,7 +36,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.1.0',
+                version: '1.1.1',
             },
             {
                 capabilities: {
@@ -96,6 +108,13 @@ export class SerpstatMCPServer {
             new GetOnePageAuditsListHandler(),
             new GetOnePageReportsListHandler(),
             new GetOnePageAuditResultsHandler(),
+            new RescanOnePageAuditHandler(),
+            new StopOnePageAuditHandler(),
+            new RemoveOnePageAuditHandler(),
+            new GetOnePageAuditByCategoriesHandler(),
+            new GetOnePageAuditErrorRowsHandler(),
+            new GetOnePageAuditPageNamesHandler(),
+            new GetOnePageAuditUserLogHandler(),
         ];
 
         for (const handler of handlers) {

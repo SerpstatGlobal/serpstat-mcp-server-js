@@ -333,3 +333,8 @@ export const SITE_AUDIT_ERROR_NAMES = [
 export const SITE_AUDIT_ERROR_DISPLAY_MODES = ["all", "new", "solved"] as const;
 export const SITE_AUDIT_ERROR_PRIORITIES = ["high", "medium", "low", "information", "solved"] as const;
 export const DEFAULT_ERROR_ELEMENTS_LIMIT = 10;
+
+// One Page Audit User Log constants
+export const USER_LOG_TYPES = ["info", "warning", "error"] as const;
+export const DEFAULT_USER_LOG_PAGE_SIZE = 100;
+export const DEFAULT_USER_LOG_PAGE = 0;
