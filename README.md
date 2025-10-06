@@ -1,6 +1,7 @@
 # Serpstat MCP Server
 
 [![npm version](https://badge.fury.io/js/@serpstat%2Fserpstat-mcp-server.svg)](https://badge.fury.io/js/@serpstat%2Fserpstat-mcp-server)
+[![MCP Badge](https://lobehub.com/badge/mcp/serpstatglobal-serpstat-mcp-server-js)](https://lobehub.com/mcp/serpstatglobal-serpstat-mcp-server-js)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A TypeScript server that integrates Serpstat SEO API with Anthropic's Model Context Protocol (MCP), enabling AI assistants like Claude to access comprehensive SEO data and analysis tools.
