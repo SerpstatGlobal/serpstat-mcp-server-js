@@ -36,7 +36,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.1.1',
+                version: '1.1.2',
             },
             {
                 capabilities: {
@@ -51,72 +51,119 @@ export class SerpstatMCPServer {
     }
 
     private setupHandlers(): void {
-        const handlers = [
-            new DomainsInfoHandler(),
-            new CompetitorsHandler(),
-            new DomainKeywordsHandler(),
-            new DomainUrlsHandler(),
-            new BacklinksSummaryHandler(),
-            new GetAnchorsHandler(),
-            new GetActiveBacklinksHandler(),
-            new GetReferringDomainsHandler(),
-            new GetLostBacklinksHandler(),
-            new GetTopAnchorsHandler(),
-            new GetTopPagesByBacklinksHandler(),
-            new GetBacklinksIntersectionHandler(),
-            new GetActiveOutlinksHandler(),
-            new GetActiveOutlinkDomainsHandler(),
-            new GetThreatBacklinksHandler(),
-            new DomainRegionsCountHandler(),
-            new GetDomainUniqKeywordsHandler(),
-            new GetKeywordsHandler(),
-            new GetRelatedKeywordsHandler(),
-            new GetKeywordsInfoHandler(),
-            new GetKeywordSuggestionsHandler(),
-            new GetKeywordFullTopHandler(),
-            new GetKeywordTopUrlsHandler(),
-            new GetKeywordCompetitorsHandler(),
-            new GetKeywordTopHandler(),
-            new GetUrlSummaryTrafficHandler(),
-            new GetUrlCompetitorsHandler(),
-            new GetUrlKeywordsHandler(),
-            new GetUrlMissingKeywordsHandler(),
-            new CreateProjectHandler(),
-            new DeleteProjectHandler(),
-            new ListProjectsHandler(),
-            new GetAuditStatsHandler(),
-            new GetCreditsStatsHandler(),
-            new GetRtProjectsListHandler(),
-            new GetRtProjectStatusHandler(),
-            new GetRtProjectRegionsListHandler(),
-            new GetRtProjectKeywordSerpHistoryHandler(),
-            new GetRtProjectUrlSerpHistoryHandler(),
-            new GetSiteAuditSettingsHandler(),
-            new SetSiteAuditSettingsHandler(),
-            new StartSiteAuditHandler(),
-            new StopSiteAuditHandler(),
-            new GetCategoriesStatisticHandler(),
-            new GetHistoryByCountErrorHandler(),
-            new GetSiteAuditsListHandler(),
-            new GetScanUserUrlListHandler(),
-            new GetDefaultSettingsHandler(),
-            new GetBasicInfoHandler(),
-            new GetReportWithoutDetailsHandler(),
-            new GetErrorElementsHandler(),
-            new GetSubElementsByCrcHandler(),
-            new StartOnePageAuditScanHandler(),
-            new GetOnePageAuditsListHandler(),
-            new GetOnePageReportsListHandler(),
-            new GetOnePageAuditResultsHandler(),
-            new RescanOnePageAuditHandler(),
-            new StopOnePageAuditHandler(),
-            new RemoveOnePageAuditHandler(),
-            new GetOnePageAuditByCategoriesHandler(),
-            new GetOnePageAuditErrorRowsHandler(),
-            new GetOnePageAuditPageNamesHandler(),
-            new GetOnePageAuditUserLogHandler(),
-        ];
+        // Get enabled categories from environment variable
+        const enabledCategoriesEnv = process.env.SERPSTAT_ENABLED_CATEGORIES;
+        const enabledCategories = enabledCategoriesEnv
+            ? enabledCategoriesEnv.split(',').map(c => c.trim().toLowerCase())
+            : null; // null means all categories enabled
 
+        // Define handlers by category
+        const handlersByCategory: Record<string, BaseHandler[]> = {
+            domain: [
+                new DomainsInfoHandler(),
+                new CompetitorsHandler(),
+                new DomainKeywordsHandler(),
+                new DomainUrlsHandler(),
+                new DomainRegionsCountHandler(),
+                new GetDomainUniqKeywordsHandler(),
+            ],
+            keywords: [
+                new GetKeywordsHandler(),
+                new GetRelatedKeywordsHandler(),
+                new GetKeywordsInfoHandler(),
+                new GetKeywordSuggestionsHandler(),
+                new GetKeywordFullTopHandler(),
+                new GetKeywordTopUrlsHandler(),
+                new GetKeywordCompetitorsHandler(),
+                new GetKeywordTopHandler(),
+            ],
+            backlinks: [
+                new BacklinksSummaryHandler(),
+                new GetAnchorsHandler(),
+                new GetActiveBacklinksHandler(),
+                new GetReferringDomainsHandler(),
+                new GetLostBacklinksHandler(),
+                new GetTopAnchorsHandler(),
+                new GetTopPagesByBacklinksHandler(),
+                new GetBacklinksIntersectionHandler(),
+                new GetActiveOutlinksHandler(),
+                new GetActiveOutlinkDomainsHandler(),
+                new GetThreatBacklinksHandler(),
+            ],
+            url: [
+                new GetUrlSummaryTrafficHandler(),
+                new GetUrlCompetitorsHandler(),
+                new GetUrlKeywordsHandler(),
+                new GetUrlMissingKeywordsHandler(),
+            ],
+            projects: [
+                new CreateProjectHandler(),
+                new DeleteProjectHandler(),
+                new ListProjectsHandler(),
+            ],
+            credits: [
+                new GetAuditStatsHandler(),
+                new GetCreditsStatsHandler(),
+            ],
+            rt: [
+                new GetRtProjectsListHandler(),
+                new GetRtProjectStatusHandler(),
+                new GetRtProjectRegionsListHandler(),
+                new GetRtProjectKeywordSerpHistoryHandler(),
+                new GetRtProjectUrlSerpHistoryHandler(),
+            ],
+            audit: [
+                new GetSiteAuditSettingsHandler(),
+                new SetSiteAuditSettingsHandler(),
+                new StartSiteAuditHandler(),
+                new StopSiteAuditHandler(),
+                new GetCategoriesStatisticHandler(),
+                new GetHistoryByCountErrorHandler(),
+                new GetSiteAuditsListHandler(),
+                new GetScanUserUrlListHandler(),
+                new GetDefaultSettingsHandler(),
+                new GetBasicInfoHandler(),
+                new GetReportWithoutDetailsHandler(),
+                new GetErrorElementsHandler(),
+                new GetSubElementsByCrcHandler(),
+            ],
+            'page-audit': [
+                new StartOnePageAuditScanHandler(),
+                new GetOnePageAuditsListHandler(),
+                new GetOnePageReportsListHandler(),
+                new GetOnePageAuditResultsHandler(),
+                new RescanOnePageAuditHandler(),
+                new StopOnePageAuditHandler(),
+                new RemoveOnePageAuditHandler(),
+                new GetOnePageAuditByCategoriesHandler(),
+                new GetOnePageAuditErrorRowsHandler(),
+                new GetOnePageAuditPageNamesHandler(),
+                new GetOnePageAuditUserLogHandler(),
+            ],
+        };
+
+        // Collect handlers based on enabled categories
+        const handlers: BaseHandler[] = [];
+
+        if (enabledCategories === null) {
+            // No filter - add all handlers
+            for (const categoryHandlers of Object.values(handlersByCategory)) {
+                handlers.push(...categoryHandlers);
+            }
+            logger.info('All categories enabled');
+        } else {
+            // Filter by enabled categories
+            for (const category of enabledCategories) {
+                if (handlersByCategory[category]) {
+                    handlers.push(...handlersByCategory[category]);
+                } else {
+                    logger.warn(`Unknown category: ${category}`);
+                }
+            }
+            logger.info(`Enabled categories: ${enabledCategories.join(', ')}`);
+        }
+
+        // Register handlers
         for (const handler of handlers) {
             this.handlers.set(handler.getName(), handler);
         }

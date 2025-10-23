@@ -67,6 +67,7 @@ Set the following environment variables (can be in .env file):
 - `SERPSTAT_API_TOKEN` — Your Serpstat API token (required)
 - `SERPSTAT_API_URL` — Serpstat API URL (default: https://api.serpstat.com/v4)
 - `LOG_LEVEL` — Logging level: error, warn, info, debug (default: info)
+- `SERPSTAT_ENABLED_CATEGORIES` — Filter tools by categories (optional, comma-separated, default: all categories enabled)
 
 ### Claude Desktop & Gemini CLI Configuration
 
@@ -105,12 +106,68 @@ For local development, use the full path:
       "command": "node",
       "args": ["/path/to/node_modules/serpstat-mcp-server/dist/index.js"],
       "env": {
-        "SERPSTAT_API_TOKEN": "your_serpstat_api_token_here"
+        "SERPSTAT_API_TOKEN": "9184b2aa2328fd93bf002ed4c59e4e8e"
       }
     }
   }
 }
 ```
+
+### Filtering Tools by Category
+
+You can limit which tools are available by specifying `SERPSTAT_ENABLED_CATEGORIES` environment variable. This is useful for:
+- Reducing context window usage in AI assistants
+- Focusing on specific SEO analysis areas
+- Creating specialized configurations for different use cases
+
+**Available categories:**
+- `domain` - Domain analysis tools (domain info, competitors, domain keywords, etc.)
+- `keywords` - Keyword research tools (keyword suggestions, search volume, difficulty, etc.)
+- `backlinks` - Backlink analysis tools (backlink summary, anchors, referring domains, etc.)
+- `url` - URL analysis tools (URL traffic, competitors, keywords, etc.)
+- `projects` - Project management tools (create, list, delete projects)
+- `credits` - Credits and usage monitoring tools
+- `rt` - Rank tracking tools (rank history, SERP tracking, etc.)
+- `audit` - Site audit tools (full site SEO audit, error reports, etc.)
+- `page-audit` - One-page audit tools (single page analysis, on-page SEO, etc.)
+
+**Example: Enable only keyword and domain tools**
+
+```json
+{
+  "mcpServers": {
+    "serpstat": {
+      "command": "npx",
+      "args": ["-y", "@serpstat/serpstat-mcp-server"],
+      "env": {
+        "SERPSTAT_API_TOKEN": "YOUR_SERPSTAT_API_TOKEN_HERE",
+        "SERPSTAT_ENABLED_CATEGORIES": "keywords,domain"
+      }
+    }
+  }
+}
+```
+
+**Example: Enable only backlink analysis**
+
+```json
+{
+  "mcpServers": {
+    "serpstat": {
+      "command": "npx",
+      "args": ["-y", "@serpstat/serpstat-mcp-server"],
+      "env": {
+        "SERPSTAT_API_TOKEN": "YOUR_SERPSTAT_API_TOKEN_HERE",
+        "SERPSTAT_ENABLED_CATEGORIES": "backlinks"
+      }
+    }
+  }
+}
+```
+
+**Default behavior (all tools enabled):**
+
+If `SERPSTAT_ENABLED_CATEGORIES` is not specified or is empty, all tools are available (63 total tools across all categories).
 
 ## Usage Examples
 

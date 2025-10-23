@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.2] - 2025-10-24
+
+### Added
+
+- **Category Filtering**: Added support for filtering tools by categories via `SERPSTAT_ENABLED_CATEGORIES` environment variable
+    - Enable only specific tool categories to reduce context window usage in AI assistants
+    - Comma-separated list of categories: `domain`, `keywords`, `backlinks`, `url`, `projects`, `credits`, `rt`, `audit`, `page-audit`
+    - Default behavior (no filter): all 63 tools available across 9 categories
+    - Example: `SERPSTAT_ENABLED_CATEGORIES=keywords,domain` loads only keyword research (8 tools) and domain analysis (6 tools) tools
+    - Useful for creating specialized configurations focused on specific SEO analysis areas
+- Updated documentation with category filtering examples in README.md and CLAUDE.md
+- Added category-based handler organization in `src/server.ts` for maintainable tool management
+
+
 ## [1.1.1] - 2025-10-04
 
 ### Added
