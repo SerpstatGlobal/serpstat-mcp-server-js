@@ -1,7 +1,7 @@
 import { BaseHandler } from './base.js';
 import { DomainService } from '../services/domain_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
-import { domainsInfoSchema, competitorsGetSchema, domainKeywordsSchema, domainUrlsSchema, domainRegionsCountSchema, domainUniqKeywordsSchema } from '../utils/validation.js';
+import { domainsInfoSchema, competitorsGetSchema, domainKeywordsSchema, domainUrlsSchema, domainRegionsCountSchema, domainUniqKeywordsSchema, getMarketCategoriesSchema, getCategoryTopDomainsSchema } from '../utils/validation.js';
 import { loadConfig } from '../utils/config.js';
 import { z } from 'zod';
 import {
@@ -37,7 +37,10 @@ import {
     MAX_URL_CONTAIN_LENGTH,
     MIN_UNIQ_DOMAINS,
     MAX_UNIQ_DOMAINS,
-    MAX_UNIQ_KEYWORDS_ITEMS
+    MAX_UNIQ_KEYWORDS_ITEMS,
+    MARKET_CATEGORY_SORT_FIELDS,
+    CATEGORY_ID_REGEX,
+    PROJECT_ALLOWED_PAGE_SIZES
 } from '../utils/constants.js';
 
 export class DomainsInfoHandler extends BaseHandler {
@@ -577,6 +580,146 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
                 params.size = DEFAULT_PAGE_SIZE;
             }
             const result = await this.domainService.getDomainUniqKeywords(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetMarketCategoriesHandler extends BaseHandler {
+    private domainService: DomainService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.domainService = new DomainService(config);
+    }
+
+    getName(): string {
+        return 'get_market_categories';
+    }
+
+    getDescription(): string {
+        return 'Get complete list of available market research categories (1000+ categories). Use this method first to find the appropriate category_id for your analysis. Returns hierarchical categories like \'/Arts & Entertainment/TV & Video/Online Video\' with their IDs (e.g., \'.2.13.1.\'). The category_id is required for get_category_top_domains method.';
+    }
+
+    getInputSchema(): object {
+        return {
+            type: "object",
+            properties: {},
+            additionalProperties: false,
+            description: "No parameters required - returns all available market categories"
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = getMarketCategoriesSchema.parse(call.arguments);
+            const result = await this.domainService.getMarketCategories(params);
+            return this.createSuccessResponse(result);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return this.createErrorResponse(new Error(`Invalid parameters: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`));
+            }
+            return this.createErrorResponse(error as Error);
+        }
+    }
+}
+
+export class GetCategoryTopDomainsHandler extends BaseHandler {
+    private domainService: DomainService;
+
+    constructor() {
+        super();
+        const config = loadConfig();
+        this.domainService = new DomainService(config);
+    }
+
+    getName(): string {
+        return 'get_category_top_domains';
+    }
+
+    getDescription(): string {
+        return 'Get top-performing domains in a specific market category with SEO metrics (traffic, visibility, keywords, backlinks, SDR). Requires category_id from get_market_categories - call that method first to find the right category. Returns ranked domains for competitive landscape analysis with filtering and sorting options.';
+    }
+
+    getInputSchema(): object {
+        return {
+            type: "object",
+            properties: {
+                category_id: {
+                    type: "string",
+                    pattern: CATEGORY_ID_REGEX,
+                    description: "Category identifier in format .X.Y.Z. (e.g., '.2.' for Arts & Entertainment or '.2.13.1.' for Arts & Entertainment/TV & Video/Online Video). Get this from get_market_categories method."
+                },
+                se: {
+                    type: "string",
+                    enum: MAIN_SEARCH_ENGINES,
+                    description: "Search engine database (e.g., g_us for Google US)"
+                },
+                filters: {
+                    type: "object",
+                    properties: {
+                        visibility: { type: "number", description: "Exact visibility score" },
+                        visibility_min: { type: "number", description: "Minimum visibility score" },
+                        visibility_max: { type: "number", description: "Maximum visibility score" },
+                        traffic: { type: "integer", description: "Exact traffic value" },
+                        traffic_min: { type: "integer", description: "Minimum traffic" },
+                        traffic_max: { type: "integer", description: "Maximum traffic" },
+                        keywords: { type: "integer", description: "Exact number of keywords" },
+                        keywords_min: { type: "integer", description: "Minimum number of keywords" },
+                        keywords_max: { type: "integer", description: "Maximum number of keywords" },
+                        referring_domains: { type: "integer", description: "Exact number of referring domains" },
+                        referring_domains_min: { type: "integer", description: "Minimum number of referring domains" },
+                        referring_domains_max: { type: "integer", description: "Maximum number of referring domains" },
+                        backlinks: { type: "integer", description: "Exact number of backlinks" },
+                        backlinks_min: { type: "integer", description: "Minimum number of backlinks" },
+                        backlinks_max: { type: "integer", description: "Maximum number of backlinks" },
+                        sdr: { type: "integer", minimum: 0, maximum: 100, description: "Exact Serpstat Domain Rank (0-100)" },
+                        sdr_min: { type: "integer", minimum: 0, maximum: 100, description: "Minimum Serpstat Domain Rank" },
+                        sdr_max: { type: "integer", minimum: 0, maximum: 100, description: "Maximum Serpstat Domain Rank" }
+                    },
+                    additionalProperties: false,
+                    description: "Filter conditions. All filters support exact value, min threshold, and max threshold."
+                },
+                sort: {
+                    type: "string",
+                    enum: MARKET_CATEGORY_SORT_FIELDS,
+                    description: "Sort field (global_rank, category_rank, traffic, visibility, keywords, referring_domains, backlinks, sdr)",
+                    default: "global_rank"
+                },
+                order: {
+                    type: "string",
+                    enum: SORT_ORDER,
+                    description: "Sort order (asc or desc)",
+                    default: "asc"
+                },
+                page: {
+                    type: "integer",
+                    minimum: MIN_PAGE,
+                    description: "Page number",
+                    default: 1
+                },
+                size: {
+                    type: "integer",
+                    enum: PROJECT_ALLOWED_PAGE_SIZES,
+                    description: "Number of results per page (allowed values: 20, 50, 100, 200, 500)",
+                    default: 100
+                }
+            },
+            required: ["category_id", "se"],
+            additionalProperties: false
+        };
+    }
+
+    async handle(call: MCPToolCall): Promise<MCPToolResponse> {
+        try {
+            const params = getCategoryTopDomainsSchema.parse(call.arguments);
+            const result = await this.domainService.getCategoryTopDomains(params);
             return this.createSuccessResponse(result);
         } catch (error) {
             if (error instanceof z.ZodError) {

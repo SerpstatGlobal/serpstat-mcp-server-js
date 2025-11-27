@@ -5,7 +5,7 @@ import {
     ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { BaseHandler } from './handlers/base.js';
-import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from './handlers/domain_tools.js';
+import { DomainsInfoHandler, CompetitorsHandler, DomainKeywordsHandler, DomainUrlsHandler, DomainRegionsCountHandler, GetDomainUniqKeywordsHandler, GetMarketCategoriesHandler, GetCategoryTopDomainsHandler } from './handlers/domain_tools.js';
 import { BacklinksSummaryHandler, GetAnchorsHandler, GetActiveBacklinksHandler, GetReferringDomainsHandler, GetLostBacklinksHandler, GetTopAnchorsHandler, GetTopPagesByBacklinksHandler, GetBacklinksIntersectionHandler, GetActiveOutlinksHandler, GetActiveOutlinkDomainsHandler, GetThreatBacklinksHandler } from './handlers/backlinks_tools.js';
 import { GetKeywordsHandler, GetRelatedKeywordsHandler, GetKeywordsInfoHandler, GetKeywordSuggestionsHandler, GetKeywordFullTopHandler, GetKeywordTopUrlsHandler, GetKeywordCompetitorsHandler, GetKeywordTopHandler } from './handlers/keyword_tools.js';
 import { GetUrlSummaryTrafficHandler, GetUrlCompetitorsHandler, GetUrlKeywordsHandler, GetUrlMissingKeywordsHandler } from './handlers/url_tools.js';
@@ -36,7 +36,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.1.2',
+                version: '1.1.3',
             },
             {
                 capabilities: {
@@ -66,6 +66,8 @@ export class SerpstatMCPServer {
                 new DomainUrlsHandler(),
                 new DomainRegionsCountHandler(),
                 new GetDomainUniqKeywordsHandler(),
+                new GetMarketCategoriesHandler(),
+                new GetCategoryTopDomainsHandler(),
             ],
             keywords: [
                 new GetKeywordsHandler(),

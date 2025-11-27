@@ -1,8 +1,8 @@
 import { BaseService } from './base.js';
 import { DomainsInfoResponse, SerpstatRequest } from '../types/serpstat.js';
-import { DomainsInfoParams, CompetitorsGetParams, DomainKeywordsParams, DomainUrlsParams, DomainRegionsCountParams, DomainUniqKeywordsParams } from '../utils/validation.js';
+import { DomainsInfoParams, CompetitorsGetParams, DomainKeywordsParams, DomainUrlsParams, DomainRegionsCountParams, DomainUniqKeywordsParams, GetMarketCategoriesParams, GetCategoryTopDomainsParams } from '../utils/validation.js';
 import { logger } from '../utils/logger.js';
-import { CompetitorsResponse, DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse } from '../types/serpstat.js';
+import { CompetitorsResponse, DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse, GetMarketCategoriesResponse, GetCategoryTopDomainsResponse } from '../types/serpstat.js';
 
 export class DomainService extends BaseService {
     async getDomainsInfo(params: DomainsInfoParams): Promise<DomainsInfoResponse> {
@@ -138,6 +138,57 @@ export class DomainService extends BaseService {
         logger.info('Successfully retrieved unique keywords', {
             keywordsCount: response.result.data.length,
             leftLines: response.result.summary_info.left_lines
+        });
+
+        return response.result;
+    }
+
+    async getMarketCategories(params: GetMarketCategoriesParams): Promise<GetMarketCategoriesResponse> {
+        logger.info('Getting market research categories');
+
+        const request: SerpstatRequest = {
+            id: `market_categories_${Date.now()}`,
+            method: 'SerpstatDomainProcedure.getMarketCategories',
+            params,
+        };
+
+        const response = await this.makeRequest<GetMarketCategoriesResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved market categories', {
+            categoriesCount: response.result.data.length
+        });
+
+        return response.result;
+    }
+
+    async getCategoryTopDomains(params: GetCategoryTopDomainsParams): Promise<GetCategoryTopDomainsResponse> {
+        logger.info('Getting category top domains', {
+            category_id: params.category_id,
+            se: params.se,
+            page: params.page,
+            size: params.size
+        });
+
+        const request: SerpstatRequest = {
+            id: `category_top_domains_${Date.now()}`,
+            method: 'SerpstatDomainProcedure.getCategoryTopDomains',
+            params,
+        };
+
+        const response = await this.makeRequest<GetCategoryTopDomainsResponse>(request);
+
+        if (!response.result) {
+            throw new Error('No result data received from Serpstat API');
+        }
+
+        logger.info('Successfully retrieved category top domains', {
+            domainsCount: response.result.data.length,
+            total: response.result.total,
+            page: response.result.page
         });
 
         return response.result;
