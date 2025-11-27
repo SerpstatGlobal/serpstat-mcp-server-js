@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.3] - 2025-11-27
+
+### Added
+
+- **Market Research Tools**: Added two new methods for analyzing competitive landscape by market categories
+    - `get_market_categories` - Get complete list of available market research categories (1000+ hierarchical categories organized by industry verticals like Arts & Entertainment, Business & Industrial, E-commerce, Health & Fitness, etc.) with unique category IDs in format .X.Y.Z. for use in competitive analysis (does not consume API credits)
+    - `get_category_top_domains` - Get top-performing domains in a specific market category with comprehensive SEO metrics including traffic, visibility, keywords count, referring domains, backlinks, and Serpstat Domain Rank (SDR). Supports filtering by various metrics (traffic, visibility, keywords, backlinks, SDR) and sorting options (global rank, category rank, traffic, visibility). Useful for competitive landscape analysis and market leader identification (consumes 1 API credit per result row)
+- Added comprehensive validation schemas and TypeScript types for market research operations
+- Added test coverage for market research methods (6 new tests covering validation schemas and service methods)
+- Updated documentation with market research usage examples and tools reference in README.md
+- Domain Analysis Tools category now includes 8 tools (previously 6), bringing total tool count to 65 across all categories
+
 ## [1.1.2] - 2025-10-24
 
 ### Added

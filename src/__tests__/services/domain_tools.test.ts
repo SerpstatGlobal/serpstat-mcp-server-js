@@ -1,8 +1,8 @@
 import { DomainService } from '../../services/domain_tools.js';
 import { Config } from '../../utils/config.js';
-import { DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams } from '../../utils/validation.js';
-import { DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse } from '../../types/serpstat.js';
-import { DomainRegionsCountHandler, GetDomainUniqKeywordsHandler } from '../../handlers/domain_tools.js';
+import { DomainsInfoParams, competitorsGetSchema, CompetitorsGetParams, domainKeywordsSchema, DomainKeywordsParams, domainUrlsSchema, DomainUrlsParams, domainRegionsCountSchema, DomainRegionsCountParams, domainUniqKeywordsSchema, DomainUniqKeywordsParams, GetMarketCategoriesParams, GetCategoryTopDomainsParams } from '../../utils/validation.js';
+import { DomainKeywordsResponse, DomainUrlsResponse, DomainRegionsCountResponse, DomainUniqKeywordsResponse, GetMarketCategoriesResponse, GetCategoryTopDomainsResponse } from '../../types/serpstat.js';
+import { DomainRegionsCountHandler, GetDomainUniqKeywordsHandler, GetMarketCategoriesHandler, GetCategoryTopDomainsHandler } from '../../handlers/domain_tools.js';
 import { jest, beforeEach, describe, it, expect } from '@jest/globals';
 
 
@@ -477,6 +477,140 @@ describe('DomainService', () => {
         it('returns error for invalid params', async () => {
             const handler = new GetDomainUniqKeywordsHandler();
             const res = await handler.handle({ name: 'get_domain_uniq_keywords', arguments: { se: 'g_us', domains: ['bad_domain'], minusDomain: 'puma.com' } });
+            expect(res.isError).toBeTruthy();
+            expect(res.content?.[0]?.text).toContain('Invalid parameters');
+        });
+    });
+
+    describe('getMarketCategories', () => {
+        it('should validate empty parameters', () => {
+            const params: GetMarketCategoriesParams = {};
+            expect(params).toBeDefined();
+        });
+
+        it('should make request and return categories', async () => {
+            const params: GetMarketCategoriesParams = {};
+            const mockResult: GetMarketCategoriesResponse = {
+                data: [
+                    { category_id: '.', category_name: 'All Categories' },
+                    { category_id: '.1.', category_name: '/Adult' },
+                    { category_id: '.2.', category_name: '/Arts & Entertainment' },
+                    { category_id: '.2.13.', category_name: '/Arts & Entertainment/TV & Video' },
+                    { category_id: '.2.13.1.', category_name: '/Arts & Entertainment/TV & Video/Online Video' }
+                ]
+            };
+            jest.spyOn(service, 'makeRequest').mockResolvedValue({ id: '1', result: mockResult });
+            const result = await service.getMarketCategories(params);
+            expect(result).toEqual(mockResult);
+            expect(result.data).toHaveLength(5);
+        });
+
+        it('throws if no result', async () => {
+            jest.spyOn(service, 'makeRequest').mockResolvedValue({ id: '1' });
+            await expect(service.getMarketCategories({})).rejects.toThrow('No result data received from Serpstat API');
+        });
+    });
+
+    describe('GetMarketCategoriesHandler', () => {
+        it('returns success response for valid call', async () => {
+            const handler = new GetMarketCategoriesHandler();
+            const mockResult: GetMarketCategoriesResponse = {
+                data: [
+                    { category_id: '.2.', category_name: '/Arts & Entertainment' }
+                ]
+            };
+            jest.spyOn(handler['domainService'], 'getMarketCategories').mockResolvedValue(mockResult);
+            const res = await handler.handle({ name: 'get_market_categories', arguments: {} });
+            expect(res.isError).toBeFalsy();
+            expect(res.content).toBeDefined();
+            expect(JSON.stringify(res.content)).toContain('category_id');
+        });
+    });
+
+    describe('getCategoryTopDomains', () => {
+        it('should validate correct parameters', () => {
+            const params: GetCategoryTopDomainsParams = {
+                category_id: '.2.',
+                se: 'g_us'
+            };
+            expect(params.category_id).toBe('.2.');
+            expect(params.se).toBe('g_us');
+        });
+
+        it('should handle category with filters', () => {
+            const params: GetCategoryTopDomainsParams = {
+                category_id: '.2.13.1.',
+                se: 'g_us',
+                filters: {
+                    traffic_min: 50000,
+                    sdr_min: 50
+                },
+                sort: 'traffic',
+                order: 'desc',
+                page: 1,
+                size: 20
+            };
+            expect(params.filters?.traffic_min).toBe(50000);
+            expect(params.filters?.sdr_min).toBe(50);
+            expect(params.sort).toBe('traffic');
+        });
+
+        it('should make request and return top domains', async () => {
+            const params: GetCategoryTopDomainsParams = {
+                category_id: '.2.3.4.',
+                se: 'g_us',
+                size: 20
+            };
+            const mockResult: GetCategoryTopDomainsResponse = {
+                data: [
+                    {
+                        domain: 'youtube.com',
+                        category_id: '.2.13.1.',
+                        category_name: '/Arts & Entertainment/TV & Video/Online Video',
+                        category_rank: 1,
+                        global_rank: 1,
+                        traffic: 5788043813,
+                        visibility: 22025.193,
+                        keywords: 190820206,
+                        referring_domains: 20143764,
+                        backlinks: 7079054425,
+                        sdr: 98
+                    }
+                ],
+                page: 1,
+                total: 100
+            };
+            jest.spyOn(service, 'makeRequest').mockResolvedValue({ id: '1', result: mockResult });
+            const result = await service.getCategoryTopDomains(params);
+            expect(result).toEqual(mockResult);
+            expect(result.data).toHaveLength(1);
+            expect(result.page).toBe(1);
+        });
+
+        it('throws if no result', async () => {
+            jest.spyOn(service, 'makeRequest').mockResolvedValue({ id: '1' });
+            await expect(service.getCategoryTopDomains({ category_id: '.2.', se: 'g_us' })).rejects.toThrow('No result data received from Serpstat API');
+        });
+    });
+
+    describe('GetCategoryTopDomainsHandler', () => {
+        it('returns success response for valid call', async () => {
+            const handler = new GetCategoryTopDomainsHandler();
+            const mockResult: GetCategoryTopDomainsResponse = {
+                data: [],
+                page: 1,
+                total: 0
+            };
+            jest.spyOn(handler['domainService'], 'getCategoryTopDomains').mockResolvedValue(mockResult);
+            const res = await handler.handle({ name: 'get_category_top_domains', arguments: { category_id: '.2.', se: 'g_us' } });
+            expect(res.isError).toBeFalsy();
+            expect(res.content).toBeDefined();
+            expect(JSON.stringify(res.content)).toContain('page');
+        });
+
+        it('returns error for invalid category_id format', async () => {
+            const handler = new GetCategoryTopDomainsHandler();
+            const res = await handler.handle({ name: 'get_category_top_domains', arguments: { category_id: 'invalid', se: 'g_us' } });
             expect(res.isError).toBeTruthy();
             expect(res.content?.[0]?.text).toContain('Invalid parameters');
         });

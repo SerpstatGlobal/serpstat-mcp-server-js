@@ -103,6 +103,8 @@ import {
     MIN_IMAGE_SIZE,
     MIN_PAGE_SIZE,
     MIN_EXTERNAL_LINKS,
+    MARKET_CATEGORY_SORT_FIELDS,
+    CATEGORY_ID_REGEX,
 } from './constants.js';
 
 // Common schemas
@@ -1179,3 +1181,50 @@ export const getOnePageAuditUserLogSchema = z.object({
 }).strict();
 
 export type GetOnePageAuditUserLogParams = z.infer<typeof getOnePageAuditUserLogSchema>;
+
+// Market Research validation schemas
+
+// getMarketCategories - no parameters required
+export const getMarketCategoriesSchema = z.object({}).strict();
+
+export type GetMarketCategoriesParams = z.infer<typeof getMarketCategoriesSchema>;
+
+// getCategoryTopDomains - get top domains in a specific market category
+export const getCategoryTopDomainsSchema = z.object({
+    category_id: z.string().regex(new RegExp(CATEGORY_ID_REGEX), {
+        message: 'category_id must match pattern: ^\\.((\\d+)\\.)*$ (e.g., .2. or .2.13.1.)'
+    }),
+    se: searchEngineSchema,
+    filters: z.object({
+        visibility: z.number().optional(),
+        visibility_min: z.number().optional(),
+        visibility_max: z.number().optional(),
+        traffic: z.number().int().optional(),
+        traffic_min: z.number().int().optional(),
+        traffic_max: z.number().int().optional(),
+        keywords: z.number().int().optional(),
+        keywords_min: z.number().int().optional(),
+        keywords_max: z.number().int().optional(),
+        referring_domains: z.number().int().optional(),
+        referring_domains_min: z.number().int().optional(),
+        referring_domains_max: z.number().int().optional(),
+        backlinks: z.number().int().optional(),
+        backlinks_min: z.number().int().optional(),
+        backlinks_max: z.number().int().optional(),
+        sdr: z.number().int().min(0).max(100).optional(),
+        sdr_min: z.number().int().min(0).max(100).optional(),
+        sdr_max: z.number().int().min(0).max(100).optional(),
+    }).strict().optional(),
+    sort: z.enum(MARKET_CATEGORY_SORT_FIELDS).default("global_rank").optional(),
+    order: sortOrderSchema.default("asc").optional(),
+    page: z.number().int().min(MIN_PAGE).default(1).optional(),
+    size: z.union([
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[0]),
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[1]),
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[2]),
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[3]),
+        z.literal(PROJECT_ALLOWED_PAGE_SIZES[4])
+    ]).default(100).optional(),
+}).strict();
+
+export type GetCategoryTopDomainsParams = z.infer<typeof getCategoryTopDomainsSchema>;

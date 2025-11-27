@@ -1081,3 +1081,34 @@ export interface GetOnePageAuditUserLogResponse {
     items: UserLogItem[];
     totalCount: number;
 }
+
+// Market Research interfaces
+
+export interface MarketCategory {
+    category_id: string;
+    category_name: string;
+}
+
+export interface GetMarketCategoriesResponse {
+    data: MarketCategory[];
+}
+
+export interface CategoryDomain {
+    domain: string;
+    category_id: string;
+    category_name: string;
+    category_rank: number;
+    global_rank: number;
+    traffic: number;
+    visibility: number;
+    keywords: number;
+    referring_domains: number;
+    backlinks: number;
+    sdr: number;
+}
+
+export interface GetCategoryTopDomainsResponse {
+    data: CategoryDomain[];
+    page: number;
+    total: number;
+}

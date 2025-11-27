@@ -39,3 +39,4 @@ TODO.md
 /docs/
 /.claude/
 /.idea/
+/.env.example.production

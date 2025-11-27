@@ -338,3 +338,17 @@ export const DEFAULT_ERROR_ELEMENTS_LIMIT = 10;
 export const USER_LOG_TYPES = ["info", "warning", "error"] as const;
 export const DEFAULT_USER_LOG_PAGE_SIZE = 100;
 export const DEFAULT_USER_LOG_PAGE = 0;
+
+// Market Research constants
+export const MARKET_CATEGORY_SORT_FIELDS = [
+    "global_rank",
+    "category_rank",
+    "traffic",
+    "visibility",
+    "keywords",
+    "referring_domains",
+    "backlinks",
+    "sdr"
+] as const;
+
+export const CATEGORY_ID_REGEX = "^\\.((\\d+)\\.)*$";

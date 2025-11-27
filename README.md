@@ -106,7 +106,7 @@ For local development, use the full path:
       "command": "node",
       "args": ["/path/to/node_modules/serpstat-mcp-server/dist/index.js"],
       "env": {
-        "SERPSTAT_API_TOKEN": "9184b2aa2328fd93bf002ed4c59e4e8e"
+        "SERPSTAT_API_TOKEN": "YOUR_SERPSTAT_API_TOKEN_HERE"
       }
     }
   }
@@ -167,7 +167,7 @@ You can limit which tools are available by specifying `SERPSTAT_ENABLED_CATEGORI
 
 **Default behavior (all tools enabled):**
 
-If `SERPSTAT_ENABLED_CATEGORIES` is not specified or is empty, all tools are available (63 total tools across all categories).
+If `SERPSTAT_ENABLED_CATEGORIES` is not specified or is empty, all tools are available (65 total tools across all categories).
 
 ## Usage Examples
 
@@ -177,6 +177,13 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 - "Show me domain info for **example.com**"
 - "Find competitors for **my-site.com** in Google US"
 - "Get top 50 keywords that **example.com** ranks for"
+
+### Market Research
+- "Show me all available market research categories"
+- "Find top domains in **'E-commerce'** category for Google US"
+- "Get top 20 domains in **'/Arts & Entertainment/TV & Video'** category sorted by traffic"
+- "Analyze competitive landscape in **'Business & Industrial'** category with domains that have SDR above 50"
+- "Find leading players in **'Health & Fitness'** market with minimum 100k monthly traffic"
 
 ### Keyword Research
 - "Find related keywords to **'digital marketing'**"
@@ -220,111 +227,113 @@ After installation and configuration in Claude Desktop, you can ask Claude:
 
 ### Domain Analysis Tools
 
-| Tool Name                | Description                                                              | Key Parameters           |
-|--------------------------|--------------------------------------------------------------------------|--------------------------|
-| get_domains_info         | Get SEO information for multiple domains                                 | domains, se, filters     |
-| get_domain_competitors   | Get list of competitor domains                                           | domain, se, size, filters|
-| get_domain_keywords      | Get keywords that domain ranks for                                       | domain, se, page, size   |
-| get_domain_urls          | Get URLs within a domain and their keyword counts                        | domain, se, page, size   |
-| get_domain_regions_count | Get keyword count by region for a domain                                 | domain, sort, order      |
-| get_domain_uniq_keywords | Get unique keywords for two domains not ranked by a third domain         | se, domains, minusDomain |
+| Tool Name                | Description                                                               | Key Parameters                             |
+|--------------------------|---------------------------------------------------------------------------|--------------------------------------------|
+| get_domains_info         | Get SEO information for multiple domains                                  | domains, se, filters                       |
+| get_domain_competitors   | Get list of competitor domains                                            | domain, se, size, filters                  |
+| get_domain_keywords      | Get keywords that domain ranks for                                        | domain, se, page, size                     |
+| get_domain_urls          | Get URLs within a domain and their keyword counts                         | domain, se, page, size                     |
+| get_domain_regions_count | Get keyword count by region for a domain                                  | domain, sort, order                        |
+| get_domain_uniq_keywords | Get unique keywords for two domains not ranked by a third domain          | se, domains, minusDomain                   |
+| get_market_categories    | Get complete list of 1000+ market research categories                     | none                                       |
+| get_category_top_domains | Get top-performing domains in a specific market category with SEO metrics | category_id, se, filters, sort, page, size |
 
 ### Keyword Research Tools
 
-| Tool Name               | Description                                                                                      | Key Parameters             |
-|-------------------------|--------------------------------------------------------------------------------------------------|----------------------------|
-| get_keywords            | Get related organic keywords for a given keyword                                                 | keyword, se, filters       |
-| get_related_keywords    | Get semantically related keywords with frequency, CPC, competition, and difficulty data          | keyword, se, filters, sort |
-| get_keyword_suggestions | Get search suggestions for a keyword using full-text search with geographic names info           | keyword, se, filters       |
-| get_keywords_info       | Get keyword overview with volume, CPC, competition, difficulty, and SERP features                | keywords, se, withIntents  |
-| get_keyword_full_top    | Get Google's top-100 search results for analyzed keywords                                        | keyword, se, size          |
-| get_keyword_top_urls    | Get website pages that rank for the largest amount of analyzed keyword variations                | keyword, se, page, page_size|
-| get_keyword_competitors | Get domains that rank for the given keyword in Google top-20 results with competitor analysis    | keyword, se, filters, sort |
-| get_keyword_top         | Get Google's top-100 search results for the analyzed keyword with position, URL, and SERP features| keyword, se, filters, size |
+| Tool Name               | Description                                                                                        | Key Parameters               |
+|-------------------------|----------------------------------------------------------------------------------------------------|------------------------------|
+| get_keywords            | Get related organic keywords for a given keyword                                                   | keyword, se, filters         |
+| get_related_keywords    | Get semantically related keywords with frequency, CPC, competition, and difficulty data            | keyword, se, filters, sort   |
+| get_keyword_suggestions | Get search suggestions for a keyword using full-text search with geographic names info             | keyword, se, filters         |
+| get_keywords_info       | Get keyword overview with volume, CPC, competition, difficulty, and SERP features                  | keywords, se, withIntents    |
+| get_keyword_full_top    | Get Google's top-100 search results for analyzed keywords                                          | keyword, se, size            |
+| get_keyword_top_urls    | Get website pages that rank for the largest amount of analyzed keyword variations                  | keyword, se, page, page_size |
+| get_keyword_competitors | Get domains that rank for the given keyword in Google top-20 results with competitor analysis      | keyword, se, filters, sort   |
+| get_keyword_top         | Get Google's top-100 search results for the analyzed keyword with position, URL, and SERP features | keyword, se, filters, size   |
 
 ### URL Analysis Tools
 
-| Tool Name                 | Description                                                                                        | Key Parameters           |
-|---------------------------|---------------------------------------------------------------------------------------------------|--------------------------|
-| get_url_summary_traff     | Get traffic and keyword statistics for website pages matching a specific URL mask                | se, domain, urlContains  |
-| get_url_competitors       | Get list of URL competitors showing domains competing for same keywords in top-10 results        | se, url, sort, page      |
-| get_url_keywords          | Get keywords for which specified URL ranks in top-100 Google and top-50 Bing search results     | se, url, filters, sort   |
-| get_url_missing_keywords  | Get keywords that competitors rank for but the given URL does not, identifying keyword gaps      | url, se, filters, sort   |
+| Tool Name                | Description                                                                                 | Key Parameters          |
+|--------------------------|---------------------------------------------------------------------------------------------|-------------------------|
+| get_url_summary_traff    | Get traffic and keyword statistics for website pages matching a specific URL mask           | se, domain, urlContains |
+| get_url_competitors      | Get list of URL competitors showing domains competing for same keywords in top-10 results   | se, url, sort, page     |
+| get_url_keywords         | Get keywords for which specified URL ranks in top-100 Google and top-50 Bing search results | se, url, filters, sort  |
+| get_url_missing_keywords | Get keywords that competitors rank for but the given URL does not, identifying keyword gaps | url, se, filters, sort  |
 
 ### Backlinks Analysis Tools
 
-| Tool Name                  | Description                                                                                   | Key Parameters               |
-|----------------------------|-----------------------------------------------------------------------------------------------|------------------------------|
-| get_backlinks_summary      | Get comprehensive backlinks summary with referring domains, quality metrics, and changes      | domain, subdomain            |
-| get_anchors                | Get anchor text analysis for backlinks with metrics on referring domains and backlinks        | query, searchType, anchor, sort|
-| get_active_backlinks       | Get a list of active backlinks showing linking pages, target pages, and link attributes       | query, searchType, sort, page|
-| get_referring_domains      | Get a list of referring domains with domain rank metrics and referring pages count            | query, searchType, sort, page|
-| get_lost_backlinks         | Get a list of lost backlinks showing linking pages, target pages, and deletion dates          | query, searchType, sort, page|
-| get_top_pages_by_backlinks | Get a list of top pages by backlinks with various filtering and sorting parameters            | query, searchType, sort, size|
-| get_top10_anchors          | Get TOP-10 anchors with the number of backlinks and referring domains                         | query, searchType            |
-| get_backlinks_intersection | Get backlinks from domains that link to multiple analyzed sites for competitive analysis      | query, intersect, sort, page |
-| get_active_outlinks        | Get active outbound links from a domain or URL with target URLs and anchor text               | query, searchType, sort, filters|
-| get_active_outlink_domains | Get external domains that receive outbound links from analyzed domain                         | query, searchType, sort, filters|
-| get_threat_backlinks       | Get malicious backlinks pointing to analyzed domain from sites flagged for security threats   | query, searchType, sort, filters|
+| Tool Name                  | Description                                                                                 | Key Parameters                   |
+|----------------------------|---------------------------------------------------------------------------------------------|----------------------------------|
+| get_backlinks_summary      | Get comprehensive backlinks summary with referring domains, quality metrics, and changes    | domain, subdomain                |
+| get_anchors                | Get anchor text analysis for backlinks with metrics on referring domains and backlinks      | query, searchType, anchor, sort  |
+| get_active_backlinks       | Get a list of active backlinks showing linking pages, target pages, and link attributes     | query, searchType, sort, page    |
+| get_referring_domains      | Get a list of referring domains with domain rank metrics and referring pages count          | query, searchType, sort, page    |
+| get_lost_backlinks         | Get a list of lost backlinks showing linking pages, target pages, and deletion dates        | query, searchType, sort, page    |
+| get_top_pages_by_backlinks | Get a list of top pages by backlinks with various filtering and sorting parameters          | query, searchType, sort, size    |
+| get_top10_anchors          | Get TOP-10 anchors with the number of backlinks and referring domains                       | query, searchType                |
+| get_backlinks_intersection | Get backlinks from domains that link to multiple analyzed sites for competitive analysis    | query, intersect, sort, page     |
+| get_active_outlinks        | Get active outbound links from a domain or URL with target URLs and anchor text             | query, searchType, sort, filters |
+| get_active_outlink_domains | Get external domains that receive outbound links from analyzed domain                       | query, searchType, sort, filters |
+| get_threat_backlinks       | Get malicious backlinks pointing to analyzed domain from sites flagged for security threats | query, searchType, sort, filters |
 
 ### Project Management Tools
 
-| Tool Name      | Description                                                                    | Key Parameters       |
-|----------------|--------------------------------------------------------------------------------|----------------------|
-| create_project | Create a new project in Serpstat for tracking SEO metrics and site audits     | domain, name, groups |
-| delete_project | Delete an existing project from Serpstat by project ID                        | project_id           |
-| list_projects  | Retrieve a list of projects associated with the account with pagination       | page, size           |
+| Tool Name      | Description                                                               | Key Parameters       |
+|----------------|---------------------------------------------------------------------------|----------------------|
+| create_project | Create a new project in Serpstat for tracking SEO metrics and site audits | domain, name, groups |
+| delete_project | Delete an existing project from Serpstat by project ID                    | project_id           |
+| list_projects  | Retrieve a list of projects associated with the account with pagination   | page, size           |
 
 ### Credits & Usage Monitoring Tools
 
-| Tool Name                   | Description                                                                                  | Key Parameters |
-|-----------------------------|----------------------------------------------------------------------------------------------|----------------|
+| Tool Name                   | Description                                                                                 | Key Parameters |
+|-----------------------------|---------------------------------------------------------------------------------------------|----------------|
 | get_credits_for_audit_stats | Check available audit credits (one-page audit, JavaScript scanning, crawl limits) *No cost* | none           |
 | get_credits_stats           | Check API credits usage, account info, and browser plugin limits *No cost*                  | none           |
 
 ### Rank Tracking Tools
 
-| Tool Name                           | Description                                                                                      | Key Parameters                |
-|-------------------------------------|--------------------------------------------------------------------------------------------------|-------------------------------|
-| get_rt_projects_list                | Get rank tracker projects with ID, name, domain, creation date, and tracking status *No cost*   | page, pageSize                |
-| get_rt_project_status               | Check if rank tracker project is parsing (true=processing, false=ready) *No cost*               | projectId, regionId           |
-| get_rt_project_regions_list         | Get list of regions for a rank tracker project with status, SERP type, device, and location *No cost* | projectId                    |
-| get_rt_project_keyword_serp_history | Get Google's top-100 SERP history for rank tracker keywords with positions and URLs *No cost*   | projectId, projectRegionId, page|
-| get_rt_project_url_serp_history     | Get ranking history of URLs for rank tracker keywords with historical position data *No cost*   | projectId, projectRegionId, page|
+| Tool Name                           | Description                                                                                           | Key Parameters                   |
+|-------------------------------------|-------------------------------------------------------------------------------------------------------|----------------------------------|
+| get_rt_projects_list                | Get rank tracker projects with ID, name, domain, creation date, and tracking status *No cost*         | page, pageSize                   |
+| get_rt_project_status               | Check if rank tracker project is parsing (true=processing, false=ready) *No cost*                     | projectId, regionId              |
+| get_rt_project_regions_list         | Get list of regions for a rank tracker project with status, SERP type, device, and location *No cost* | projectId                        |
+| get_rt_project_keyword_serp_history | Get Google's top-100 SERP history for rank tracker keywords with positions and URLs *No cost*         | projectId, projectRegionId, page |
+| get_rt_project_url_serp_history     | Get ranking history of URLs for rank tracker keywords with historical position data *No cost*         | projectId, projectRegionId, page |
 
 ### Site Audit Tools
 
-| Tool Name                   | Description                                                                                                                      | Key Parameters              |
-|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
-| get_site_audit_settings                 | Get audit settings for a project including scan parameters, scheduling, and error thresholds *No cost*                          | projectId                        |
-| set_site_audit_settings                 | Update audit settings for a project with scan configuration, scheduling, and notifications *No cost*                            | projectId, mainSettings, ...     |
-| start_site_audit                        | Start audit session for a project and receive reportId for tracking progress (1 credit/page, 10 credits/page with JS rendering) | projectId                        |
-| stop_site_audit                         | Stop active audit session for a project *No cost*                                                                               | projectId                        |
-| get_site_audit_results_by_categories    | Get audit results statistics grouped by issue categories (pages status, meta tags, links, etc.) *No cost*                       | reportId                         |
-| get_site_audit_history                  | Get historical error count data for a specific error type across multiple audit reports *No cost*                               | projectId, errorName, limit, offset |
-| get_site_audits_list                    | Get list of all audit reports for a project with summary statistics and progress information *No cost*                          | projectId, limit, offset         |
-| get_site_audit_scanned_urls_list        | Get list of URLs that will be scanned based on project scan settings *No cost*                                                  | projectId                        |
-| get_site_audit_project_default_settings | Get default audit settings template to use when creating new projects *No cost*                                                 | -                                |
-| get_site_audit_bref_info                | Get essential summary information from latest audit including SDO score, issue counts by priority, scan progress, and completion status *No cost* | reportId                         |
-| get_site_audit_deteailed_report         | Get number of errors categorized by type with comparison to previous report showing countAll, countNew, and countFixed *No cost* | reportId, compareReportId (optional) |
-| get_site_audit_pages_spec_errors        | Get list of all pages where a specific error was detected with filtering by mode (all/new/solved) and pagination support *No cost* | reportId, compareReportId, projectId, errorName, mode, limit, offset |
-| get_site_audit_elements_with_issues     | Get list of sub-elements (URLs) containing specific errors using CRC from get_site_audit_pages_spec_errors response *No cost*  | reportId, projectId, errorName, crc, compareReportId (optional), mode, limit, offset |
+| Tool Name                               | Description                                                                                                                                       | Key Parameters                                                                       |
+|-----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| get_site_audit_settings                 | Get audit settings for a project including scan parameters, scheduling, and error thresholds *No cost*                                            | projectId                                                                            |
+| set_site_audit_settings                 | Update audit settings for a project with scan configuration, scheduling, and notifications *No cost*                                              | projectId, mainSettings, ...                                                         |
+| start_site_audit                        | Start audit session for a project and receive reportId for tracking progress (1 credit/page, 10 credits/page with JS rendering)                   | projectId                                                                            |
+| stop_site_audit                         | Stop active audit session for a project *No cost*                                                                                                 | projectId                                                                            |
+| get_site_audit_results_by_categories    | Get audit results statistics grouped by issue categories (pages status, meta tags, links, etc.) *No cost*                                         | reportId                                                                             |
+| get_site_audit_history                  | Get historical error count data for a specific error type across multiple audit reports *No cost*                                                 | projectId, errorName, limit, offset                                                  |
+| get_site_audits_list                    | Get list of all audit reports for a project with summary statistics and progress information *No cost*                                            | projectId, limit, offset                                                             |
+| get_site_audit_scanned_urls_list        | Get list of URLs that will be scanned based on project scan settings *No cost*                                                                    | projectId                                                                            |
+| get_site_audit_project_default_settings | Get default audit settings template to use when creating new projects *No cost*                                                                   | -                                                                                    |
+| get_site_audit_bref_info                | Get essential summary information from latest audit including SDO score, issue counts by priority, scan progress, and completion status *No cost* | reportId                                                                             |
+| get_site_audit_deteailed_report         | Get number of errors categorized by type with comparison to previous report showing countAll, countNew, and countFixed *No cost*                  | reportId, compareReportId (optional)                                                 |
+| get_site_audit_pages_spec_errors        | Get list of all pages where a specific error was detected with filtering by mode (all/new/solved) and pagination support *No cost*                | reportId, compareReportId, projectId, errorName, mode, limit, offset                 |
+| get_site_audit_elements_with_issues     | Get list of sub-elements (URLs) containing specific errors using CRC from get_site_audit_pages_spec_errors response *No cost*                     | reportId, projectId, errorName, crc, compareReportId (optional), mode, limit, offset |
 
 ### One Page Audit Tools
 
-| Tool Name                      | Description                                                                                                                      | Key Parameters              |
-|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
-| page_audit_start_scan          | Scan a single webpage with JavaScript rendering. Returns pageId and reportId for tracking. Use page_audit_get_reports_for_page to check progress via status and progress fields (10 credits per scan) | name, url, userAgent (recommended: 0 for Chrome), httpAuthLogin (optional), httpAuthPass (optional) |
-| page_audit_get_last_scans      | Get list of all one-page audit projects with pageId, url, name, status, lastActiveReport (latest scan results with SDO score), finishedReportCount, settings *No cost* | limit (optional, default 30), offset (optional, default 0), teamMemberId (optional) |
-| page_audit_get_reports_for_page | Get history of all audit reports for a specific page with reportId, auditDate, status (1=in progress, 3=finalizing, 4=completed), SDO score (0-100), error counts, progress (0-100) *No cost* | pageId, limit (optional), offset (optional) |
-| page_audit_get_results_report  | Get detailed audit results with categories array (errors grouped by meta_tags, headings, content, multimedia, https, pagespeed_desktop/mobile, etc), hasAdditionRows flag for drill-down availability *No cost* | pageId (from page_audit_get_last_scans or page_audit_start_scan) |
-| page_audit_rescan              | Rescan existing one-page audit project and create new audit report. Returns reportId. Track progress via page_audit_get_reports_for_page (10 credits per rescan) | pageId, name, userAgent (recommended: 0 for Chrome), httpAuthLogin (optional), httpAuthPass (optional) |
-| page_audit_stop                | Stop active one-page audit scan. Returns boolean indicating success *No cost*                                                   | pageId                      |
-| page_audit_delete              | Remove one-page audit project from customer project list permanently. Returns boolean *No cost*                                 | pageId                      |
-| page_audit_get_report_by_categories | Get audit results by categories for specific report. Use compareReportId to see countNew (errors added) and countFixed (errors resolved) *No cost* | reportId, compareReportId (optional, enables change tracking) |
-| page_audit_report_drill_down   | Get detailed problematic elements list. ONLY works for errors with hasAdditionRows=true. Response varies by error type (e.g., image URLs for multimedia errors) *No cost* | reportId, error (must match error.key), mode (all/new/solved, optional), compareReportId (optional), page (optional), size (optional, max 1000) |
-| page_audit_get_scan_names      | Get list of all one-page audit project names with pageId, name, url, finishedReportCount for project discovery *No cost*       | teamMemberId (optional)     |
-| page_audit_scan_logs           | Get chronological log of scan events with message (event name), type (info/warning/error), params (event-specific data or []), created_at timestamp for debugging *No cost* | reportId (optional, all scans if not specified), page (optional, default 0), pageSize (optional, default 100) |
+| Tool Name                           | Description                                                                                                                                                                                                     | Key Parameters                                                                                                                                  |
+|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| page_audit_start_scan               | Scan a single webpage with JavaScript rendering. Returns pageId and reportId for tracking. Use page_audit_get_reports_for_page to check progress via status and progress fields (10 credits per scan)           | name, url, userAgent (recommended: 0 for Chrome), httpAuthLogin (optional), httpAuthPass (optional)                                             |
+| page_audit_get_last_scans           | Get list of all one-page audit projects with pageId, url, name, status, lastActiveReport (latest scan results with SDO score), finishedReportCount, settings *No cost*                                          | limit (optional, default 30), offset (optional, default 0), teamMemberId (optional)                                                             |
+| page_audit_get_reports_for_page     | Get history of all audit reports for a specific page with reportId, auditDate, status (1=in progress, 3=finalizing, 4=completed), SDO score (0-100), error counts, progress (0-100) *No cost*                   | pageId, limit (optional), offset (optional)                                                                                                     |
+| page_audit_get_results_report       | Get detailed audit results with categories array (errors grouped by meta_tags, headings, content, multimedia, https, pagespeed_desktop/mobile, etc), hasAdditionRows flag for drill-down availability *No cost* | pageId (from page_audit_get_last_scans or page_audit_start_scan)                                                                                |
+| page_audit_rescan                   | Rescan existing one-page audit project and create new audit report. Returns reportId. Track progress via page_audit_get_reports_for_page (10 credits per rescan)                                                | pageId, name, userAgent (recommended: 0 for Chrome), httpAuthLogin (optional), httpAuthPass (optional)                                          |
+| page_audit_stop                     | Stop active one-page audit scan. Returns boolean indicating success *No cost*                                                                                                                                   | pageId                                                                                                                                          |
+| page_audit_delete                   | Remove one-page audit project from customer project list permanently. Returns boolean *No cost*                                                                                                                 | pageId                                                                                                                                          |
+| page_audit_get_report_by_categories | Get audit results by categories for specific report. Use compareReportId to see countNew (errors added) and countFixed (errors resolved) *No cost*                                                              | reportId, compareReportId (optional, enables change tracking)                                                                                   |
+| page_audit_report_drill_down        | Get detailed problematic elements list. ONLY works for errors with hasAdditionRows=true. Response varies by error type (e.g., image URLs for multimedia errors) *No cost*                                       | reportId, error (must match error.key), mode (all/new/solved, optional), compareReportId (optional), page (optional), size (optional, max 1000) |
+| page_audit_get_scan_names           | Get list of all one-page audit project names with pageId, name, url, finishedReportCount for project discovery *No cost*                                                                                        | teamMemberId (optional)                                                                                                                         |
+| page_audit_scan_logs                | Get chronological log of scan events with message (event name), type (info/warning/error), params (event-specific data or []), created_at timestamp for debugging *No cost*                                     | reportId (optional, all scans if not specified), page (optional, default 0), pageSize (optional, default 100)                                   |
 
 ### Search Engines (se parameter)
 
