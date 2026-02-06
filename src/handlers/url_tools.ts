@@ -1,4 +1,4 @@
-import { BaseHandler } from './base.js';
+import { BaseHandler, ToolAnnotations } from './base.js';
 import { UrlService } from '../services/url_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { urlSummaryTrafficSchema, urlCompetitorsSchema, urlKeywordsSchema, urlMissingKeywordsSchema } from '../utils/validation.js';
@@ -43,6 +43,9 @@ export class GetUrlSummaryTrafficHandler extends BaseHandler {
             ' `This operation will cost 1000-2000 credits`. API COST: 1000 credits per each of `traffic`|`keywords` output parameter';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get URL Traffic Summary', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
 
     getInputSchema(): object {
         return {
@@ -104,6 +107,10 @@ export class GetUrlCompetitorsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Returns competitor URLs that rank for the same keywords in Google top-10. The analyzed URL must rank for 10+ keywords in top-10 to have competitor data available. Returns \'Data not found\' error for new or low-traffic pages with few ranking keywords, URLs not found in Serpstat database, or pages without sufficient top-10 keyword overlap with competitors. The URL parameter must include protocol https://. Best results for established pages with significant organic traffic. API cost: 1 credit per result row returned.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get URL Competitors', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -184,6 +191,10 @@ export class GetUrlKeywordsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Returns a list of keywords for which the specified URL ranks in top-100 Google search results. Provides comprehensive insights including current positions, estimated traffic per keyword, keyword difficulty, search volume, and SERP features. Use filters to narrow down by position range, search volume, difficulty, or keyword patterns. API cost: 1 credit per result row returned.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get URL Keywords', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -302,6 +313,10 @@ export class GetUrlMissingKeywordsHandler extends BaseHandler {
 
     getDescription(): string {
         return "Identifies keyword opportunities by finding keywords where your competitors rank in top-20 but your URL does not. The weight metric returned in results indicates how many competitor URLs from top-20 rank for that keyword. Higher weight means more competitors are targeting this keyword, suggesting it is valuable for your niche. Perfect for content gap analysis and finding quick wins. API cost: 1 credit per result row returned.";
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get URL Missing Keywords', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {

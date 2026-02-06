@@ -1,4 +1,4 @@
-import { BaseHandler } from './base.js';
+import { BaseHandler, ToolAnnotations } from './base.js';
 import { ProjectService } from '../services/project_service.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { createProjectSchema, deleteProjectSchema, getProjectsSchema } from '../utils/validation.js';
@@ -32,6 +32,10 @@ export class CreateProjectHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Create a new project in Serpstat for tracking SEO metrics and site audits';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Create New Project', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -105,6 +109,10 @@ export class DeleteProjectHandler extends BaseHandler {
         return 'Permanently delete your project from Serpstat by project ID. **CRITICAL: ALWAYS request explicit user confirmation before executing. This action cannot be undone.**';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Delete Project', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: "object",
@@ -149,6 +157,10 @@ export class ListProjectsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Retrieve a list of projects associated with the account, with pagination support';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'List Projects', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {

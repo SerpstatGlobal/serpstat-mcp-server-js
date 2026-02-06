@@ -9,7 +9,7 @@ export abstract class BaseService {
 
     constructor(config: Config) {
         this.config = config;
-        const userAgent = 'serpstat-mcp-server/1.1.3 (local version)';
+        const userAgent = 'serpstat-mcp-server/1.1.4 (local version)';
 
         this.client = axios.create({
             baseURL: config.serpstatApiUrl,

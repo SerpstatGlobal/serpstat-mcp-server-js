@@ -1,4 +1,4 @@
-import { BaseHandler } from './base.js';
+import { BaseHandler, ToolAnnotations } from './base.js';
 import { BacklinksService } from '../services/backlinks_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { backlinksSummarySchema, BacklinksSummaryParams, anchorsSchema, AnchorsParams, getActiveBacklinksSchema, GetActiveBacklinksParams, getReferringDomainsSchema, GetReferringDomainsParams, getLostBacklinksSchema, GetLostBacklinksParams, getTopAnchorsSchema, GetTopAnchorsParams, getTopPagesByBacklinksSchema, GetTopPagesByBacklinksParams, getBacklinksIntersectionSchema, GetBacklinksIntersectionParams, getActiveOutlinksSchema, GetActiveOutlinksParams, getActiveOutlinkDomainsSchema, getThreatBacklinksSchema } from '../utils/validation.js';
@@ -24,6 +24,10 @@ export class BacklinksSummaryHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get comprehensive backlinks summary using Serpstat API. Returns referring domains, backlinks count, link types, quality metrics and recent changes for domain or subdomain.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Backlinks Summary', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -78,6 +82,10 @@ export class GetAnchorsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get anchor text analysis for backlinks using Serpstat API. Returns anchor texts used in backlinks, with metrics including referring domains, total backlinks, and nofollow counts for domain or URL analysis.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Backlink Anchors', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -166,6 +174,10 @@ export class GetActiveBacklinksHandler extends BaseHandler {
         return 'Get a list of active backlinks using Serpstat API. Returns linking pages, target pages, link attributes, link types, external links count, anchor text, and discovery dates for domain or URL analysis.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Active Backlinks', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: "object",
@@ -252,6 +264,10 @@ export class GetReferringDomainsHandler extends BaseHandler {
         return 'Get a list of referring domains using Serpstat API. Returns referring domains that link to the analyzed site with domain rank metrics, referring pages count, and filtering options for comprehensive backlink analysis.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Referring Domains', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: "object",
@@ -328,6 +344,10 @@ export class GetLostBacklinksHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get a list of lost backlinks showing linking pages, target pages, link attributes, and deletion dates for domain or URL analysis, **use sort by check desc** to get recently lost backlinks';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Lost Backlinks', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): Record<string, any> {
@@ -415,6 +435,10 @@ export class GetTopAnchorsHandler extends BaseHandler {
         return 'Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis, use this method is you need a fast brief way to get info about top 10 anchors';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Top 10 Anchors', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): Record<string, any> {
         return {
             type: "object",
@@ -466,6 +490,10 @@ export class GetTopPagesByBacklinksHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get leading pages by backlinks using Serpstat API. Returns pages with the highest number of referring pages, domains, and IP addresses for comprehensive backlink analysis.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Top Pages by Backlinks', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): Record<string, any> {
@@ -543,6 +571,10 @@ export class GetBacklinksIntersectionHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get backlinks from domains that link to multiple analyzed sites simultaneously. This method reveals shared referring domains between your target domain and competitors, useful for competitive backlink analysis and identifying potential link sources. Returns intersection data showing which donors link to multiple domains in your analysis set, including link metrics, anchor texts, and domain authority scores.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Backlinks Intersection', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): Record<string, any> {
@@ -628,6 +660,10 @@ export class GetActiveOutlinksHandler extends BaseHandler {
         return 'Get active outbound links from a domain or URL. Returns external links the site points to, including target URLs, anchor text, link attributes (nofollow/dofollow), link types, and discovery dates. Useful for analyzing linking strategies, finding partnership opportunities, and auditing outbound link profiles.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Active Outlinks', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): Record<string, any> {
         return {
             type: "object",
@@ -711,6 +747,10 @@ export class GetActiveOutlinkDomainsHandler extends BaseHandler {
         return 'Get external domains that receive outbound links from the analyzed domain. Returns target domains with total link counts, revealing partnership networks, referenced sources, and linking patterns. Helps identify collaboration opportunities by analyzing which domains competitors link to.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Outlink Domains', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): Record<string, any> {
         return {
             type: "object",
@@ -787,6 +827,10 @@ export class GetThreatBacklinksHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get malicious backlinks pointing to the analyzed domain. Returns links from sites flagged for threats like social engineering, malware, or unwanted software. Shows referring domain, source URL, target URL, platform type, threat type, and last update date. Essential for identifying and removing harmful backlinks that could damage domain reputation and SEO rankings.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Threat Backlinks', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): Record<string, any> {

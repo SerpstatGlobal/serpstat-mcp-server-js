@@ -1,4 +1,4 @@
-import { BaseHandler } from './base.js';
+import { BaseHandler, ToolAnnotations } from './base.js';
 import { KeywordService } from '../services/keyword_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { keywordGetSchema, getRelatedKeywordsSchema, keywordsInfoSchema, keywordSuggestionsSchema, keywordFullTopSchema, keywordTopUrlsSchema, keywordCompetitorsSchema, keywordTopSchema } from '../utils/validation.js';
@@ -48,6 +48,10 @@ export class GetKeywordsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Shows organic keywords related to the researched keyword for which domains rank in Google top 100. For each found keyword, displays its search volume, CPC, and competition level.'
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Related Keywords', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -177,6 +181,10 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
         return 'Shows all search queries semantically related to the researched keyword. For each found keyword, displays its search volume, CPC, competition, difficulty, weight, intents, and more.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Semantically Related Keywords', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: 'object',
@@ -296,6 +304,10 @@ export class GetKeywordsInfoHandler extends BaseHandler {
         return "Get keyword overview showing volume, CPC, competition level, difficulty, and additional metrics for multiple keywords. Provides comprehensive analysis including search volume, cost per click, competition levels, SERP features, and keyword intents.";
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Keywords Info', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: "object",
@@ -405,6 +417,10 @@ export class GetKeywordSuggestionsHandler extends BaseHandler {
         return 'Shows search suggestions for the keyword you requested (they are found by the full-text search). Returns keyword suggestions with geographic names information.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Keyword Suggestions', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: 'object',
@@ -485,6 +501,10 @@ export class GetKeywordFullTopHandler extends BaseHandler {
         return 'Shows Google\'s top-100 search results for the analyzed keyword. Returns detailed information about domains ranking for the keyword including their visibility, organic/PPC keywords count, SDR score, and backlink metrics.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Keyword Full Top 100', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: 'object',
@@ -560,6 +580,10 @@ export class GetKeywordTopUrlsHandler extends BaseHandler {
         return 'Returns website pages that rank for the largest amount of the analyzed keyword variations and have the highest traffic. Shows URLs with keyword count, estimated traffic, and Facebook shares.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Keyword Top URLs', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: 'object',
@@ -629,6 +653,10 @@ export class GetKeywordCompetitorsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Lists the domains that rank for the given keyword in Google top-20 results. Shows detailed competitor analysis including visibility metrics, traffic data, keyword dynamics, and relevance scores.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Keyword Competitors', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -759,6 +787,10 @@ export class GetKeywordTopHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Shows Google\'s top-100 search results for the analyzed keyword. Returns position data, URLs, domains, subdomains, and SERP feature types. This method is deprecated but still functional.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Keyword Top Results', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
