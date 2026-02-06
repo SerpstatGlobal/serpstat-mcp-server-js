@@ -36,7 +36,7 @@ export class SerpstatMCPServer {
         this.server = new Server(
             {
                 name: 'serpstat-mcp-server',
-                version: '1.1.3',
+                version: '1.1.4',
             },
             {
                 capabilities: {
@@ -179,6 +179,7 @@ export class SerpstatMCPServer {
                 name: handler.getName(),
                 description: handler.getDescription(),
                 inputSchema: handler.getInputSchema(),
+                annotations: handler.getAnnotations(),
             }));
 
             logger.debug(`Listing ${tools.length} available tools`);

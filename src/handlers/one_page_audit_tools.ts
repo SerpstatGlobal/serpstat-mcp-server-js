@@ -1,4 +1,4 @@
-import { BaseHandler } from './base.js';
+import { BaseHandler, ToolAnnotations } from './base.js';
 import { OnePageAuditService } from '../services/one_page_audit.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import {
@@ -44,6 +44,10 @@ export class StartOnePageAuditScanHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Scan a single webpage with JavaScript rendering. Returns pageId and reportId for tracking. Use page_audit_get_reports_for_page to check progress via status and progress fields. API COST: 10 credits per scan. Wait for progress=100 before retrieving results with page_audit_get_results_report.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Start Page Audit Scan', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -106,6 +110,10 @@ export class GetOnePageAuditsListHandler extends BaseHandler {
         return 'Get list of all one-page audit projects. Returns page info including: pageId (use with other methods), url, name, status, lastActiveReport (latest scan results with SDO score and issue counts), finishedReportCount, settings. Use this as starting point to find pageId for other operations. Does not consume API credits.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'List Page Audits', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: 'object',
@@ -156,6 +164,10 @@ export class GetOnePageReportsListHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get history of all audit reports for a specific page. Returns array of reports with: id (reportId), auditDate, status, sdo (0-100 score), high/medium/low/information error counts, viruses, progress (0-100). Use this to track scan completion and view historical results. Status values: 1=in progress, 3=finalizing, 4=completed. Sort by auditDate to get most recent first. Does not consume API credits.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Page Audit Reports', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -210,6 +222,10 @@ export class GetOnePageAuditResultsHandler extends BaseHandler {
         return 'Get detailed audit results for a page. Returns: categories array (errors grouped by category like meta_tags, headings, content, multimedia, https, pagespeed_desktop, pagespeed_mobile, etc), data array (page details), report object (SDO score, error counts, progress). Each category contains errors with: key (error identifier), priority (high/medium/low/information), countAll/countNew/countFixed, hasAdditionRows (true means drill-down available via page_audit_report_drill_down). Use this to analyze specific issues found during scan. Does not consume API credits.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Page Audit Results', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: 'object',
@@ -250,6 +266,10 @@ export class RescanOnePageAuditHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Rescan existing one-page audit project. Creates new audit report for the page. Returns reportId for the new scan. API COST: 10 credits per rescan. Use page_audit_get_reports_for_page to track progress.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Rescan Page Audit', readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -312,6 +332,10 @@ export class StopOnePageAuditHandler extends BaseHandler {
         return 'Stop active one-page audit scan. Returns boolean indicating success. Does not consume API credits.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Stop Page Audit', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: 'object',
@@ -354,6 +378,10 @@ export class RemoveOnePageAuditHandler extends BaseHandler {
         return 'Remove one-page audit project from customer project list. Returns boolean indicating success. Does not consume API credits.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Delete Page Audit', readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: 'object',
@@ -394,6 +422,10 @@ export class GetOnePageAuditByCategoriesHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get audit results by categories for a specific report. Returns categories array with errors grouped by type (meta_tags, headings, content, multimedia, https, etc), page data, and report info. Use compareReportId to see changes between reports (countNew shows errors added since compareReportId, countFixed shows errors resolved since compareReportId). Does not consume API credits.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Audit by Categories', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -441,6 +473,10 @@ export class GetOnePageAuditErrorRowsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get detailed list of problematic elements for specific error types. ONLY works for errors with hasAdditionRows=true from page_audit_get_results_report response. Returns error \'Try get additional rows in rows-less error\' for page-level errors where hasAdditionRows=false. Response structure varies by error type: for multimedia errors (image_no_alt, large_image_size, broken_image_url) returns array of image URLs that have the issue; for page-level errors (miss_favicon, etc) returns array with single object containing page URL. Always check hasAdditionRows flag before calling this method. Does not consume API credits.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Drill Down Error Details', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -511,6 +547,10 @@ export class GetOnePageAuditPageNamesHandler extends BaseHandler {
         return 'Get list of all one-page audit project names. Returns array of pages with: pageId, name, url, finishedReportCount. Use this to discover available audit projects. Does not consume API credits.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Page Audit Names', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: 'object',
@@ -549,6 +589,10 @@ export class GetOnePageAuditUserLogHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get chronological log of scan events for debugging and progress tracking. Returns array of log items with: message (event name like audit_finish, crawl_start, server_check_robots_pass), type (info/warning/error), params (object with event-specific data, may be empty array if no additional info, e.g., {sdo: 64} or []), created_at (timestamp). Useful for debugging scan issues and understanding scan progress. Supports pagination via page and pageSize parameters. Does not consume API credits.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Scan Logs', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {

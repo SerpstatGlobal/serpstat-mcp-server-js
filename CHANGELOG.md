@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.4] - 2026-02-06
+
+### Added
+
+- **MCP Tool Annotations**: Added [tool annotations](https://modelcontextprotocol.io/docs/concepts/tools#tool-annotations) to all 65 handlers, providing MCP clients with metadata about each tool's behavior (read-only, destructive, idempotent, open-world hints and human-readable titles)
+
 ## [1.1.3] - 2025-11-27
 
 ### Added

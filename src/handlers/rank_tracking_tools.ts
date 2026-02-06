@@ -1,4 +1,4 @@
-import { BaseHandler } from './base.js';
+import { BaseHandler, ToolAnnotations } from './base.js';
 import { RankTrackingService } from '../services/rank_tracking_service.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { getRtProjectsListSchema, getRtProjectStatusSchema, getRtProjectRegionsListSchema, getRtProjectKeywordSerpHistorySchema, getRtProjectUrlSerpHistorySchema } from '../utils/validation.js';
@@ -29,6 +29,10 @@ export class GetRtProjectsListHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get a list of rank tracker projects including project ID, name, domain, creation date, and tracking status. This method does not consume API credits.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'List Rank Tracker Projects', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -83,6 +87,10 @@ export class GetRtProjectStatusHandler extends BaseHandler {
         return 'Get the current status of position updates (parsing) for a rank tracker project and region. Use this to check if data is ready before requesting results. This method does not consume API credits.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Project Parsing Status', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: "object",
@@ -134,6 +142,10 @@ export class GetRtProjectRegionsListHandler extends BaseHandler {
         return 'Get the list of regions configured for a rank tracker project, including region ID, status (active/inactive), SERP type (organic/paid), device type (desktop/mobile), search engine, and location details. This method does not consume API credits.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'List Project Regions', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: "object",
@@ -178,6 +190,10 @@ export class GetRtProjectKeywordSerpHistoryHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get complete Google top-100 SERP history for tracked keywords in a rank tracker project. Returns full competitor analysis with historical positions, URLs, domains, and search volumes for each date. WARNING: This method returns large datasets (full top-100 for each keyword/date combination). Recommended pageSize: 20-50 for most use cases. Use date filters and keyword filters to reduce response size. Supports keyword tagging for grouping and filtering. This method does not consume API credits.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Keyword SERP History', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -274,6 +290,10 @@ export class GetRtProjectUrlSerpHistoryHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get ranking history showing only YOUR domain\'s positions across all tracked keywords. Unlike get_rt_project_keyword_serp_history (which shows full top-100), this method returns only positions where your specified domain/URL ranks. Perfect for tracking your own performance over time without competitor noise. Returns historical position data, search volumes, and optional keyword tags. This method does not consume API credits.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get URL Ranking History', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {

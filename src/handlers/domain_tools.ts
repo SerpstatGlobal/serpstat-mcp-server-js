@@ -1,4 +1,4 @@
-import { BaseHandler } from './base.js';
+import { BaseHandler, ToolAnnotations } from './base.js';
 import { DomainService } from '../services/domain_tools.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { domainsInfoSchema, competitorsGetSchema, domainKeywordsSchema, domainUrlsSchema, domainRegionsCountSchema, domainUniqKeywordsSchema, getMarketCategoriesSchema, getCategoryTopDomainsSchema } from '../utils/validation.js';
@@ -58,6 +58,10 @@ export class DomainsInfoHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get comprehensive SEO information for multiple domains including visibility, keywords, traffic, and dynamics';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Domains SEO Info', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -129,6 +133,10 @@ export class CompetitorsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get a list of competitor domains for a given domain, including visibility, traffic, and relevance.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Domain Competitors', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -213,6 +221,10 @@ export class DomainKeywordsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get keywords that domain ranks for in Google search results. Includes position, traffic, difficulty analysis with comprehensive SEO insights and performance metrics.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Domain Keywords', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -338,6 +350,10 @@ export class DomainUrlsHandler extends BaseHandler {
         return 'Get URLs within a domain and keyword count for each URL. Analyze URL structure, performance distribution, and identify top-performing pages. Each URL costs 1 API credit, minimum 1 credit per request.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Domain URLs', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: "object",
@@ -416,6 +432,10 @@ export class DomainRegionsCountHandler extends BaseHandler {
             +' Returns: keyword count by country, regional performance comparison, and identifies primary market for the domain.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Domain Regions Count', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: "object",
@@ -474,6 +494,10 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Returns unique keywords of two domains for which a third domain does not rank. Equivalent to a Domain vs domain report.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Unique Keywords Comparison', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -607,6 +631,10 @@ export class GetMarketCategoriesHandler extends BaseHandler {
         return 'Get complete list of available market research categories (1000+ categories). Use this method first to find the appropriate category_id for your analysis. Returns hierarchical categories like \'/Arts & Entertainment/TV & Video/Online Video\' with their IDs (e.g., \'.2.13.1.\'). The category_id is required for get_category_top_domains method.';
     }
 
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Market Categories', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+    }
+
     getInputSchema(): object {
         return {
             type: "object",
@@ -645,6 +673,10 @@ export class GetCategoryTopDomainsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Get top-performing domains in a specific market category with SEO metrics (traffic, visibility, keywords, backlinks, SDR). Requires category_id from get_market_categories - call that method first to find the right category. Returns ranked domains for competitive landscape analysis with filtering and sorting options.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Category Top Domains', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {

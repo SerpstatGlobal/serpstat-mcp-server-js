@@ -1,4 +1,4 @@
-import { BaseHandler } from './base.js';
+import { BaseHandler, ToolAnnotations } from './base.js';
 import { CreditsService } from '../services/credits_service.js';
 import { MCPToolCall, MCPToolResponse } from '../types/mcp.js';
 import { getAuditStatsSchema, getCreditsStatsSchema } from '../utils/validation.js';
@@ -20,6 +20,10 @@ export class GetAuditStatsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Check available audit credits including one-page audit, JavaScript scanning, and page crawl limits. Use this before running site audits to verify available resources. This method does not consume API credits.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get Audit Credits Stats', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
@@ -60,6 +64,10 @@ export class GetCreditsStatsHandler extends BaseHandler {
 
     getDescription(): string {
         return 'Check available API credits, usage statistics, account information, and browser plugin limits. Perfect for monitoring API usage and planning resource-heavy operations. This method does not consume API credits.';
+    }
+
+    getAnnotations(): ToolAnnotations {
+        return { title: 'Get API Credits Stats', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
     }
 
     getInputSchema(): object {
