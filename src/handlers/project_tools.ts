@@ -31,7 +31,7 @@ export class CreateProjectHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Create a new project in Serpstat for tracking SEO metrics and site audits';
+        return 'CREATE new project for SEO tracking and audits. USE WHEN: starting new project, setting up monitoring.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -106,7 +106,7 @@ export class DeleteProjectHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Permanently delete your project from Serpstat by project ID. **CRITICAL: ALWAYS request explicit user confirmation before executing. This action cannot be undone.**';
+        return 'DELETE project permanently. **CRITICAL: Request user confirmation. Cannot be undone.** USE WHEN: removing project.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -156,7 +156,7 @@ export class ListProjectsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Retrieve a list of projects associated with the account, with pagination support';
+        return 'LIST account projects. USE WHEN: viewing projects, finding project ID. Supports pagination.';
     }
 
     getAnnotations(): ToolAnnotations {

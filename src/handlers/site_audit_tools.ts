@@ -59,7 +59,7 @@ export class GetSiteAuditSettingsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get current configuration of EXISTING audit project. Returns: mainSettings (domain, name, pagesLimit, scanSpeed, scanDuration, userAgent, robotsTxt, etc), scan filters (keywords to include/exclude), authentication, email notifications, scheduling, error thresholds. Compare with get_site_audit_project_default_settings which returns template for NEW projects. Does not consume API credits.';
+        return 'GET current settings of EXISTING audit project. USE WHEN: reviewing project config, before modifying settings. Returns: mainSettings, scan filters, auth, notifications, scheduling, error thresholds. Compare with get_site_audit_project_default_settings (template for NEW projects). Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -105,7 +105,7 @@ export class SetSiteAuditSettingsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Update or create audit project configuration. Use get_site_audit_project_default_settings to get template, then modify and save with this method. Required fields: mainSettings (domain, name, subdomainsCheck, pagesLimit, scanSpeed, etc), scanSetting (type: 1=all site, 2=URL list, 3=sitemap), scheduleSettings, mailTriggerSettings, baseAuthBlock, keyword filters. Does not consume API credits.';
+        return 'UPDATE audit project configuration. USE WHEN: creating or modifying audit project. Get template from get_site_audit_project_default_settings first, modify, save with this method. Required: mainSettings, scanSetting (1=all site, 2=URL list, 3=sitemap), scheduleSettings, mailTriggerSettings, baseAuthBlock, keyword filters. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -319,7 +319,7 @@ export class StartSiteAuditHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Launch audit scan for a project. Returns reportId to track progress. Check completion with get_site_audits_list (progress field). API COST: 1 credit per page without JS rendering, 10 credits per page with JS rendering (scanJsPage setting). Wait for progress=100 before analyzing results.';
+        return 'START audit scan for project. USE WHEN: launching site crawl. Returns: reportId. Check progress with get_site_audits_list (progress field). **Cost: 1 credit/page (10 credits/page with JS rendering).** Wait for progress=100 before analyzing.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -365,7 +365,7 @@ export class StopSiteAuditHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Stop active audit scan for a project. Partial results may be available. Check get_site_audits_list to see if audit was stopped (stoped field).';
+        return 'STOP active audit scan. USE WHEN: canceling crawl. Partial results may be available. Check get_site_audits_list for stopped status.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -411,7 +411,7 @@ export class GetCategoriesStatisticHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get AGGREGATED error statistics by category. Returns sum of errors grouped by priority for each category. Each category shows: highCount, mediumCount, lowCount, informationCount. Use this for quick overview to identify problematic categories. Categories are fixed: pages_status, meta_tags, headings, content, multimedia, indexation, redirects, links, server_params, https, hreflang, amp, markup, pagespeed_desktop, pagespeed_mobile. Does not consume API credits. For specific error breakdown use get_site_audit_deteailed_report.';
+        return 'GET aggregated error stats by category. USE WHEN: quick audit overview, identifying problem areas. Returns: error counts per category (highCount, mediumCount, lowCount, informationCount). Categories: pages_status, meta_tags, headings, content, multimedia, indexation, redirects, links, server_params, https, hreflang, amp, markup, pagespeed. For error details use get_site_audit_deteailed_report. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -457,7 +457,7 @@ export class GetHistoryByCountErrorHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Track how a SPECIFIC error type changed over time across all audits in project. Returns array with reportId, date, and count for each audit. Use this to: verify if fixes are working (count should decrease), monitor if errors are growing, track specific problem areas. The errorName must be from the fixed enum list (same as error.key from get_site_audit_deteailed_report). Example: errorName=\'no_desc\' shows trend of pages without meta description. Does not consume API credits.';
+        return 'TRACK specific error type trend over time. USE WHEN: verifying fixes, monitoring error growth. Returns: reportId, date, count per audit. errorName must match error.key from get_site_audit_deteailed_report (e.g., \'no_desc\'). Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -520,7 +520,7 @@ export class GetSiteAuditsListHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'STARTING POINT for audit analysis. Returns list of all audit reports for a project. Use reportId from response with other audit methods. Returns: reportId (use with other methods), date, SDO score (0-100), pages scanned/limit, critical/non-critical issue counts, viruses, progress (0-100), completion status, hasDetailData flag (true=full data available, false=in progress/failed). Does not consume API credits. TIP: Sort by date to get most recent audit first.';
+        return '**STARTING POINT for audit analysis.** LIST all audit reports for project. USE WHEN: finding reportId, checking audit status. Returns: reportId (for other methods), date, SDO score (0-100), pages scanned, issue counts, progress (0-100), hasDetailData flag. **TIP: sort by date for most recent.** Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -578,7 +578,7 @@ export class GetScanUserUrlListHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get CONFIGURED URL list for scanning (not actual scan results). ONLY works when scanSetting.type is 2 (URL list) or 3 (sitemap list). Returns error \'Scan url list not found\' when type=1 (scan all site) because no specific URLs are configured. This shows INPUT configuration, not OUTPUT of what was scanned. Check get_site_audits_list response for actual scanned page count. Does not consume API credits.';
+        return 'GET configured URL list for scanning (input config, not scan results). **ONLY works when scanSetting.type is 2 (URL list) or 3 (sitemap list).** Returns error for type=1 (scan all site). USE WHEN: checking scan URL configuration. For actual scanned page count use get_site_audits_list. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -624,7 +624,7 @@ export class GetDefaultSettingsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get DEFAULT TEMPLATE settings for creating new projects (NOT settings of existing project). Returns server-side recommended defaults. Use this to: populate new project form with sensible defaults, avoid hardcoding values, ensure settings stay current if Serpstat changes recommendations. Workflow: 1) Call this method, 2) Modify returned object (set domain, name, adjust limits), 3) Call set_site_audit_settings to save. Key differences from project settings: domain=\'\' (must set), name=\'\' (must set), pagesLimit=5000 (default), scheduleRepeatOption=3 (weekly). Does not consume API credits and does not require projectId.';
+        return 'GET default template for NEW audit projects (not existing project settings). USE WHEN: creating new project, populating defaults. Workflow: 1) Call this, 2) Modify (set domain, name, limits), 3) Save with set_site_audit_settings. Defaults: pagesLimit=5000, scheduleRepeatOption=3 (weekly). No projectId required. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -664,7 +664,7 @@ export class GetBasicInfoHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get quick summary of a single audit for dashboard display. Returns: sdo (0-100 score), highCount/mediumCount/lowCount/informationCount (errors by priority), checkedPageCount (pages scanned), progress (0-100), stoped flag, captchaDetected flag, redirectCount. Lightweight method, does not consume API credits. For detailed analysis use get_site_audit_results_by_categories or get_site_audit_deteailed_report.';
+        return 'GET quick audit summary (lightweight). USE WHEN: dashboard display, quick status check. Returns: SDO score (0-100), error counts by priority, pages scanned, progress, stopped/captcha flags. For details use get_site_audit_results_by_categories or get_site_audit_deteailed_report. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -710,7 +710,7 @@ export class GetReportWithoutDetailsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get COMPLETE error breakdown organized by categories. Main method for detailed audit analysis. Returns categories array, each with errors array containing: key (error identifier like \'no_desc\', \'h1_missing\'), priority (high/medium/low/information), countAll (total errors), countNew (new vs compareReportId), countFixed (fixed vs compareReportId). Use compareReportId parameter to track changes between audits. Use error.key with get_site_audit_history (track across all audits) or get_site_audit_pages_spec_errors (see affected pages). Does not consume API credits.';
+        return 'GET complete error breakdown by categories. **Main method for detailed analysis.** USE WHEN: full audit review, error analysis. Returns: categories with errors (key, priority, countAll, countNew, countFixed). Use compareReportId for diff between audits. Use error.key with get_site_audit_history or get_site_audit_pages_spec_errors for drill-down. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -761,7 +761,7 @@ export class GetErrorElementsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'DRILL-DOWN STEP 1: Get list of elements (pages/images) with specific error. Returns: url (problematic page or image URL), urlCrc/imageCrc (unique numeric ID for drill-down), count (occurrences). The CRC is used with get_site_audit_elements_with_issues for deeper analysis. Mode parameter: \'all\' (all errors), \'new\' (new vs compareReportId), \'solved\' (fixed vs compareReportId). Example flow: get pages with \'image_no_alt\' error → get imageCrc → use with get_site_audit_elements_with_issues to see which pages use that image. Does not consume API credits.';
+        return '**DRILL-DOWN STEP 1:** GET pages/elements with specific error. USE WHEN: finding affected pages for an error. Returns: url, urlCrc/imageCrc (for step 2), count. Use CRC with get_site_audit_elements_with_issues for deeper analysis. Mode: \'all\'|\'new\'|\'solved\' (vs compareReportId). Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -839,7 +839,7 @@ export class GetSubElementsByCrcHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'DRILL-DOWN STEP 2: Shows WHERE a problematic element is used. Use crc from get_site_audit_pages_spec_errors response. ONLY works for hierarchical errors (images, scripts, links). Does NOT work for page-level errors (no_desc, no_title, h1_missing) - returns \'Error don\'t have sub elements\'. Example: Step 1 finds image without alt (imageCrc=12345), Step 2 shows which pages use that image. The crc parameter must match urlCrc/imageCrc from previous method. Does not consume API credits.';
+        return '**DRILL-DOWN STEP 2:** Shows WHERE problematic element is used. USE WHEN: tracing error to pages. Use crc from get_site_audit_pages_spec_errors. **ONLY for hierarchical errors (images, scripts, links).** Returns \'Error don\'t have sub elements\' for page-level errors (no_desc, h1_missing). Free.';
     }
 
     getAnnotations(): ToolAnnotations {
