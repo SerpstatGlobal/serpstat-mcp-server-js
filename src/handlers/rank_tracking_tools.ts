@@ -28,7 +28,7 @@ export class GetRtProjectsListHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get a list of rank tracker projects including project ID, name, domain, creation date, and tracking status. This method does not consume API credits.';
+        return 'LIST rank tracking projects. USE WHEN: finding projects, starting rank analysis. Returns: projectId, name, domain, creation date, status.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -84,7 +84,7 @@ export class GetRtProjectStatusHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get the current status of position updates (parsing) for a rank tracker project and region. Use this to check if data is ready before requesting results. This method does not consume API credits.';
+        return 'CHECK position update status for project/region. USE WHEN: before requesting rank data, checking if data ready. Returns: parsing status.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -139,7 +139,7 @@ export class GetRtProjectRegionsListHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get the list of regions configured for a rank tracker project, including region ID, status (active/inactive), SERP type (organic/paid), device type (desktop/mobile), search engine, and location details. This method does not consume API credits.';
+        return 'LIST regions configured for project. USE WHEN: finding regionId, checking tracked regions. Returns: regionId, status, SERP type, device type, search engine, location.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -189,7 +189,7 @@ export class GetRtProjectKeywordSerpHistoryHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get complete Google top-100 SERP history for tracked keywords in a rank tracker project. Returns full competitor analysis with historical positions, URLs, domains, and search volumes for each date. WARNING: This method returns large datasets (full top-100 for each keyword/date combination). Recommended pageSize: 20-50 for most use cases. Use date filters and keyword filters to reduce response size. Supports keyword tagging for grouping and filtering. This method does not consume API credits.';
+        return 'GET full top-100 SERP history for tracked keywords. USE WHEN: competitor tracking, SERP changes analysis. Returns: positions, URLs, domains, volumes per date. **WARNING: large datasets. Use pageSize 20-50, date/keyword filters to reduce.** Supports keyword tagging.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -289,7 +289,7 @@ export class GetRtProjectUrlSerpHistoryHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get ranking history showing only YOUR domain\'s positions across all tracked keywords. Unlike get_rt_project_keyword_serp_history (which shows full top-100), this method returns only positions where your specified domain/URL ranks. Perfect for tracking your own performance over time without competitor noise. Returns historical position data, search volumes, and optional keyword tags. This method does not consume API credits.';
+        return 'GET YOUR domain\'s ranking history only (not full top-100). Unlike get_rt_project_keyword_serp_history, shows only where your URL ranks. USE WHEN: tracking own rankings, performance monitoring. Returns: positions, volumes, keyword tags.';
     }
 
     getAnnotations(): ToolAnnotations {

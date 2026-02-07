@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.5] - 2026-02-07
+
+### Improved
+
+- **Optimized tool descriptions for all 65 tools** — rewritten for better LLM tool selection and reduced token consumption
+    - Applied consistent format: `ACTION_VERB what it does. USE WHEN: triggers. Returns: key outputs.`
+    - Average ~39% character reduction across all descriptions (16,588 → 10,120 chars total)
+    - Added clear action verbs (GET/FIND/LIST/CHECK/START/STOP/COMPARE/ANALYZE)
+    - Added explicit `USE WHEN:` triggers for better contextual tool selection
+    - Highlighted critical prerequisites (e.g., `**REQUIRED FIRST STEP**`, `**Call first before...**`)
+    - Marked deprecated tools with uppercase `**DEPRECATED**`
+    - Replaced verbose credit notes with concise format (e.g., `Free.`, `Cost: 10 credits.`)
+    - Updated 3 test assertions in `keyword_tools.test.ts` to match new descriptions
+
 ## [1.1.4] - 2026-02-06
 
 ### Added

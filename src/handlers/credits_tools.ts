@@ -19,7 +19,7 @@ export class GetAuditStatsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Check available audit credits including one-page audit, JavaScript scanning, and page crawl limits. Use this before running site audits to verify available resources. This method does not consume API credits.';
+        return 'CHECK audit credits. USE WHEN: before running audits, checking limits. Returns: one-page audit credits, JS scanning credits, page crawl limits.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -63,7 +63,7 @@ export class GetCreditsStatsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Check available API credits, usage statistics, account information, and browser plugin limits. Perfect for monitoring API usage and planning resource-heavy operations. This method does not consume API credits.';
+        return 'CHECK API credits and usage stats. USE WHEN: monitoring usage, before expensive operations. Returns: credits balance, usage stats, account info.';
     }
 
     getAnnotations(): ToolAnnotations {

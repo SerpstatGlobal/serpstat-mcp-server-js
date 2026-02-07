@@ -23,7 +23,7 @@ export class BacklinksSummaryHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get comprehensive backlinks summary using Serpstat API. Returns referring domains, backlinks count, link types, quality metrics and recent changes for domain or subdomain.';
+        return 'GET backlink profile overview. USE WHEN: backlink audit, link building assessment. Returns: referring domains count, backlinks count, link types, quality metrics, recent changes.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -81,7 +81,7 @@ export class GetAnchorsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get anchor text analysis for backlinks using Serpstat API. Returns anchor texts used in backlinks, with metrics including referring domains, total backlinks, and nofollow counts for domain or URL analysis.';
+        return 'GET anchor text distribution for backlinks. USE WHEN: anchor text audit, link diversity check. Returns: anchor texts with referring domains, backlinks count, nofollow ratio.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -171,7 +171,7 @@ export class GetActiveBacklinksHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get a list of active backlinks using Serpstat API. Returns linking pages, target pages, link attributes, link types, external links count, anchor text, and discovery dates for domain or URL analysis.';
+        return 'LIST active backlinks pointing to domain/URL. USE WHEN: backlink audit, finding link sources. Returns: linking page, target page, anchor, link type, attributes, discovery date.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -261,7 +261,7 @@ export class GetReferringDomainsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get a list of referring domains using Serpstat API. Returns referring domains that link to the analyzed site with domain rank metrics, referring pages count, and filtering options for comprehensive backlink analysis.';
+        return 'LIST domains linking to target site. USE WHEN: referring domain audit, link diversity analysis. Returns: domains with domain rank, referring pages count.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -343,7 +343,7 @@ export class GetLostBacklinksHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get a list of lost backlinks showing linking pages, target pages, link attributes, and deletion dates for domain or URL analysis, **use sort by check desc** to get recently lost backlinks';
+        return 'LIST recently lost backlinks. USE WHEN: monitoring link losses, detecting problems. Returns: lost links with source, target, attributes, deletion date. **TIP: sort by check desc for most recent.**';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -432,7 +432,7 @@ export class GetTopAnchorsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get TOP-10 anchors with the number of backlinks and referring domains for domain analysis, use this method is you need a fast brief way to get info about top 10 anchors';
+        return 'GET top-10 anchor texts (quick overview). USE WHEN: fast anchor check, backlink snapshot. Returns: top 10 anchors with backlink and referring domain counts.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -489,7 +489,7 @@ export class GetTopPagesByBacklinksHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get leading pages by backlinks using Serpstat API. Returns pages with the highest number of referring pages, domains, and IP addresses for comprehensive backlink analysis.';
+        return 'GET pages with most backlinks on a domain. USE WHEN: finding most linked pages, content analysis. Returns: pages ranked by referring pages, domains, IPs.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -570,7 +570,7 @@ export class GetBacklinksIntersectionHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get backlinks from domains that link to multiple analyzed sites simultaneously. This method reveals shared referring domains between your target domain and competitors, useful for competitive backlink analysis and identifying potential link sources. Returns intersection data showing which donors link to multiple domains in your analysis set, including link metrics, anchor texts, and domain authority scores.';
+        return 'FIND shared referring domains across multiple sites. USE WHEN: competitor backlink gap analysis, finding link opportunities. Returns: domains linking to multiple targets with link metrics and authority scores.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -657,7 +657,7 @@ export class GetActiveOutlinksHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get active outbound links from a domain or URL. Returns external links the site points to, including target URLs, anchor text, link attributes (nofollow/dofollow), link types, and discovery dates. Useful for analyzing linking strategies, finding partnership opportunities, and auditing outbound link profiles.';
+        return 'GET outbound links from domain/URL. USE WHEN: outlink audit, partnership analysis, checking external links. Returns: target URLs, anchors, link attributes (follow/nofollow), dates.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -744,7 +744,7 @@ export class GetActiveOutlinkDomainsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get external domains that receive outbound links from the analyzed domain. Returns target domains with total link counts, revealing partnership networks, referenced sources, and linking patterns. Helps identify collaboration opportunities by analyzing which domains competitors link to.';
+        return 'GET domains that receive outlinks from target. USE WHEN: outlink domain analysis, finding partnerships. Returns: target domains with link counts and patterns.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -826,7 +826,7 @@ export class GetThreatBacklinksHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get malicious backlinks pointing to the analyzed domain. Returns links from sites flagged for threats like social engineering, malware, or unwanted software. Shows referring domain, source URL, target URL, platform type, threat type, and last update date. Essential for identifying and removing harmful backlinks that could damage domain reputation and SEO rankings.';
+        return 'GET toxic/malicious backlinks. USE WHEN: disavow audit, threat detection, link cleanup. Returns: links from flagged sites (malware, social engineering, unwanted software) with threat type, source/target URLs, dates.';
     }
 
     getAnnotations(): ToolAnnotations {

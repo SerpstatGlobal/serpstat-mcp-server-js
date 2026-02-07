@@ -47,7 +47,7 @@ export class GetKeywordsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Shows organic keywords related to the researched keyword for which domains rank in Google top 100. For each found keyword, displays its search volume, CPC, and competition level.'
+        return 'FIND organic keywords related to a keyword (by shared ranking domains). USE WHEN: keyword research, expanding keyword list. Returns: search volume, CPC, competition per keyword.'
     }
 
     getAnnotations(): ToolAnnotations {
@@ -178,7 +178,7 @@ export class GetRelatedKeywordsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Shows all search queries semantically related to the researched keyword. For each found keyword, displays its search volume, CPC, competition, difficulty, weight, intents, and more.';
+        return 'FIND semantically related keywords (by meaning, not just ranking overlap). USE WHEN: topic clustering, semantic SEO, content planning. Returns: volume, CPC, competition, difficulty, weight, intents.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -301,7 +301,7 @@ export class GetKeywordsInfoHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return "Get keyword overview showing volume, CPC, competition level, difficulty, and additional metrics for multiple keywords. Provides comprehensive analysis including search volume, cost per click, competition levels, SERP features, and keyword intents.";
+        return 'GET metrics for multiple keywords at once. USE WHEN: bulk keyword analysis, checking volume/difficulty for keyword list. Returns: volume, CPC, competition, difficulty, SERP features, intents per keyword.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -414,7 +414,7 @@ export class GetKeywordSuggestionsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Shows search suggestions for the keyword you requested (they are found by the full-text search). Returns keyword suggestions with geographic names information.';
+        return 'GET autocomplete-style keyword suggestions. USE WHEN: finding long-tail keywords, expanding seed keyword. Returns: keyword suggestions with geo-name flags.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -498,7 +498,7 @@ export class GetKeywordFullTopHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Shows Google\'s top-100 search results for the analyzed keyword. Returns detailed information about domains ranking for the keyword including their visibility, organic/PPC keywords count, SDR score, and backlink metrics.';
+        return 'GET Google top-100 SERP with domain metrics for a keyword. USE WHEN: SERP analysis, checking who ranks. Returns: position, domain visibility, organic/PPC keyword counts, SDR, backlinks.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -577,7 +577,7 @@ export class GetKeywordTopUrlsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Returns website pages that rank for the largest amount of the analyzed keyword variations and have the highest traffic. Shows URLs with keyword count, estimated traffic, and Facebook shares.';
+        return 'GET top URLs ranking for keyword variations by traffic. USE WHEN: finding best content for keyword, competitor page analysis. Returns: URLs with keyword count, traffic, shares.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -652,7 +652,7 @@ export class GetKeywordCompetitorsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Lists the domains that rank for the given keyword in Google top-20 results. Shows detailed competitor analysis including visibility metrics, traffic data, keyword dynamics, and relevance scores.';
+        return 'FIND domains ranking for keyword in Google top-20. USE WHEN: keyword competition analysis, finding who ranks. Returns: visibility, traffic, keyword dynamics, relevance.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -786,7 +786,7 @@ export class GetKeywordTopHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Shows Google\'s top-100 search results for the analyzed keyword. Returns position data, URLs, domains, subdomains, and SERP feature types. This method is deprecated but still functional.';
+        return '**DEPRECATED - use get_keyword_full_top instead.** GET Google top-100 positions for keyword. Returns: position, URL, domain, subdomain, SERP features.';
     }
 
     getAnnotations(): ToolAnnotations {

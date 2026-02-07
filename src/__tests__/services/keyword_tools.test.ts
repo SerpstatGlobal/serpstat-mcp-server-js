@@ -367,7 +367,7 @@ describe('GetKeywordsInfoHandler', () => {
 
     it('returns correct description', () => {
         const description = handler.getDescription();
-        expect(description).toContain('keyword overview');
+        expect(description).toContain('multiple keywords');
         expect(description).toContain('volume');
         expect(description).toContain('CPC');
         expect(description).toContain('competition');
@@ -538,9 +538,9 @@ describe('GetKeywordSuggestionsHandler', () => {
 
     it('returns correct description', () => {
         const description = handler.getDescription();
-        expect(description).toContain('search suggestions');
-        expect(description).toContain('full-text search');
-        expect(description).toContain('geographic names');
+        expect(description).toContain('keyword suggestions');
+        expect(description).toContain('long-tail');
+        expect(description).toContain('geo-name');
     });
 
     it('returns correct input schema', () => {
@@ -654,8 +654,8 @@ describe('GetKeywordTopHandler', () => {
     });
 
     it('should have correct description', () => {
-        expect(handler.getDescription()).toContain('Google\'s top-100 search results');
-        expect(handler.getDescription()).toContain('deprecated');
+        expect(handler.getDescription()).toContain('Google top-100 positions');
+        expect(handler.getDescription()).toContain('DEPRECATED');
     });
 
     it('should have correct input schema', () => {

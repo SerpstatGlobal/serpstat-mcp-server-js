@@ -38,9 +38,7 @@ export class GetUrlSummaryTrafficHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Returns traffic and keyword statistics for website pages that match a specific URL mask. ' +
-            'Shows organic traffic and number of keywords found for URLs matching the given pattern. **HIGH-COST METHOD - EXPLICIT CONFIRMATION REQUIRED**.  Before executing, inform the user:\n' +
-            ' `This operation will cost 1000-2000 credits`. API COST: 1000 credits per each of `traffic`|`keywords` output parameter';
+        return 'GET traffic and keyword stats for URLs matching a pattern. USE WHEN: section traffic analysis, URL mask analysis. **HIGH-COST: 1000 credits per output type (traffic|keywords). Confirm with user before executing.** Returns: organic traffic, keyword count for matching URLs.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -106,7 +104,7 @@ export class GetUrlCompetitorsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Returns competitor URLs that rank for the same keywords in Google top-10. The analyzed URL must rank for 10+ keywords in top-10 to have competitor data available. Returns \'Data not found\' error for new or low-traffic pages with few ranking keywords, URLs not found in Serpstat database, or pages without sufficient top-10 keyword overlap with competitors. The URL parameter must include protocol https://. Best results for established pages with significant organic traffic. API cost: 1 credit per result row returned.';
+        return 'FIND competitor URLs ranking for same keywords in Google top-10. USE WHEN: page-level competition analysis, finding similar pages. URL must include https:// protocol. Requires 10+ keywords in top-10 (returns \'Data not found\' for low-traffic pages). Cost: 1 credit/row.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -190,7 +188,7 @@ export class GetUrlKeywordsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Returns a list of keywords for which the specified URL ranks in top-100 Google search results. Provides comprehensive insights including current positions, estimated traffic per keyword, keyword difficulty, search volume, and SERP features. Use filters to narrow down by position range, search volume, difficulty, or keyword patterns. API cost: 1 credit per result row returned.';
+        return 'GET keywords a URL ranks for in Google top-100. USE WHEN: page keyword analysis, content audit. Returns: position, traffic, difficulty, volume, SERP features per keyword. Cost: 1 credit/row.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -312,7 +310,7 @@ export class GetUrlMissingKeywordsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return "Identifies keyword opportunities by finding keywords where your competitors rank in top-20 but your URL does not. The weight metric returned in results indicates how many competitor URLs from top-20 rank for that keyword. Higher weight means more competitors are targeting this keyword, suggesting it is valuable for your niche. Perfect for content gap analysis and finding quick wins. API cost: 1 credit per result row returned.";
+        return 'FIND content gap keywords (competitors rank in top-20, your URL does not). USE WHEN: content gap analysis, finding quick wins, keyword opportunities. Returns: missing keywords with weight (higher = more competitors rank for it). Cost: 1 credit/row.';
     }
 
     getAnnotations(): ToolAnnotations {

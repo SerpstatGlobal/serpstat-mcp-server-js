@@ -57,7 +57,7 @@ export class DomainsInfoHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get comprehensive SEO information for multiple domains including visibility, keywords, traffic, and dynamics';
+        return 'GET SEO metrics for multiple domains. USE WHEN: comparing domains, bulk analysis. Returns: visibility, keywords, traffic, dynamics.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -132,7 +132,7 @@ export class CompetitorsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get a list of competitor domains for a given domain, including visibility, traffic, and relevance.';
+        return 'FIND competitor domains. USE WHEN: competitive analysis, finding rivals. Returns: domains with visibility, traffic, relevance.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -220,7 +220,7 @@ export class DomainKeywordsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get keywords that domain ranks for in Google search results. Includes position, traffic, difficulty analysis with comprehensive SEO insights and performance metrics.';
+        return 'GET keywords a domain ranks for in Google top-100. USE WHEN: domain keyword research, SEO audit. Returns: position, traffic, difficulty, CPC.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -347,7 +347,7 @@ export class DomainUrlsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get URLs within a domain and keyword count for each URL. Analyze URL structure, performance distribution, and identify top-performing pages. Each URL costs 1 API credit, minimum 1 credit per request.';
+        return 'GET domain URLs with keyword counts. USE WHEN: finding top pages, URL structure analysis. Returns: URLs ranked by keyword count. Cost: 1 credit per URL.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -428,8 +428,7 @@ export class DomainRegionsCountHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return '**REQUIRED FIRST STEP ONLY IF DOMAIN ANALYSIS** for domain analysis: Determines optimal regional database (se parameter) by analyzing domain keyword presence across all Google regions. This tool identifies which regional database contains the most keyword data for the domain, ensuring subsequent analysis uses the correct market context.'
-            +' Returns: keyword count by country, regional performance comparison, and identifies primary market for the domain.';
+        return '**REQUIRED FIRST STEP for domain analysis.** Determines best regional database (se parameter) by checking keyword presence across all Google regions. USE WHEN: starting any domain analysis, choosing se parameter. Returns: keyword count by country, primary market identification.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -493,7 +492,7 @@ export class GetDomainUniqKeywordsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Returns unique keywords of two domains for which a third domain does not rank. Equivalent to a Domain vs domain report.';
+        return 'COMPARE two domains\' unique keywords excluding a third domain. USE WHEN: domain vs domain analysis, finding keyword gaps between competitors.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -628,7 +627,7 @@ export class GetMarketCategoriesHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get complete list of available market research categories (1000+ categories). Use this method first to find the appropriate category_id for your analysis. Returns hierarchical categories like \'/Arts & Entertainment/TV & Video/Online Video\' with their IDs (e.g., \'.2.13.1.\'). The category_id is required for get_category_top_domains method.';
+        return 'LIST all market categories (1000+). **Call first before get_category_top_domains.** USE WHEN: market research, industry analysis. Returns: hierarchical category names with category_id (required for get_category_top_domains).';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -672,7 +671,7 @@ export class GetCategoryTopDomainsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get top-performing domains in a specific market category with SEO metrics (traffic, visibility, keywords, backlinks, SDR). Requires category_id from get_market_categories - call that method first to find the right category. Returns ranked domains for competitive landscape analysis with filtering and sorting options.';
+        return 'GET top domains in market category. Requires category_id from get_market_categories. USE WHEN: market research, industry leaders. Returns: ranked domains with traffic, visibility, keywords, backlinks, SDR.';
     }
 
     getAnnotations(): ToolAnnotations {

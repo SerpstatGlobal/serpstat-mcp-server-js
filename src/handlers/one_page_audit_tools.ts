@@ -43,7 +43,7 @@ export class StartOnePageAuditScanHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Scan a single webpage with JavaScript rendering. Returns pageId and reportId for tracking. Use page_audit_get_reports_for_page to check progress via status and progress fields. API COST: 10 credits per scan. Wait for progress=100 before retrieving results with page_audit_get_results_report.';
+        return 'SCAN single webpage with JS rendering. USE WHEN: page audit, on-page SEO check. Returns: pageId, reportId. Track with page_audit_get_reports_for_page. **Cost: 10 credits.** Wait for progress=100 before results.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -107,7 +107,7 @@ export class GetOnePageAuditsListHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get list of all one-page audit projects. Returns page info including: pageId (use with other methods), url, name, status, lastActiveReport (latest scan results with SDO score and issue counts), finishedReportCount, settings. Use this as starting point to find pageId for other operations. Does not consume API credits.';
+        return '**STARTING POINT for page audits.** LIST all page audit projects. USE WHEN: finding pageId, listing audited pages. Returns: pageId (for other methods), url, name, status, lastActiveReport with SDO and counts. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -163,7 +163,7 @@ export class GetOnePageReportsListHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get history of all audit reports for a specific page. Returns array of reports with: id (reportId), auditDate, status, sdo (0-100 score), high/medium/low/information error counts, viruses, progress (0-100). Use this to track scan completion and view historical results. Status values: 1=in progress, 3=finalizing, 4=completed. Sort by auditDate to get most recent first. Does not consume API credits.';
+        return 'GET audit report history for page. USE WHEN: tracking scan completion, viewing past results. Returns: reportId, date, status (1=in progress, 3=finalizing, 4=completed), SDO, error counts, progress. **TIP: sort by date for most recent.** Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -219,7 +219,7 @@ export class GetOnePageAuditResultsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get detailed audit results for a page. Returns: categories array (errors grouped by category like meta_tags, headings, content, multimedia, https, pagespeed_desktop, pagespeed_mobile, etc), data array (page details), report object (SDO score, error counts, progress). Each category contains errors with: key (error identifier), priority (high/medium/low/information), countAll/countNew/countFixed, hasAdditionRows (true means drill-down available via page_audit_report_drill_down). Use this to analyze specific issues found during scan. Does not consume API credits.';
+        return 'GET detailed page audit results. USE WHEN: analyzing page issues, reviewing errors after scan. Returns: categories (errors by type: meta_tags, headings, content, multimedia, pagespeed), page data, report (SDO, counts). Each error has: key, priority, counts, hasAdditionRows (if true, drill down with page_audit_report_drill_down). Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -265,7 +265,7 @@ export class RescanOnePageAuditHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Rescan existing one-page audit project. Creates new audit report for the page. Returns reportId for the new scan. API COST: 10 credits per rescan. Use page_audit_get_reports_for_page to track progress.';
+        return 'RESCAN existing page audit. USE WHEN: re-checking after fixes. Returns: reportId. Track with page_audit_get_reports_for_page. **Cost: 10 credits.**';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -329,7 +329,7 @@ export class StopOnePageAuditHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Stop active one-page audit scan. Returns boolean indicating success. Does not consume API credits.';
+        return 'STOP active page audit scan. USE WHEN: canceling scan. Returns: success boolean.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -375,7 +375,7 @@ export class RemoveOnePageAuditHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Remove one-page audit project from customer project list. Returns boolean indicating success. Does not consume API credits.';
+        return 'DELETE page audit project. USE WHEN: removing audit project. Returns: success boolean.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -421,7 +421,7 @@ export class GetOnePageAuditByCategoriesHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get audit results by categories for a specific report. Returns categories array with errors grouped by type (meta_tags, headings, content, multimedia, https, etc), page data, and report info. Use compareReportId to see changes between reports (countNew shows errors added since compareReportId, countFixed shows errors resolved since compareReportId). Does not consume API credits.';
+        return 'GET audit results by categories for report. USE WHEN: category-level analysis, comparing reports. Returns: categories with errors by type, page data. Use compareReportId for countNew/countFixed vs previous report. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -472,7 +472,7 @@ export class GetOnePageAuditErrorRowsHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get detailed list of problematic elements for specific error types. ONLY works for errors with hasAdditionRows=true from page_audit_get_results_report response. Returns error \'Try get additional rows in rows-less error\' for page-level errors where hasAdditionRows=false. Response structure varies by error type: for multimedia errors (image_no_alt, large_image_size, broken_image_url) returns array of image URLs that have the issue; for page-level errors (miss_favicon, etc) returns array with single object containing page URL. Always check hasAdditionRows flag before calling this method. Does not consume API credits.';
+        return 'GET problematic elements for specific error. **ONLY works if hasAdditionRows=true** from page_audit_get_results_report. USE WHEN: drilling into error details. Returns error for hasAdditionRows=false. Response varies: multimedia errors -> image URL array; page-level errors -> page URL array. **Check hasAdditionRows flag first.** Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -544,7 +544,7 @@ export class GetOnePageAuditPageNamesHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get list of all one-page audit project names. Returns array of pages with: pageId, name, url, finishedReportCount. Use this to discover available audit projects. Does not consume API credits.';
+        return 'LIST page audit project names. USE WHEN: discovering projects. Returns: pageId, name, url, finishedReportCount. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
@@ -588,7 +588,7 @@ export class GetOnePageAuditUserLogHandler extends BaseHandler {
     }
 
     getDescription(): string {
-        return 'Get chronological log of scan events for debugging and progress tracking. Returns array of log items with: message (event name like audit_finish, crawl_start, server_check_robots_pass), type (info/warning/error), params (object with event-specific data, may be empty array if no additional info, e.g., {sdo: 64} or []), created_at (timestamp). Useful for debugging scan issues and understanding scan progress. Supports pagination via page and pageSize parameters. Does not consume API credits.';
+        return 'GET scan event logs. USE WHEN: debugging scan issues, tracking progress. Returns: log items with message (audit_finish, crawl_start, etc), type (info/warning/error), params, timestamp. Supports pagination. Free.';
     }
 
     getAnnotations(): ToolAnnotations {
